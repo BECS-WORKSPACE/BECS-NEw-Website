@@ -178,6 +178,51 @@ a {
   font-weight: 700;
 }
 
+/* Toast Notification Styles */
+.toast-notification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid var(--success);
+  animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, fadeOut 0.3s ease-in 2.7s forwards;
+}
+
+.toast-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  background: var(--success);
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.toast-content {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; pointer-events: none; }
+}
+
 .app-shell {
   padding-top: 28px;
   padding-bottom: 40px;
@@ -312,6 +357,12 @@ a {
 .product-card {
   position: relative;
   padding: 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
 }
 
 .product-card--active {
@@ -379,6 +430,18 @@ a {
 .detail-price-row span {
   color: #9aa5b6;
   text-decoration: line-through;
+}
+
+.mrp-strikethrough {
+  color: #9aa5b6;
+  text-decoration: line-through;
+  font-size: 1.1rem;
+}
+
+.save-amount {
+  color: var(--success);
+  font-weight: 700;
+  font-size: 0.95rem;
 }
 
 .card-actions,
@@ -721,6 +784,37 @@ a {
 
 .empty-state {
   margin: 0;
+}
+
+/* Premium Checkout Summary */
+.premium-summary-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #d5d9d9;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.premium-summary-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f1111;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.summary-details .summary-line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  color: #0f1111;
+}
+
+.summary-details .summary-line.expandable-trigger:hover span {
+  text-decoration: underline;
+  color: #c45500;
 }
 
 @media (max-width: 1260px) {

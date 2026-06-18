@@ -10,6 +10,54 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
+
+// Stripe Webhook MUST come before express.json()
+app.post('/api/orders/webhook', express.raw({type: 'application/json'}), async (req, res) => {
+  const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+  const Order = require('./models/Order');
+  const sig = req.headers['stripe-signature'];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  
+  if (!endpointSecret) {
+    console.log('STRIPE_WEBHOOK_SECRET is not defined, skipping signature verification for development');
+  }
+
+  let event;
+  try {
+    if (endpointSecret) {
+      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    } else {
+      event = JSON.parse(req.body.toString());
+    }
+  } catch (err) {
+    console.error(`Webhook Error: ${err.message}`);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === 'payment_intent.succeeded') {
+    const paymentIntent = event.data.object;
+    try {
+      if(paymentIntent.metadata && paymentIntent.metadata.orderId) {
+        await Order.findByIdAndUpdate(paymentIntent.metadata.orderId, {
+          isPaid: true,
+          paidAt: Date.now(),
+          status: 'Processing',
+          paymentResult: {
+            id: paymentIntent.id,
+            status: paymentIntent.status,
+            update_time: new Date().toISOString(),
+          }
+        });
+        console.log(`Order ${paymentIntent.metadata.orderId} marked as paid via webhook`);
+      }
+    } catch (err) {
+      console.error('Error updating order on webhook:', err);
+    }
+  }
+
+  res.send();
+});
+
 app.use(express.json());
 
 // Routes
@@ -17,11 +65,13 @@ const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const adminRoutes = require('./routes/admin');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // New Models
 const Contact = require('./models/Contact');
