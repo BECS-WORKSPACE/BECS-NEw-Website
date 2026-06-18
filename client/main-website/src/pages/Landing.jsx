@@ -250,6 +250,83 @@ const carouselServices = repeatArray(services, 4);
 const carouselTeam = repeatArray(team, 6);
 const carouselTestimonials = repeatArray(testimonials, 6);
 
+const ManualCarousel = ({ children, headingTitle, headingPill, headingText, speed = 1, isTestimonial = false }) => {
+  const scrollRef = React.useRef(null);
+  const isPausedRef = React.useRef(false);
+  const interactTimeoutRef = React.useRef(null);
+
+  React.useEffect(() => {
+    let animationFrameId;
+    let pos = 0;
+    
+    const scrollLoop = () => {
+      if (scrollRef.current && !isPausedRef.current) {
+        if (pos === 0 || Math.abs(pos - scrollRef.current.scrollLeft) > 10) {
+           pos = scrollRef.current.scrollLeft;
+        }
+        
+        pos += speed;
+        scrollRef.current.scrollLeft = pos;
+        
+        if (scrollRef.current.scrollLeft >= scrollRef.current.scrollWidth - scrollRef.current.clientWidth - 20) {
+           scrollRef.current.scrollLeft = 0;
+           pos = 0;
+        }
+      }
+      animationFrameId = requestAnimationFrame(scrollLoop);
+    };
+
+    animationFrameId = requestAnimationFrame(scrollLoop);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [speed]);
+
+  const handleManualInteract = (offset) => {
+    isPausedRef.current = true;
+    if (interactTimeoutRef.current) clearTimeout(interactTimeoutRef.current);
+    
+    if (scrollRef.current && offset !== 0) {
+      scrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+    }
+
+    interactTimeoutRef.current = setTimeout(() => {
+      isPausedRef.current = false;
+    }, 4000);
+  };
+
+  return (
+    <>
+      <div style={{ marginBottom: '32px' }}>
+        <div className={`section-heading ${!isTestimonial ? 'section-heading--left' : ''}`} style={{ margin: 0, textAlign: 'left' }}>
+          {headingPill && <span className="section-pill">{headingPill}</span>}
+          <h2 style={{ marginBottom: '16px' }}>{headingTitle}</h2>
+          <p style={{ margin: 0 }}>{headingText}</p>
+        </div>
+      </div>
+
+      <div 
+        className="carousel-container-wrapper"
+        onMouseEnter={() => { isPausedRef.current = true; }}
+        onMouseLeave={() => { if (!interactTimeoutRef.current) isPausedRef.current = false; }}
+        onTouchStart={() => handleManualInteract(0)}
+      >
+        <button className="carousel-btn carousel-btn--left" onClick={() => handleManualInteract(-380)} aria-label="Previous">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        
+        <div className="carousel-container-manual" ref={scrollRef}>
+          <div className="carousel-track-manual">
+            {children}
+          </div>
+        </div>
+
+        <button className="carousel-btn carousel-btn--right" onClick={() => handleManualInteract(380)} aria-label="Next">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </>
+  );
+};
+
 const Landing = () => {
   const [user, setUser] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -389,20 +466,17 @@ const Landing = () => {
       </header>
 
       <main>
-        <section className="hero-section section-white" id="home">
+        <section className="hero-section" id="home">
           <div className="container hero-grid">
-            <div className="hero-copy">
-              <span className="section-pill">Electronics Innovation Leaders</span>
+            <div className="hero-copy fade-in-up">
+              <span className="section-pill">Enterprise Technology Partner</span>
               <h1>
-                Innovating
-                <br />
-                Electronics.
-                <br />
-                <span>Powering Futures.</span>
+                Engineering Smart Electronics, <br />
+                Automation & Digital Solutions <br />
+                <span>for Modern Businesses.</span>
               </h1>
               <p>
-                Premium consultancy, smart automation, and cutting-edge electronic
-                solutions from IoT ecosystems to industrial power systems.
+                BECS delivers professional electronics solutions, industrial automation, IoT systems, embedded technologies, digital platforms, and educational initiatives that help businesses, institutions, and individuals innovate faster.
               </p>
 
               <div className="hero-actions">
@@ -410,71 +484,56 @@ const Landing = () => {
                   Explore Services
                 </a>
                 <a className="pill-button pill-button--ghost" href={ecommerceUrl}>
-                  Visit Store
+                  Visit BECS Store
                 </a>
-                <a className="pill-button pill-button--ghost" href={trainingUrl} style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}>
-                  BECS Vidyapeeth
+                <a className="pill-button pill-button--ghost" href="#contact" style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}>
+                  Contact Us
                 </a>
               </div>
 
-              <div className="hero-proof">
-                <div className="hero-avatars">
-                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80"
-                    alt="Client"
-                  />
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=80"
-                    alt="Client"
-                  />
-                  <img
-                    src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=80&q=80"
-                    alt="Client"
-                  />
-                </div>
-                <span>500+ Happy Clients</span>
-                <span className="hero-rating">4.9 / 5 Rating</span>
+              <div className="hero-trust-metrics">
+                <div className="trust-item"><span className="trust-check">✓</span> Electronics Solutions</div>
+                <div className="trust-item"><span className="trust-check">✓</span> Automation Projects</div>
+                <div className="trust-item"><span className="trust-check">✓</span> Educational Programs</div>
+                <div className="trust-item"><span className="trust-check">✓</span> E-Commerce Platform</div>
               </div>
             </div>
 
-            <div className="hero-visual">
-              <div className="hero-circuit-animated">
-                <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                  <img 
-                    src="https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&w=1200&q=80" 
-                    alt="Advanced Electronics Platform" 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8, animation: 'slowZoom 20s infinite alternate ease-in-out' }} 
-                  />
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(18,24,39,0.9) 0%, rgba(18,24,39,0.4) 100%)' }}></div>
-                  
-                  {/* Dynamic Glassmorphic Overlay Cards */}
-                  <div style={{ position: 'absolute', top: '12%', left: '8%', background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.15)', padding: '24px', borderRadius: '20px', color: '#fff', transform: isElecActive ? 'translateY(0) scale(1)' : 'translateY(15px) scale(0.95)', opacity: isElecActive ? 1 : 0.3, transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)', width: '240px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                      <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#22d3ee', boxShadow: '0 0 12px #22d3ee' }}></div>
-                      <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#22d3ee', fontWeight: 800 }}>Hardware & IoT</div>
-                    </div>
-                    <div style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '4px', fontFamily: 'Outfit' }}>Active</div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>Microcontroller telemetry synced perfectly.</div>
-                  </div>
-
-                  <div style={{ position: 'absolute', top: '38%', right: '8%', background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.15)', padding: '24px', borderRadius: '20px', color: '#fff', transform: isSoftActive ? 'translateY(0) scale(1)' : 'translateY(15px) scale(0.95)', opacity: isSoftActive ? 1 : 0.3, transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)', width: '240px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                      <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#fb923c', boxShadow: '0 0 12px #fb923c' }}></div>
-                      <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#fb923c', fontWeight: 800 }}>Software Dev</div>
-                    </div>
-                    <div style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '4px', fontFamily: 'Outfit' }}>Deployed</div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>Zero-downtime deployment successful.</div>
-                  </div>
-
-                  <div style={{ position: 'absolute', bottom: '12%', left: '15%', background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.15)', padding: '24px', borderRadius: '20px', color: '#fff', transform: isMktgActive ? 'translateY(0) scale(1)' : 'translateY(15px) scale(0.95)', opacity: isMktgActive ? 1 : 0.3, transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)', width: '240px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                      <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#34d399', boxShadow: '0 0 12px #34d399' }}></div>
-                      <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#34d399', fontWeight: 800 }}>Digital Growth</div>
-                    </div>
-                    <div style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '4px', fontFamily: 'Outfit' }}>+245%</div>
-                    <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>Engagement and ROAS optimized.</div>
-                  </div>
+            <div className="hero-visual fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <div className="hero-collage">
+                <div className="collage-img collage-img-1">
+                  <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80" alt="PCB Design" />
                 </div>
+                <div className="collage-img collage-img-2">
+                  <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80" alt="Industrial Automation" />
+                </div>
+                <div className="collage-img collage-img-3">
+                  <img src="https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&w=600&q=80" alt="Electronics Component" />
+                </div>
+                <div className="collage-img collage-img-4">
+                  <img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=600&q=80" alt="IoT Device" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="container fade-in-up" style={{ animationDelay: '0.4s' }}>
+            <div className="hero-statistics">
+              <div className="stat-box">
+                <strong>100+</strong>
+                <span>Products</span>
+              </div>
+              <div className="stat-box">
+                <strong>10+</strong>
+                <span>Services</span>
+              </div>
+              <div className="stat-box">
+                <strong>24/7</strong>
+                <span>Support</span>
+              </div>
+              <div className="stat-box">
+                <strong>99%</strong>
+                <span>Customer Satisfaction</span>
               </div>
             </div>
           </div>
@@ -524,43 +583,37 @@ const Landing = () => {
 
         <section className="section-white" id="services">
           <div className="container">
-            <div className="section-heading">
-              <span className="section-pill">What We Offer</span>
-              <h2>Our Services</h2>
-              <p>
-                End-to-end electronic solutions tailored to your industry needs from
-                initial concept to full deployment.
-              </p>
-            </div>
-
-            <div className="carousel-container">
-              <div className="carousel-track">
-                {carouselServices.map((service, index) => {
-                  const isTraining = service.title === 'Training';
-                  return (
-                    <article className="service-card" key={`${service.title}-${index}`}>
-                      <div className="service-icon">
-                        <Icon kind={service.icon} />
-                      </div>
-                      <h3>{service.title}</h3>
-                      <p>{service.text}</p>
-                      <ul>
-                        {service.points.map((point) => (
-                          <li key={point}>{point}</li>
-                        ))}
-                      </ul>
-                      <a
-                        href={isTraining ? trainingUrl : "#contact"}
-                        target={isTraining ? "_blank" : undefined}
-                        rel={isTraining ? "noopener noreferrer" : undefined}
-                      >
-                        {isTraining ? 'Explore Courses' : 'Learn More'}
-                      </a>
-                    </article>
-                  );
-                })}
-              </div>
-            </div>
+            <ManualCarousel 
+              headingPill="What We Offer"
+              headingTitle="Our Services"
+              headingText="End-to-end electronic solutions tailored to your industry needs from initial concept to full deployment."
+              speed={1.2}
+            >
+              {carouselServices.map((service, index) => {
+                const isTraining = service.title === 'Training';
+                return (
+                  <article className="service-card" key={`${service.title}-${index}`}>
+                    <div className="service-icon">
+                      <Icon kind={service.icon} />
+                    </div>
+                    <h3>{service.title}</h3>
+                    <p>{service.text}</p>
+                    <ul>
+                      {service.points.map((point) => (
+                        <li key={point}>{point}</li>
+                      ))}
+                    </ul>
+                    <a
+                      href={isTraining ? trainingUrl : "#contact"}
+                      target={isTraining ? "_blank" : undefined}
+                      rel={isTraining ? "noopener noreferrer" : undefined}
+                    >
+                      {isTraining ? 'Explore Courses' : 'Learn More'}
+                    </a>
+                  </article>
+                );
+              })}
+            </ManualCarousel>
           </div>
         </section>
 
@@ -807,32 +860,27 @@ const Landing = () => {
 
         <section className="section-cream testimonials-section">
           <div className="container">
-            <div className="section-heading">
-              <h2>What Our Clients Say</h2>
-              <p>
-                Trusted by industry leaders and innovative companies here's what our clients
-                have to say about working with us.
-              </p>
-            </div>
-
-            <div className="carousel-container">
-              <div className="carousel-track" style={{ animationDuration: '50s' }}>
-                {carouselTestimonials.map((item, index) => (
-                  <article className="testimonial-card" key={`${item.name}-${index}`}>
-                    <span className="quote-glyph">"</span>
-                    <div className="testimonial-stars">5/5</div>
-                    <p>{item.text}</p>
-                    <div className="testimonial-person">
-                      <img src={item.image} alt={item.name} />
-                      <div>
-                        <strong>{item.name}</strong>
-                        <span>{item.company}</span>
-                      </div>
+            <ManualCarousel 
+              headingTitle="What Our Clients Say"
+              headingText="Trusted by industry leaders and innovative companies here's what our clients have to say about working with us."
+              speed={1.2}
+              isTestimonial={true}
+            >
+              {carouselTestimonials.map((item, index) => (
+                <article className="testimonial-card" key={`${item.name}-${index}`}>
+                  <span className="quote-glyph">"</span>
+                  <div className="testimonial-stars">5/5</div>
+                  <p>{item.text}</p>
+                  <div className="testimonial-person">
+                    <img src={item.image} alt={item.name} />
+                    <div>
+                      <strong>{item.name}</strong>
+                      <span>{item.company}</span>
                     </div>
-                  </article>
-                ))}
-              </div>
-            </div>
+                  </div>
+                </article>
+              ))}
+            </ManualCarousel>
           </div>
         </section>
       </main>
