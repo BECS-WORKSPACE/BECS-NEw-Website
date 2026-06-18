@@ -887,39 +887,6 @@ const Landing = () => {
           </div>
         </section>
 
-        <section className="section-cream" id="testimonials">
-          <div className="container">
-            <ManualCarousel
-              headingPill="Testimonials"
-              headingTitle="What Our Clients Say"
-              headingText="Trusted by businesses, institutions, and innovators across the industry for delivering reliable and cutting-edge automation solutions."
-              isTestimonial={true}
-              speed={0.5}
-            >
-              {carouselTestimonials.map((t, idx) => (
-                <article key={idx} style={{ 
-                  minWidth: '350px', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', 
-                  border: '1px solid rgba(255,255,255,0.4)', borderRadius: '16px', padding: '30px', 
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: '20px'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <img src={t.image} alt={t.name} style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover' }} />
-                    <div>
-                      <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--navy)' }}>{t.name}</h4>
-                      <span style={{ fontSize: '0.9rem', color: 'var(--muted)', fontWeight: 600 }}>{t.company}</span>
-                    </div>
-                  </div>
-                  <div style={{ color: '#f59e0b', fontSize: '1.2rem', letterSpacing: '2px' }}>★★★★★</div>
-                  <p style={{ margin: 0, fontSize: '1rem', lineHeight: 1.6, color: '#334155', fontStyle: 'italic' }}>"{t.text}"</p>
-                  <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--line)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                     <span style={{ background: '#d1fae5', color: '#065f46', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700 }}>✓ Verified Client</span>
-                  </div>
-                </article>
-              ))}
-            </ManualCarousel>
-          </div>
-        </section>
-
         <section className="section-white" id="projects">
           <div className="container">
             <div className="section-heading">
