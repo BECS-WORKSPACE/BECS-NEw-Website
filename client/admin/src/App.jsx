@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { login as apiLogin, fetchStats, fetchAllOrders, updateOrderStatus, fetchAllUsers, fetchAllProducts, updateProduct, createProduct, deleteProduct, bulkCreateProducts, fetchContacts, fetchEnquiries, fetchCourses, updateEnquiryStatus, deleteEnquiry as apiDeleteEnquiry, deleteContact as apiDeleteContact, createCourse as apiCreateCourse, updateCourse as apiUpdateCourse, deleteCourse as apiDeleteCourse } from './api';
+import io from 'socket.io-client';
+import DashboardOverview from './components/DashboardOverview';
+import StoreOrders from './components/StoreOrders';
 
 const formatPrice = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
 
@@ -99,8 +102,31 @@ const AdminApp = () => {
   const [courses, setCourses] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
+  const [notification, setNotification] = useState(null); // Real-time notification
 
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173';
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  useEffect(() => {
+    // Socket.IO Setup
+    const socket = io(apiUrl);
+    
+    socket.on('new_order', (data) => {
+      setNotification(`🔔 New Order Received: #${data.orderId.slice(-8).toUpperCase()}`);
+      setTimeout(() => setNotification(null), 5000);
+      loadDashboardData(); // Refresh data silently
+    });
+
+    socket.on('order_updated', (data) => {
+      if (data.order && data.order.status === 'Delivered') {
+        setNotification(`🔔 Order Delivered: #${data.order._id.slice(-8).toUpperCase()}`);
+        setTimeout(() => setNotification(null), 5000);
+      }
+      loadDashboardData(); // Refresh data silently
+    });
+
+    return () => socket.disconnect();
+  }, [apiUrl]);
 
   useEffect(() => {
     const savedAdmin = localStorage.getItem('becs_admin');
@@ -307,98 +333,7 @@ const AdminApp = () => {
 
   // --- VIEWS ---
 
-  const DashboardView = () => {
-    if (!stats) return <div>Loading stats...</div>;
-    return (
-      <div className="view-container">
-        <header className="view-header">
-          <div>
-            <h2 className="view-title">Master Control Panel</h2>
-            <p className="view-subtitle">High-level overview of your entire ecosystem.</p>
-          </div>
-        </header>
-
-        <div className="stats-grid">
-          <div className="stat-card">
-            <h3>Total Global Clients</h3>
-            <div className="value">{stats.userCount}</div>
-            <p className="trend-up">Live from database</p>
-          </div>
-          <div className="stat-card">
-            <h3>Total Revenue</h3>
-            <div className="value">{formatPrice(stats.totalRevenue)}</div>
-            <p className="trend-up">All time sales</p>
-          </div>
-          <div className="stat-card">
-            <h3>Pending Orders</h3>
-            <div className="value">{stats.pendingOrders}</div>
-            <p className="trend-up">Requires processing</p>
-          </div>
-          <div className="stat-card">
-            <h3>Low Stock Products</h3>
-            <div className="value" style={{color: '#ef4444'}}>{stats.lowStockProducts}</div>
-            <p className="trend-down">Inventory alerts</p>
-          </div>
-        </div>
-
-        <div className="tables-grid">
-          <section className="card">
-            <div className="card-header">
-              <h3>Recent Clients</h3>
-              <button className="btn-ghost" onClick={() => setActiveTab('users')}>View All</button>
-            </div>
-            <div className="table-wrapper">
-              <table>
-                <thead>
-                  <tr><th>Name / Email</th><th>Admin Status</th></tr>
-                </thead>
-                <tbody>
-                  {stats.recentUsers.map(client => (
-                    <tr key={client._id}>
-                      <td>
-                        <strong>{client.name}</strong>
-                        <span className="table-subtext">{client.email}</span>
-                      </td>
-                      <td>
-                        {client.isAdmin ? <span className="badge badge-success">Administrator</span> : <span className="badge badge-primary">Customer</span>}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <section className="card">
-            <div className="card-header">
-              <h3>Recent Live Orders</h3>
-              <button className="btn-ghost" onClick={() => setActiveTab('orders')}>Manage Orders</button>
-            </div>
-            <div className="table-wrapper">
-              <table>
-                <thead>
-                  <tr><th>Order ID</th><th>Status</th><th>Total</th></tr>
-                </thead>
-                <tbody>
-                  {stats.recentOrders.map(order => (
-                    <tr key={order._id}>
-                      <td style={{ color: 'var(--accent)', fontWeight: 700 }}>{order._id.slice(-6)}</td>
-                      <td>
-                        <span className={`badge badge-${order.status === 'Delivered' ? 'success' : order.status === 'Processing' ? 'warning' : 'primary'}`}>
-                          {order.status}
-                        </span>
-                      </td>
-                      <td>{formatPrice(order.totalPrice)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </div>
-      </div>
-    );
-  };
+  // Old DashboardView was removed, using imported component
 
   const UsersView = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -441,54 +376,7 @@ const AdminApp = () => {
     );
   };
 
-  const OrdersView = () => {
-    return (
-      <div className="view-container">
-        <header className="view-header">
-          <div>
-            <h2 className="view-title">Ecommerce Orders Control</h2>
-            <p className="view-subtitle">Track and update the status of active store orders.</p>
-          </div>
-        </header>
-        <section className="card">
-          <div className="table-wrapper">
-            <table>
-              <thead>
-                <tr><th>Order ID</th><th>Customer</th><th>Date</th><th>Total</th><th>Status</th><th>Update</th></tr>
-              </thead>
-              <tbody>
-                {orders.map(order => (
-                  <tr key={order._id}>
-                    <td style={{color: 'var(--accent)', fontWeight: 700}}>{order._id.slice(-8)}</td>
-                    <td style={{fontWeight: 600}}>{order.shippingDetails?.name || order.user?.name}</td>
-                    <td style={{color: 'var(--text-light)'}}>{new Date(order.createdAt).toLocaleDateString()}</td>
-                    <td style={{fontWeight: 700}}>{formatPrice(order.totalPrice)}</td>
-                    <td>
-                      <span className={`badge badge-${order.status === 'Delivered' ? 'success' : order.status === 'Processing' ? 'warning' : 'primary'}`}>
-                        {order.status}
-                      </span>
-                    </td>
-                    <td>
-                      <select 
-                        value={order.status} 
-                        onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                        style={{ padding: '6px', borderRadius: '6px', border: '1px solid var(--border)' }}
-                      >
-                        <option value="Processing">Processing</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </div>
-    );
-  };
+  // Old OrdersView was removed, using imported component
 
   const ProductsView = () => {
     return (
@@ -820,14 +708,14 @@ const AdminApp = () => {
   const renderActiveView = () => {
     if (loading) return <div style={{ padding: '40px' }}>Loading real-time data...</div>;
     switch(activeTab) {
-      case 'dashboard': return <DashboardView />;
+      case 'dashboard': return <DashboardOverview stats={stats} orders={orders} setActiveTab={setActiveTab} formatPrice={formatPrice} />;
       case 'users': return <UsersView />;
-      case 'orders': return <OrdersView />;
+      case 'orders': return <StoreOrders orders={orders} handleStatusChange={handleStatusChange} formatPrice={formatPrice} />;
       case 'products': return <ProductsView />;
       case 'contacts': return <ContactsView />;
       case 'enquiries': return <EnquiriesView />;
       case 'courses': return <CoursesView />;
-      default: return <DashboardView />;
+      default: return <DashboardOverview stats={stats} orders={orders} setActiveTab={setActiveTab} formatPrice={formatPrice} />;
     }
   };
 
@@ -866,6 +754,11 @@ const AdminApp = () => {
       </aside>
 
       <main className="main-content">
+        {notification && (
+          <div className="toast-notification">
+            {notification}
+          </div>
+        )}
         {renderActiveView()}
       </main>
     </div>

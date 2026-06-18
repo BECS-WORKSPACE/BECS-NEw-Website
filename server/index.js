@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const http = require('http');
+const { Server } = require('socket.io');
 
 dotenv.config();
 
@@ -48,6 +50,12 @@ app.post('/api/orders/webhook', express.raw({type: 'application/json'}), async (
             update_time: new Date().toISOString(),
           }
         });
+        
+        // Emit real-time event for admin dashboard
+        if (global.io) {
+          global.io.emit('new_order', { orderId: paymentIntent.metadata.orderId });
+        }
+        
         console.log(`Order ${paymentIntent.metadata.orderId} marked as paid via webhook`);
       }
     } catch (err) {
@@ -120,7 +128,26 @@ app.get('/', (req, res) => {
 });
 
 // Start server immediately
-app.listen(PORT, () => {
+const server = http.createServer(app);
+
+// Initialize Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
+  }
+});
+
+global.io = io;
+
+io.on('connection', (socket) => {
+  console.log('Client connected to Socket.IO');
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});
+
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 

@@ -54,6 +54,12 @@ router.put('/orders/:id/status', protect, admin, async (req, res) => {
         order.deliveredAt = Date.now();
       }
       const updatedOrder = await order.save();
+      
+      // Emit real-time event for admin dashboard
+      if (global.io) {
+        global.io.emit('order_updated', { order: updatedOrder });
+      }
+      
       res.json(updatedOrder);
     } else {
       res.status(404).json({ message: 'Order not found' });
