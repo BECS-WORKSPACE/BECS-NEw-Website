@@ -236,7 +236,7 @@ function ShopProvider({ children }) {
     <ShopContext.Provider value={{
       products, loading, cartItems, setCartItems, wishlistItems, setWishlistItems, addresses, setAddresses, orders, setOrders, checkout, setCheckout,
       cartSummary, handleAddToCart, handleQuantityChange, handleRemoveItem, handleToggleWishlist,
-      message, setMessage, defaultCheckout, user, handleLogin, handleRegister, handleLogout,
+      message, setMessage, defaultCheckout, user, setUser, handleLogin, handleRegister, handleLogout,
       getInclusivePrice, shippingSpeed, setShippingSpeed, calculateEDD
     }}>
       {children}
@@ -308,9 +308,13 @@ function Navbar() {
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
                 onClick={() => setShowDropdown(!showDropdown)}
               >
-                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--navy)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: 'bold', marginBottom: '2px' }}>
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
+                {user.avatar ? (
+                  <img src={user.avatar} alt="Avatar" style={{ width: '32px', height: '32px', borderRadius: '50%', marginBottom: '2px', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--navy)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: 'bold', marginBottom: '2px' }}>
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
                 <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Profile</span>
               </div>
               
@@ -1745,9 +1749,27 @@ function Wishlist() {
 }
 
 function Profile() {
-  const { user, handleLogout, addresses, setAddresses } = React.useContext(ShopContext);
+  const { user, setUser, handleLogout, addresses, setAddresses } = React.useContext(ShopContext);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
+
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [customAvatarUrl, setCustomAvatarUrl] = useState('');
+  
+  const presetAvatars = [
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Nala',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Missy',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Sam',
+  ];
+
+  const handleUpdateAvatar = (url) => {
+    setUser({ ...user, avatar: url });
+    setShowAvatarModal(false);
+    setCustomAvatarUrl('');
+  };
 
   if (!user) {
     navigate('/login');
@@ -1761,9 +1783,13 @@ function Profile() {
         {/* Account Sidebar */}
         <aside style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid var(--line)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '30px', paddingBottom: '20px', borderBottom: '1px solid var(--line)' }}>
-             <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent), var(--accent-deep))', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 'bold' }}>
-               {user.name.charAt(0).toUpperCase()}
-             </div>
+             {user.avatar ? (
+               <img src={user.avatar} alt="User Avatar" style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--line)' }} />
+             ) : (
+               <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent), var(--accent-deep))', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 'bold' }}>
+                 {user.name.charAt(0).toUpperCase()}
+               </div>
+             )}
              <div>
                <strong style={{ display: 'block', fontSize: '1.2rem', color: 'var(--navy)' }}>{user.name}</strong>
                <span style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>{user.email}</span>
@@ -1785,7 +1811,48 @@ function Profile() {
         <div style={{ padding: '30px', border: '1px solid var(--line)', borderRadius: '16px', minHeight: '600px' }}>
           {activeTab === 'profile' && (
             <div>
-              <h2 style={{ fontSize: '1.8rem', marginBottom: '30px', paddingBottom: '16px', borderBottom: '1px solid var(--line)' }}>Personal Information</h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', paddingBottom: '16px', borderBottom: '1px solid var(--line)' }}>
+                <h2 style={{ fontSize: '1.8rem', margin: 0 }}>Personal Information</h2>
+                <button onClick={() => setShowAvatarModal(true)} className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>Edit Avatar</button>
+              </div>
+
+              {showAvatarModal && (
+                <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '12px', border: '1px solid var(--line)', marginBottom: '30px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Choose your Avatar</h3>
+                    <button onClick={() => setShowAvatarModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
+                  </div>
+                  
+                  <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingBottom: '16px', marginBottom: '16px' }}>
+                    {presetAvatars.map((url, idx) => (
+                      <img 
+                        key={idx} 
+                        src={url} 
+                        alt="Preset Avatar" 
+                        onClick={() => handleUpdateAvatar(url)}
+                        style={{ width: '60px', height: '60px', borderRadius: '50%', cursor: 'pointer', border: user.avatar === url ? '3px solid var(--accent)' : '1px solid var(--line)', background: '#fff', flexShrink: 0 }} 
+                      />
+                    ))}
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <input 
+                      type="text" 
+                      placeholder="Or paste an image URL..." 
+                      value={customAvatarUrl} 
+                      onChange={(e) => setCustomAvatarUrl(e.target.value)} 
+                      style={{ flex: 1, padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--line)' }}
+                    />
+                    <button 
+                      onClick={() => { if(customAvatarUrl) handleUpdateAvatar(customAvatarUrl); }} 
+                      className="action-button action-button--solid" 
+                      style={{ padding: '0 20px' }}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              )}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--muted)', marginBottom: '8px' }}>Full Name</label>
