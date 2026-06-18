@@ -85,6 +85,7 @@ function ShopProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [cartItems, setCartItems] = useState(() => safeRead(STORAGE_KEYS.cart, []));
   const [wishlistItems, setWishlistItems] = useState(() => safeRead(STORAGE_KEYS.wishlist, []));
+  const [addresses, setAddresses] = useState(() => safeRead('becs_ecommerce_addresses', []));
   const [orders, setOrders] = useState([]);
   const [checkout, setCheckout] = useState(defaultCheckout);
   const [message, setMessage] = useState('');
@@ -121,6 +122,7 @@ function ShopProvider({ children }) {
 
   useEffect(() => { window.localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(cartItems)); }, [cartItems]);
   useEffect(() => { window.localStorage.setItem(STORAGE_KEYS.wishlist, JSON.stringify(wishlistItems)); }, [wishlistItems]);
+  useEffect(() => { window.localStorage.setItem('becs_ecommerce_addresses', JSON.stringify(addresses)); }, [addresses]);
   useEffect(() => { 
     if (user) {
       window.localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
@@ -232,7 +234,7 @@ function ShopProvider({ children }) {
 
   return (
     <ShopContext.Provider value={{
-      products, loading, cartItems, setCartItems, wishlistItems, setWishlistItems, orders, setOrders, checkout, setCheckout,
+      products, loading, cartItems, setCartItems, wishlistItems, setWishlistItems, addresses, setAddresses, orders, setOrders, checkout, setCheckout,
       cartSummary, handleAddToCart, handleQuantityChange, handleRemoveItem, handleToggleWishlist,
       message, setMessage, defaultCheckout, user, handleLogin, handleRegister, handleLogout,
       getInclusivePrice, shippingSpeed, setShippingSpeed, calculateEDD
@@ -583,6 +585,7 @@ function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [affiliateLink, setAffiliateLink] = useState('');
+  const [activeImage, setActiveImage] = useState(0);
   const navigate = useNavigate();
 
   const handleGenerateAffiliate = () => {
@@ -635,13 +638,39 @@ function ProductDetail() {
   const discountPercent = Math.round((discountAmount / inclusiveOriginal) * 100);
   const isWishlisted = wishlistItems.some(item => item._id === product._id);
 
+  const images = product.images || [
+    product.image,
+    'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=600&q=80'
+  ];
+
   return (
     <div className="container app-shell" style={{ paddingTop: '40px' }}>
       <Link to="/" style={{ display: 'inline-block', marginBottom: '30px', color: 'var(--muted)', fontWeight: 700, fontSize: '1.1rem' }}>← Back to Products</Link>
       
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'start' }}>
-        <div className="product-image" style={{ height: '600px', borderRadius: '30px' }}>
-          <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div>
+          <div className="product-image" style={{ height: '500px', borderRadius: '30px', marginBottom: '20px', overflow: 'hidden', cursor: 'zoom-in' }}>
+            <img 
+              src={images[activeImage]} 
+              alt={product.name} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }} 
+              onMouseOver={e => e.currentTarget.style.transform = 'scale(1.15)'} 
+              onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+            />
+          </div>
+          <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingBottom: '10px' }}>
+            {images.map((img, idx) => (
+              <div 
+                key={idx} 
+                onClick={() => setActiveImage(idx)}
+                style={{ width: '100px', height: '100px', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', border: activeImage === idx ? '3px solid var(--accent)' : '3px solid transparent', opacity: activeImage === idx ? 1 : 0.6, transition: 'all 0.2s ease', flexShrink: 0 }}
+              >
+                <img src={img} alt={`Thumbnail ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            ))}
+          </div>
         </div>
         
         <div className="detail-card" style={{ border: 'none', boxShadow: 'none', padding: '0', background: 'transparent' }}>
@@ -902,14 +931,25 @@ function MockPaymentUI({ onSuccess, onBack, amount }) {
 }
 
 function Checkout() {
-  const { cartItems, cartSummary, checkout, setCheckout, setOrders, defaultCheckout, setCartItems, setMessage, user, getInclusivePrice, shippingSpeed, setShippingSpeed, calculateEDD } = React.useContext(ShopContext);
+  const { cartItems, cartSummary, checkout, setCheckout, setOrders, defaultCheckout, setCartItems, setMessage, user, getInclusivePrice, shippingSpeed, setShippingSpeed, calculateEDD, addresses, setAddresses } = React.useContext(ShopContext);
   const navigate = useNavigate();
   const [checkoutStep, setCheckoutStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [latestOrder, setLatestOrder] = useState(null);
   const [showTaxes, setShowTaxes] = useState(false);
   
+  const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+
   const edd = calculateEDD(shippingSpeed, checkout.pincode);
+
+  useEffect(() => {
+    if (addresses.length === 0) setIsAddingNewAddress(true);
+    else if (!selectedAddressId && addresses.length > 0) {
+      setSelectedAddressId(addresses[0].id);
+      setCheckout((current) => ({ ...current, ...addresses[0] }));
+    }
+  }, [addresses, selectedAddressId, setCheckout]);
 
   useEffect(() => {
     if (!user) navigate('/login');
@@ -939,7 +979,25 @@ function Checkout() {
 
   const handleNextStep = async () => {
     if (checkoutStep === 1) {
-      if (!validateShipping()) return;
+      if (isAddingNewAddress) {
+        if (!validateShipping()) return;
+        const newAddr = {
+          id: Date.now().toString(),
+          name: checkout.name,
+          email: checkout.email,
+          phone: checkout.phone,
+          address: checkout.address,
+          city: checkout.city,
+          state: checkout.state,
+          pincode: checkout.pincode,
+        };
+        setAddresses((prev) => [...prev, newAddr]);
+        setSelectedAddressId(newAddr.id);
+        setIsAddingNewAddress(false);
+      } else {
+        const selected = addresses.find(a => a.id === selectedAddressId);
+        if (selected) setCheckout((prev) => ({ ...prev, ...selected }));
+      }
       setCheckoutStep(2);
       return;
     }
@@ -1015,16 +1073,47 @@ function Checkout() {
           
           {checkoutStep === 1 && (
             <section className="panel" style={{ padding: '30px' }}>
-              <div className="panel-header"><div><span className="eyebrow">Shipping Details</span><h2>Delivery Information</h2></div></div>
-              <div className="form-grid form-grid--two">
-                <label><span>Full Name</span><input name="name" value={checkout.name} onChange={handleCheckoutChange} />{errors.name && <small>{errors.name}</small>}</label>
-                <label><span>Email</span><input name="email" value={checkout.email} onChange={handleCheckoutChange} />{errors.email && <small>{errors.email}</small>}</label>
-                <label><span>Phone Number</span><input name="phone" value={checkout.phone} onChange={handleCheckoutChange} />{errors.phone && <small>{errors.phone}</small>}</label>
-                <label><span>City</span><input name="city" value={checkout.city} onChange={handleCheckoutChange} />{errors.city && <small>{errors.city}</small>}</label>
-                <label><span>State</span><input name="state" value={checkout.state} onChange={handleCheckoutChange} />{errors.state && <small>{errors.state}</small>}</label>
-                <label><span>Pincode</span><input name="pincode" value={checkout.pincode} onChange={handleCheckoutChange} />{errors.pincode && <small>{errors.pincode}</small>}</label>
-                <label className="form-grid-span"><span>Full Address</span><textarea name="address" rows="3" value={checkout.address} onChange={handleCheckoutChange} />{errors.address && <small>{errors.address}</small>}</label>
+              <div className="panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div><span className="eyebrow">Shipping Details</span><h2>Delivery Information</h2></div>
+                {!isAddingNewAddress && (
+                  <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={() => { setIsAddingNewAddress(true); setCheckout(defaultCheckout); }}>+ Add New Address</button>
+                )}
               </div>
+
+              {!isAddingNewAddress ? (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  {addresses.map((addr) => (
+                    <div 
+                      key={addr.id} 
+                      onClick={() => { setSelectedAddressId(addr.id); setCheckout((prev) => ({ ...prev, ...addr })); }}
+                      style={{ padding: '20px', border: selectedAddressId === addr.id ? '2px solid var(--accent)' : '1px solid var(--line)', borderRadius: '12px', cursor: 'pointer', position: 'relative', background: selectedAddressId === addr.id ? 'rgba(0, 86, 210, 0.02)' : '#fff' }}
+                    >
+                      {selectedAddressId === addr.id && <div style={{ position: 'absolute', top: '16px', right: '16px', color: 'var(--accent)', fontWeight: 'bold' }}>✓ Selected</div>}
+                      <h4 style={{ margin: '0 0 8px 0', fontSize: '1.1rem' }}>{addr.name}</h4>
+                      <p style={{ margin: 0, color: 'var(--muted)', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                        {addr.address}<br />
+                        {addr.city}, {addr.state} - {addr.pincode}<br />
+                        Phone: {addr.phone}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <>
+                  {addresses.length > 0 && (
+                    <button className="text-button" style={{ marginBottom: '20px', color: 'var(--muted)' }} onClick={() => setIsAddingNewAddress(false)}>← Back to Saved Addresses</button>
+                  )}
+                  <div className="form-grid form-grid--two">
+                    <label><span>Full Name</span><input name="name" value={checkout.name} onChange={handleCheckoutChange} />{errors.name && <small>{errors.name}</small>}</label>
+                    <label><span>Email</span><input name="email" value={checkout.email} onChange={handleCheckoutChange} />{errors.email && <small>{errors.email}</small>}</label>
+                    <label><span>Phone Number</span><input name="phone" value={checkout.phone} onChange={handleCheckoutChange} />{errors.phone && <small>{errors.phone}</small>}</label>
+                    <label><span>City</span><input name="city" value={checkout.city} onChange={handleCheckoutChange} />{errors.city && <small>{errors.city}</small>}</label>
+                    <label><span>State</span><input name="state" value={checkout.state} onChange={handleCheckoutChange} />{errors.state && <small>{errors.state}</small>}</label>
+                    <label><span>Pincode</span><input name="pincode" value={checkout.pincode} onChange={handleCheckoutChange} />{errors.pincode && <small>{errors.pincode}</small>}</label>
+                    <label className="form-grid-span"><span>Full Address</span><textarea name="address" rows="3" value={checkout.address} onChange={handleCheckoutChange} />{errors.address && <small>{errors.address}</small>}</label>
+                  </div>
+                </>
+              )}
             </section>
           )}
 
