@@ -1,8 +1,18 @@
 {
+  "name": "becs-monorepo",
+  "private": true,
+  "packageManager": "npm@10.8.2",
+  "workspaces": [
+    "client/*",
+    "server"
+  ],
   "scripts": {
-    "dev": "concurrently -n BACKEND,MAIN,STORE,ADMIN,TRAINING \"cd server && npm run dev\" \"cd client/main-website && npm run dev\" \"cd client/becs-store && npm run dev\" \"cd client/admin && npm run dev\" \"cd client/training-institute && npm run dev\""
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "legacy-dev": "concurrently -n BACKEND,MAIN,STORE,ADMIN,TRAINING \"cd server && npm run dev\" \"cd client/main-website && npm run dev\" \"cd client/becs-store && npm run dev\" \"cd client/admin && npm run dev\" \"cd client/training-institute && npm run dev\""
   },
   "devDependencies": {
-    "concurrently": "^9.2.0"
+    "concurrently": "^9.2.0",
+    "turbo": "^2.9.18"
   }
 }

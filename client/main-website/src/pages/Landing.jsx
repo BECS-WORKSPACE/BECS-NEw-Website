@@ -544,8 +544,7 @@ const Landing = () => {
             <a href="#projects">Portfolio</a>
             <a href={trainingUrl}>Vidyapeeth</a>
             <a href="#contact">Contact</a>
-            <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', marginLeft: '10px' }}>🔍</button>
-          </nav>
+            </nav>
 
           {user ? (
             <div style={{ position: 'relative' }}>
