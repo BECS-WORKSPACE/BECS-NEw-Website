@@ -249,6 +249,7 @@ function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173';
 
@@ -259,41 +260,80 @@ function Navbar() {
   };
 
   return (
-    <header className="shop-topbar">
-      <div className="container shop-topbar-inner">
-        <Link className="shop-brand" to="/">
-          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="BECS Logo" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
-          <div>
-            <strong>BECS Ecommerce</strong>
-            <span>Premium Electronics Store</span>
+    <header className="shop-topbar" style={{ padding: '16px 0', borderBottom: '1px solid var(--line)', background: '#fff', position: 'sticky', top: 0, zIndex: 100 }}>
+      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '40px' }}>
+        <Link className="shop-brand" to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="BECS Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+          <div style={{ color: 'var(--navy)' }}>
+            <strong style={{ display: 'block', fontSize: '1.2rem', lineHeight: 1.2 }}>BECS</strong>
+            <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>Store</span>
           </div>
         </Link>
-        <div className="shop-search-wrap">
-          <input 
-            type="text" 
-            placeholder="Search products... (Press Enter)" 
-            value={searchTerm} 
-            onChange={(e) => setSearchTerm(e.target.value)} 
-            onKeyDown={handleSearch}
-          />
+        
+        <div style={{ flex: 1, maxWidth: '600px', position: 'relative' }}>
+          <div style={{ display: 'flex', alignItems: 'center', background: '#f1f5f9', borderRadius: '8px', padding: '0 16px', border: '1px solid transparent', transition: 'border 0.2s ease' }} onFocus={(e) => e.currentTarget.style.border = '1px solid var(--accent)'} onBlur={(e) => e.currentTarget.style.border = '1px solid transparent'}>
+            <span style={{ fontSize: '1.2rem', color: 'var(--muted)', marginRight: '8px' }}>🔍</span>
+            <input 
+              type="text" 
+              placeholder="Search products, categories, brands..." 
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)} 
+              onKeyDown={handleSearch}
+              style={{ width: '100%', padding: '12px 0', border: 'none', background: 'transparent', outline: 'none', fontSize: '1rem' }}
+            />
+          </div>
         </div>
-        <div className="shop-topbar-actions">
-          <Link className={`topbar-tab ${location.pathname === '/' ? 'topbar-tab--active' : ''}`} to="/">Shop</Link>
-          <Link className={`topbar-tab ${location.pathname === '/wishlist' ? 'topbar-tab--active' : ''}`} to="/wishlist">Wishlist ({wishlistItems.length})</Link>
-          <Link className={`topbar-tab ${location.pathname === '/cart' ? 'topbar-tab--active' : ''}`} to="/cart">Cart ({cartSummary.quantity})</Link>
-          <Link className={`topbar-tab ${location.pathname === '/orders' ? 'topbar-tab--active' : ''}`} to="/orders">Orders</Link>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          <Link to="/wishlist" style={{ textDecoration: 'none', color: 'var(--navy)', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>♡</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Wishlist</span>
+            {wishlistItems.length > 0 && <span style={{ position: 'absolute', top: '-6px', right: '-4px', background: 'var(--accent)', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{wishlistItems.length}</span>}
+          </Link>
+          
+          <Link to="/orders" style={{ textDecoration: 'none', color: 'var(--navy)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>📦</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Orders</span>
+          </Link>
+
+          <Link to="/cart" style={{ textDecoration: 'none', color: 'var(--navy)', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>🛒</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Cart</span>
+            {cartSummary.quantity > 0 && <span style={{ position: 'absolute', top: '-6px', right: '-6px', background: 'var(--accent)', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{cartSummary.quantity}</span>}
+          </Link>
+
           {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text)', fontWeight: 800 }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent), var(--accent-deep))', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(255, 112, 72, 0.3)' }}>
+            <div style={{ position: 'relative' }}>
+              <div 
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
+                onClick={() => setShowDropdown(!showDropdown)}
+              >
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--navy)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: 'bold', marginBottom: '2px' }}>
                   {user.name.charAt(0).toUpperCase()}
                 </div>
-                {user.name}
+                <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Profile</span>
               </div>
-              <button onClick={handleLogout} className="action-button action-button--ghost" style={{ padding: '0 16px', height: '44px', fontSize: '0.9rem', display: 'flex', alignItems: 'center' }}>Logout</button>
+              
+              {showDropdown && (
+                <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '16px', background: '#fff', width: '260px', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.12)', border: '1px solid var(--line)', padding: '16px 0', zIndex: 110 }}>
+                  <div style={{ padding: '0 20px 16px', borderBottom: '1px solid var(--line)', marginBottom: '8px' }}>
+                    <strong style={{ display: 'block', color: 'var(--navy)', fontSize: '1.1rem' }}>{user.name}</strong>
+                    <span style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>{user.email}</span>
+                  </div>
+                  <Link to="/profile" onClick={() => setShowDropdown(false)} style={{ display: 'flex', alignItems: 'center', padding: '10px 20px', textDecoration: 'none', color: 'var(--text)', gap: '12px', fontSize: '0.95rem' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}><span>👤</span> My Profile</Link>
+                  <Link to="/orders" onClick={() => setShowDropdown(false)} style={{ display: 'flex', alignItems: 'center', padding: '10px 20px', textDecoration: 'none', color: 'var(--text)', gap: '12px', fontSize: '0.95rem' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}><span>📦</span> Orders</Link>
+                  <Link to="/wishlist" onClick={() => setShowDropdown(false)} style={{ display: 'flex', alignItems: 'center', padding: '10px 20px', textDecoration: 'none', color: 'var(--text)', gap: '12px', fontSize: '0.95rem' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}><span>❤️</span> Wishlist</Link>
+                  <Link to="/cart" onClick={() => setShowDropdown(false)} style={{ display: 'flex', alignItems: 'center', padding: '10px 20px', textDecoration: 'none', color: 'var(--text)', gap: '12px', fontSize: '0.95rem' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}><span>🛒</span> Cart</Link>
+                  <Link to="/profile" onClick={() => setShowDropdown(false)} style={{ display: 'flex', alignItems: 'center', padding: '10px 20px', textDecoration: 'none', color: 'var(--text)', gap: '12px', fontSize: '0.95rem' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}><span>📍</span> Saved Addresses</Link>
+                  <Link to="/notifications" onClick={() => setShowDropdown(false)} style={{ display: 'flex', alignItems: 'center', padding: '10px 20px', textDecoration: 'none', color: 'var(--text)', gap: '12px', fontSize: '0.95rem' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}><span>🔔</span> Notifications</Link>
+                  <div style={{ borderTop: '1px solid var(--line)', margin: '8px 0 0', paddingTop: '8px' }}>
+                    <button onClick={() => { handleLogout(); setShowDropdown(false); }} style={{ width: '100%', textAlign: 'left', padding: '10px 20px', background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', fontWeight: 600, display: 'flex', gap: '12px', fontSize: '0.95rem' }} onMouseOver={e => e.currentTarget.style.background = '#fef2f2'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}><span>🚪</span> Logout</button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
-            <Link to="/login" className="action-button action-button--solid" style={{ marginLeft: '8px', textDecoration: 'none', display: 'flex', alignItems: 'center', height: '44px', padding: '0 20px' }}>Login</Link>
+            <Link to="/login" className="action-button action-button--solid" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', height: '40px', padding: '0 24px', borderRadius: '20px', fontSize: '0.95rem' }}>Login</Link>
           )}
         </div>
       </div>
@@ -1448,21 +1488,45 @@ function Orders() {
             <span style={{ color: 'var(--muted)', fontSize: '0.9rem', display: 'flex', alignItems: 'center' }}>Newest Orders First</span>
           </div>
           
-          {paginatedOrders.length ? paginatedOrders.map((order) => (
-            <article className="panel order-item" key={order._id} style={{ padding: '24px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }} onClick={() => setSelectedOrder(order)}>
-              <div style={{ flex: '1 1 300px' }}>
-                <div style={{ marginBottom: '8px' }}>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>Order ID:</span> <strong style={{ fontSize: '1.1rem' }}>{order._id}</strong>
+          {paginatedOrders.length ? paginatedOrders.map((order) => {
+            const firstItem = order.items?.[0];
+            const otherItemsCount = order.items?.length - 1;
+            return (
+              <article className="panel order-item" key={order._id} style={{ padding: '24px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', paddingBottom: '16px', borderBottom: '1px solid var(--line)' }}>
+                  <div>
+                    <div style={{ marginBottom: '4px' }}>
+                      <strong style={{ fontSize: '1.1rem' }}>Order #{order._id.slice(-8).toUpperCase()}</strong>
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>Placed on {new Date(order.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '1.3rem', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>{formatPrice(order.totalPrice)}</div>
+                    <span style={{ background: order.status === 'Delivered' ? '#d1fae5' : order.status === 'Cancelled' ? '#fee2e2' : '#e0e7ff', color: order.status === 'Delivered' ? '#065f46' : order.status === 'Cancelled' ? '#991b1b' : '#3730a3', padding: '4px 12px', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.8rem' }}>{order.status}</span>
+                  </div>
                 </div>
-                <div style={{ color: 'var(--text)', fontSize: '1rem', marginBottom: '4px' }}>{order.items?.length} items • {new Date(order.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}</div>
-                <div style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>Payment: {order.paymentMethod} ({order.isPaid ? 'Paid' : 'Pending'})</div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--text)', marginBottom: '8px' }}>{formatPrice(order.totalPrice)}</div>
-                <span style={{ background: order.status === 'Delivered' ? '#d1fae5' : order.status === 'Cancelled' ? '#fee2e2' : '#e0e7ff', color: order.status === 'Delivered' ? '#065f46' : order.status === 'Cancelled' ? '#991b1b' : '#3730a3', padding: '6px 16px', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.85rem' }}>{order.status}</span>
-              </div>
-            </article>
-          )) : (
+
+                <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                  {firstItem && (
+                    <img src={firstItem.image || 'https://via.placeholder.com/80'} alt={firstItem.name} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--line)' }} />
+                  )}
+                  <div style={{ flex: 1 }}>
+                    {firstItem && <h4 style={{ margin: '0 0 4px', fontSize: '1.1rem' }}>{firstItem.name}</h4>}
+                    {otherItemsCount > 0 && <span style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>+ {otherItemsCount} other item{otherItemsCount > 1 ? 's' : ''}</span>}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', paddingTop: '16px', borderTop: '1px solid var(--line)' }}>
+                  <button className="action-button action-button--solid" style={{ padding: '8px 20px', fontSize: '0.9rem' }} onClick={() => setSelectedOrder(order)}>Track Order</button>
+                  <button className="action-button action-button--ghost" style={{ padding: '8px 20px', fontSize: '0.9rem' }} onClick={(e) => { e.stopPropagation(); generateInvoice(order); }}>Download Invoice</button>
+                  <button className="action-button action-button--ghost" style={{ padding: '8px 20px', fontSize: '0.9rem' }} onClick={() => setSelectedOrder(order)}>Buy Again</button>
+                  {(order.status === 'Delivered') && (
+                    <button className="action-button action-button--ghost" style={{ padding: '8px 20px', fontSize: '0.9rem', color: '#ef4444', borderColor: '#ef4444' }}>Return Order</button>
+                  )}
+                </div>
+              </article>
+            );
+          }) : (
             <div className="panel empty-panel" style={{ textAlign: 'center', padding: '80px 20px' }}>
               <div style={{ fontSize: '4rem', marginBottom: '20px' }}>📦</div>
               <h3>No orders found</h3>
@@ -1680,6 +1744,181 @@ function Wishlist() {
   );
 }
 
+function Profile() {
+  const { user, handleLogout, addresses, setAddresses } = React.useContext(ShopContext);
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('profile');
+
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
+
+  return (
+    <div className="container app-shell" style={{ paddingTop: '40px', paddingBottom: '80px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '40px', alignItems: 'start' }}>
+        
+        {/* Account Sidebar */}
+        <aside style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid var(--line)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '30px', paddingBottom: '20px', borderBottom: '1px solid var(--line)' }}>
+             <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent), var(--accent-deep))', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 'bold' }}>
+               {user.name.charAt(0).toUpperCase()}
+             </div>
+             <div>
+               <strong style={{ display: 'block', fontSize: '1.2rem', color: 'var(--navy)' }}>{user.name}</strong>
+               <span style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>{user.email}</span>
+             </div>
+          </div>
+          
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <button onClick={() => setActiveTab('profile')} style={{ textAlign: 'left', padding: '12px 16px', borderRadius: '8px', background: activeTab === 'profile' ? 'rgba(0, 86, 210, 0.05)' : 'transparent', color: activeTab === 'profile' ? 'var(--accent)' : 'var(--text)', fontWeight: activeTab === 'profile' ? 700 : 500, border: 'none', cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '12px' }}><span>👤</span> My Profile</button>
+            <button onClick={() => navigate('/orders')} style={{ textAlign: 'left', padding: '12px 16px', borderRadius: '8px', background: 'transparent', color: 'var(--text)', fontWeight: 500, border: 'none', cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '12px' }}><span>📦</span> My Orders</button>
+            <button onClick={() => setActiveTab('addresses')} style={{ textAlign: 'left', padding: '12px 16px', borderRadius: '8px', background: activeTab === 'addresses' ? 'rgba(0, 86, 210, 0.05)' : 'transparent', color: activeTab === 'addresses' ? 'var(--accent)' : 'var(--text)', fontWeight: activeTab === 'addresses' ? 700 : 500, border: 'none', cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '12px' }}><span>📍</span> Saved Addresses</button>
+            <button onClick={() => setActiveTab('cards')} style={{ textAlign: 'left', padding: '12px 16px', borderRadius: '8px', background: activeTab === 'cards' ? 'rgba(0, 86, 210, 0.05)' : 'transparent', color: activeTab === 'cards' ? 'var(--accent)' : 'var(--text)', fontWeight: activeTab === 'cards' ? 700 : 500, border: 'none', cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '12px' }}><span>💳</span> Saved Cards & Wallet</button>
+            <button onClick={() => navigate('/notifications')} style={{ textAlign: 'left', padding: '12px 16px', borderRadius: '8px', background: 'transparent', color: 'var(--text)', fontWeight: 500, border: 'none', cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '12px' }}><span>🔔</span> Notifications</button>
+            <div style={{ height: '1px', background: 'var(--line)', margin: '10px 0' }}></div>
+            <button onClick={handleLogout} style={{ textAlign: 'left', padding: '12px 16px', borderRadius: '8px', background: 'transparent', color: '#ef4444', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '12px' }}><span>🚪</span> Logout</button>
+          </nav>
+        </aside>
+
+        {/* Main Content Area */}
+        <div style={{ padding: '30px', border: '1px solid var(--line)', borderRadius: '16px', minHeight: '600px' }}>
+          {activeTab === 'profile' && (
+            <div>
+              <h2 style={{ fontSize: '1.8rem', marginBottom: '30px', paddingBottom: '16px', borderBottom: '1px solid var(--line)' }}>Personal Information</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--muted)', marginBottom: '8px' }}>Full Name</label>
+                  <input type="text" value={user.name} readOnly style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--line)', background: '#f8fafc', fontSize: '1rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--muted)', marginBottom: '8px' }}>Email Address</label>
+                  <input type="email" value={user.email} readOnly style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--line)', background: '#f8fafc', fontSize: '1rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--muted)', marginBottom: '8px' }}>Phone Number</label>
+                  <input type="tel" placeholder="+91 xxxxx xxxxx" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '1rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--muted)', marginBottom: '8px' }}>Date of Birth</label>
+                  <input type="date" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '1rem' }} />
+                </div>
+              </div>
+              <button className="action-button action-button--solid" style={{ marginTop: '40px', padding: '12px 30px' }}>Save Changes</button>
+            </div>
+          )}
+
+          {activeTab === 'addresses' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', paddingBottom: '16px', borderBottom: '1px solid var(--line)' }}>
+                <h2 style={{ fontSize: '1.8rem', margin: 0 }}>Saved Addresses</h2>
+                <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>+ Add New Address</button>
+              </div>
+              
+              {addresses.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+                  <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📍</div>
+                  <h3 style={{ margin: '0 0 10px', fontSize: '1.2rem' }}>No Addresses Saved</h3>
+                  <p style={{ color: 'var(--muted)' }}>You haven't saved any addresses yet.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                  {addresses.map((addr, idx) => (
+                    <div key={addr.id} style={{ border: '1px solid var(--line)', borderRadius: '12px', padding: '20px', position: 'relative' }}>
+                      {idx === 0 && <span style={{ position: 'absolute', top: '20px', right: '20px', background: '#f1f5f9', color: 'var(--navy)', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600 }}>Default</span>}
+                      <h4 style={{ margin: '0 0 12px', fontSize: '1.1rem' }}>{addr.name}</h4>
+                      <p style={{ margin: '0 0 16px', color: 'var(--muted)', lineHeight: '1.5', fontSize: '0.95rem' }}>
+                        {addr.address}<br />
+                        {addr.city}, {addr.state} - {addr.pincode}<br />
+                        {addr.phone}
+                      </p>
+                      <div style={{ display: 'flex', gap: '16px', borderTop: '1px solid var(--line)', paddingTop: '16px' }}>
+                        <button style={{ background: 'none', border: 'none', color: 'var(--accent)', fontWeight: 600, cursor: 'pointer', padding: 0 }}>Edit</button>
+                        <button style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 600, cursor: 'pointer', padding: 0 }} onClick={() => setAddresses(prev => prev.filter(a => a.id !== addr.id))}>Delete</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'cards' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', paddingBottom: '16px', borderBottom: '1px solid var(--line)' }}>
+                <h2 style={{ fontSize: '1.8rem', margin: 0 }}>Saved Cards & Wallets</h2>
+                <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>+ Add New Card</button>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                <div style={{ background: 'linear-gradient(135deg, #1e293b, #0f172a)', color: 'white', borderRadius: '16px', padding: '24px', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }}></div>
+                  <h4 style={{ margin: '0 0 24px', fontSize: '1.2rem', fontWeight: 500, letterSpacing: '2px' }}>**** **** **** 4567</h4>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    <div>
+                      <span style={{ display: 'block', fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>Name on Card</span>
+                      <span style={{ fontSize: '1rem', textTransform: 'uppercase' }}>{user.name}</span>
+                    </div>
+                    <div>
+                      <span style={{ display: 'block', fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>Expires</span>
+                      <span style={{ fontSize: '1rem' }}>12/28</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ border: '1px solid var(--line)', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+                    <div style={{ width: '40px', height: '40px', background: '#f1f5f9', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 'bold' }}>UPI</div>
+                    <div>
+                      <h4 style={{ margin: '0 0 4px', fontSize: '1rem' }}>{user.name}</h4>
+                      <p style={{ margin: 0, color: 'var(--muted)', fontSize: '0.9rem' }}>{user.email.split('@')[0]}@oksbi</p>
+                    </div>
+                  </div>
+                  <button style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 600, cursor: 'pointer', textAlign: 'left', padding: 0 }}>Remove</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Notifications() {
+  const notifications = [
+    { id: 1, type: 'order', title: 'Order Shipped', text: 'Your order #ORD-12345 has been shipped and is on its way.', date: 'Today, 10:30 AM', read: false },
+    { id: 2, type: 'offer', title: 'Offer Alert', text: 'Get 20% off on all Smart Automation Kits today! Use code SMART20.', date: 'Yesterday, 02:15 PM', read: true },
+    { id: 3, type: 'stock', title: 'Back In Stock', text: 'The "PCB Design Console" you added to your wishlist is back in stock.', date: '15 Jun, 09:00 AM', read: true },
+    { id: 4, type: 'system', title: 'Welcome to BECS Store', text: 'Thank you for creating an account with us. Happy shopping!', date: '10 Jun, 11:45 AM', read: true }
+  ];
+
+  return (
+    <div className="container app-shell" style={{ paddingTop: '40px', paddingBottom: '80px', maxWidth: '800px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <h1 style={{ fontSize: '2.2rem', margin: 0 }}>Notifications</h1>
+        <button style={{ background: 'none', border: 'none', color: 'var(--accent)', fontWeight: 600, cursor: 'pointer', fontSize: '1rem' }}>Mark all as read</button>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {notifications.map(n => (
+          <div key={n.id} style={{ display: 'flex', gap: '20px', padding: '24px', background: n.read ? '#fff' : 'rgba(0, 86, 210, 0.03)', borderRadius: '12px', border: '1px solid var(--line)', position: 'relative' }}>
+            {!n.read && <span style={{ position: 'absolute', top: '24px', right: '24px', width: '10px', height: '10px', borderRadius: '50%', background: 'var(--accent)' }}></span>}
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', flexShrink: 0 }}>
+              {n.type === 'order' ? '📦' : n.type === 'offer' ? '🎉' : n.type === 'stock' ? '⚡' : '👋'}
+            </div>
+            <div>
+              <h4 style={{ margin: '0 0 6px', fontSize: '1.1rem', color: 'var(--navy)' }}>{n.title}</h4>
+              <p style={{ margin: '0 0 10px', color: 'var(--text)', lineHeight: '1.5', fontSize: '0.95rem' }}>{n.text}</p>
+              <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>{n.date}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const routerBasename = import.meta.env.DEV ? '' : (import.meta.env.VITE_SUBDOMAIN_DEPLOY === 'true' ? '' : '/store');
   return (
@@ -1703,6 +1942,8 @@ export default function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/notifications" element={<Notifications />} />
               <Route path="/login" element={<LoginPage />} />
             </Routes>
           </div>
