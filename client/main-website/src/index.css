@@ -126,11 +126,87 @@ button {
 
 .main-nav a {
   color: #334155;
+  position: relative;
+  padding: 8px 0;
+  text-decoration: none;
 }
 
-.main-nav a:hover,
-.main-nav a:focus-visible {
+.main-nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.main-nav a:hover::after,
+.main-nav a:focus-visible::after,
+.main-nav a.active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.nav-dropdown {
+  position: relative;
+}
+
+.mega-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: #fff;
+  min-width: 250px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 100;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--line);
+}
+
+.nav-dropdown:hover .mega-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.mega-menu a {
+  color: var(--navy);
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.mega-menu a::after {
+  display: none;
+}
+
+.mega-menu a:hover {
+  background: #f8fafc;
   color: var(--accent);
+}
+
+/* Sticky Header Shrink */
+.topbar {
+  transition: height 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  height: 90px;
+}
+
+.topbar--scrolled {
+  height: 72px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .topbar-login {

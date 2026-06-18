@@ -169,33 +169,115 @@ const team = [
   },
 ];
 
-const gallery = [
+const projects = [
   {
-    title: 'Premium Living Automation',
-    className: 'gallery-large',
-    image:
-      'https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?auto=format&fit=crop&w=900&q=80',
+    id: 1,
+    title: 'Smart Energy Monitoring System',
+    category: 'IoT Projects',
+    status: 'Completed',
+    image: 'https://media.istockphoto.com/id/2193635891/photo/smart-industry-4-0-mangement-control-system-concept.jpg?s=2048x2048&w=is&k=20&c=tW54C3MnETI-QPj3DOOPjIpPQVBRpCDgOt_SFzihgdg=',
+    tech: ['ESP32', 'Node.js', 'MongoDB', 'MQTT'],
+    overview: 'Developed a highly scalable industrial IoT platform for real-time energy monitoring, reducing wastage and optimizing consumption patterns.',
+    timeline: 'Started: Jan 2025 | Completed: May 2025',
+    impact: 'Reduced energy costs by 20%. Improved anomaly detection speed by 60%.',
+    gallery: ['https://media.istockphoto.com/id/2193635891/photo/smart-industry-4-0-mangement-control-system-concept.jpg?s=2048x2048&w=is&k=20&c=tW54C3MnETI-QPj3DOOPjIpPQVBRpCDgOt_SFzihgdg=']
   },
   {
-    title: 'Control Room Integration',
-    image:
-      'https://images.unsplash.com/photo-1562408590-e32931084e23?auto=format&fit=crop&w=700&q=80',
+    id: 2,
+    title: 'Factory Process Automation',
+    category: 'Automation Projects',
+    status: 'Ongoing',
+    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=900&q=80',
+    tech: ['PLC', 'SCADA', 'Industrial Ethernet', 'Python'],
+    overview: 'Complete overhaul of legacy manufacturing lines to a fully automated system with predictive maintenance capabilities.',
+    timeline: 'Status: Ongoing (Expected Q3 2026)',
+    impact: 'Expected to increase production efficiency by 35% and reduce downtime by 40%.',
+    gallery: []
   },
   {
-    title: 'Security Deployment',
-    image:
-      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=80',
+    id: 3,
+    title: 'Embedded Controller Platform',
+    category: 'Hardware Projects',
+    status: 'Completed',
+    image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=900&q=80',
+    tech: ['Altium', 'ARM Cortex-M', 'C++', 'FreeRTOS'],
+    overview: 'Designed a custom industrial-grade PCB and firmware stack for precision motor control in harsh environments.',
+    timeline: 'Started: Nov 2024 | Completed: Mar 2025',
+    impact: 'Delivered a robust platform operating at 99.9% uptime under extreme conditions.',
+    gallery: []
   },
   {
-    title: 'Testing Laboratory',
-    image:
-      'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=700&q=80',
+    id: 4,
+    title: 'Fleet Monitoring Dashboard',
+    category: 'Software Projects',
+    status: 'Completed',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80',
+    tech: ['React.js', 'Node.js', 'PostgreSQL', 'Google Maps API'],
+    overview: 'Built a comprehensive software portal to track real-time fleet GPS data, monitor fuel consumption, and schedule maintenance.',
+    timeline: 'Started: Jun 2024 | Completed: Dec 2024',
+    impact: 'Reduced fleet idle time by 15% and optimized routing leading to fuel savings.',
+    gallery: []
   },
   {
-    title: 'Industrial Panels',
-    image:
-      'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=700&q=80',
+    id: 5,
+    title: 'Smart Agriculture Sensors',
+    category: 'IoT Projects',
+    status: 'Completed',
+    image: 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=900&q=80',
+    tech: ['LoRaWAN', 'Arduino', 'AWS IoT', 'React Native'],
+    overview: 'Deployed distributed soil moisture and temperature sensors across a 500-acre farm, connected via long-range wireless.',
+    timeline: 'Started: Feb 2024 | Completed: Aug 2024',
+    impact: 'Optimized irrigation cycles, saving 30% water and increasing crop yield.',
+    gallery: []
   },
+  {
+    id: 6,
+    title: 'Warehouse Robotics Control',
+    category: 'Automation Projects',
+    status: 'Ongoing',
+    image: 'https://images.unsplash.com/photo-1716191299980-a6e8827ba10b?q=80&w=1225&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    tech: ['ROS', 'C++', 'Computer Vision', 'Lidar'],
+    overview: 'Developing navigation and coordination logic for a fleet of autonomous mobile robots in a high-density warehouse.',
+    timeline: 'Status: Ongoing (Expected Q1 2027)',
+    impact: 'Targeting 2x faster order fulfillment and zero collision incidents.',
+    gallery: []
+  },
+  {
+    id: 7,
+    title: 'Custom Medical Device PCB',
+    category: 'Hardware Projects',
+    status: 'Completed',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80',
+    tech: ['KiCad', 'Microchip PIC', 'Bluetooth LE', 'ISO 13485'],
+    overview: 'Engineered a highly compact, low-power circuit board for a wearable patient monitoring device.',
+    timeline: 'Started: Oct 2023 | Completed: Apr 2024',
+    impact: 'Achieved 14-day battery life on a single charge while meeting strict medical certifications.',
+    gallery: []
+  },
+  {
+    id: 8,
+    title: 'Inventory AI Analytics',
+    category: 'Software Projects',
+    status: 'Ongoing',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80',
+    tech: ['Python', 'TensorFlow', 'Vue.js', 'Snowflake'],
+    overview: 'Integrating machine learning models to predict stock shortages and automate supply chain reordering.',
+    timeline: 'Status: Ongoing (Expected Dec 2026)',
+    impact: 'Expected to reduce out-of-stock scenarios by 45%.',
+    gallery: []
+  },
+  {
+    id: 9,
+    title: 'Smart Building HVAC Integration',
+    category: 'Automation Projects',
+    status: 'Completed',
+    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=900&q=80',
+    tech: ['BACnet', 'Siemens Desigo', 'Node-RED', 'InfluxDB'],
+    overview: 'Upgraded a commercial office tower with centralized HVAC control mapped to real-time occupancy data.',
+    timeline: 'Started: Jan 2023 | Completed: Sep 2023',
+    impact: 'Cut building electricity usage by 22% during off-peak hours.',
+    gallery: []
+  }
 ];
 
 const partnerCards = [
@@ -355,6 +437,17 @@ const Landing = () => {
   const [contactError, setContactError] = useState('');
   const [contactLoading, setContactLoading] = useState(false);
   const [serviceState, setServiceState] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [activeProjectCategory, setActiveProjectCategory] = useState('All');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -419,7 +512,7 @@ const Landing = () => {
 
   return (
     <div className="becs-page">
-      <header className="topbar">
+      <header className={`topbar ${isScrolled ? 'topbar--scrolled' : ''}`}>
         <div className="container topbar-inner">
           <a className="brand" href="#home">
             <img src="/logo.png" alt="BECS Logo" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
@@ -429,10 +522,29 @@ const Landing = () => {
           <nav className="main-nav">
             <a href="#home">Home</a>
             <a href="#about">About</a>
-            <a href="#services">Services</a>
-            <a href={ecommerceUrl}>BECS Store</a>
+            <div className="nav-dropdown">
+              <a href="#services" style={{ cursor: 'pointer' }}>Services ▼</a>
+              <div className="mega-menu">
+                <a href="#services">Automation</a>
+                <a href="#services">IoT Solutions</a>
+                <a href="#services">Training</a>
+                <a href="#services">Consultancy</a>
+                <a href="#services">Product Supply</a>
+              </div>
+            </div>
+            <div className="nav-dropdown">
+              <a href={ecommerceUrl} style={{ cursor: 'pointer' }}>BECS Store ▼</a>
+              <div className="mega-menu">
+                <a href={ecommerceUrl}>Electronics Components</a>
+                <a href={ecommerceUrl}>IoT Devices</a>
+                <a href={ecommerceUrl}>Smart Automation</a>
+                <a href={ecommerceUrl}>Industrial Equipment</a>
+              </div>
+            </div>
+            <a href="#projects">Portfolio</a>
             <a href={trainingUrl}>Vidyapeeth</a>
             <a href="#contact">Contact</a>
+            <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', marginLeft: '10px' }}>🔍</button>
           </nav>
 
           {user ? (
@@ -475,9 +587,11 @@ const Landing = () => {
               )}
             </div>
           ) : (
-            <Link className="pill-button pill-button--solid topbar-login" to="/login">
-              Login
-            </Link>
+            <div className="topbar-login">
+              <button className="pill-button pill-button--ghost" onClick={() => navigate('/login')}>
+                Client Portal
+              </button>
+            </div>
           )}
         </div>
       </header>
@@ -708,7 +822,7 @@ const Landing = () => {
                 {/* Product 3 */}
                 <a href={ecommerceUrl} className="store-featured-card">
                   <div className="featured-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?auto=format&fit=crop&w=600&q=80" alt="Embedded Development Board" />
+                    <img src="https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=600&q=80" alt="Embedded Development Board" />
                   </div>
                   <div className="featured-info">
                     <span className="featured-badge" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>New Arrival</span>
@@ -716,17 +830,6 @@ const Landing = () => {
                     <div className="featured-price">₹4,999</div>
                   </div>
                 </a>
-
-                {/* Floating Preview */}
-                <div className="store-floating-preview">
-                  <div className="floating-preview-icon">🔥</div>
-                  <div className="floating-preview-info">
-                    <p>Smart Home Kit</p>
-                    <span>
-                      <strong style={{ color: '#f59e0b' }}>4.8 ★</strong> Rating • 120+ Sold
-                    </span>
-                  </div>
-                </div>
               </div>
 
             </div>
@@ -785,52 +888,131 @@ const Landing = () => {
           </div>
         </section>
 
-        <section className="section-cream" id="team">
+        <section className="section-cream" id="testimonials">
           <div className="container">
-            <div className="section-heading">
-              <span className="eyebrow-line">Our Leadership & Team</span>
-              <h2>The Minds Behind BECS</h2>
-              <p>
-                A team of seasoned engineers, strategists, and innovators united by a
-                shared commitment to precision, performance, and technological excellence.
-              </p>
-            </div>
-
-            <div className="carousel-container">
-              <div className="carousel-track" style={{ animationDuration: '45s' }}>
-                {carouselTeam.map((member, index) => (
-                  <article className="team-card" key={`${member.name}-${index}`}>
-                    <img src={member.image} alt={member.name} />
-                    <h3>{member.name}</h3>
-                    <strong>{member.role}</strong>
-                    <p>{member.note}</p>
-                    <button type="button">in</button>
-                  </article>
-                ))}
-              </div>
-            </div>
+            <ManualCarousel
+              headingPill="Testimonials"
+              headingTitle="What Our Clients Say"
+              headingText="Trusted by businesses, institutions, and innovators across the industry for delivering reliable and cutting-edge automation solutions."
+              isTestimonial={true}
+              speed={0.5}
+            >
+              {carouselTestimonials.map((t, idx) => (
+                <article key={idx} style={{ 
+                  minWidth: '350px', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', 
+                  border: '1px solid rgba(255,255,255,0.4)', borderRadius: '16px', padding: '30px', 
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: '20px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <img src={t.image} alt={t.name} style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover' }} />
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--navy)' }}>{t.name}</h4>
+                      <span style={{ fontSize: '0.9rem', color: 'var(--muted)', fontWeight: 600 }}>{t.company}</span>
+                    </div>
+                  </div>
+                  <div style={{ color: '#f59e0b', fontSize: '1.2rem', letterSpacing: '2px' }}>★★★★★</div>
+                  <p style={{ margin: 0, fontSize: '1rem', lineHeight: 1.6, color: '#334155', fontStyle: 'italic' }}>"{t.text}"</p>
+                  <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--line)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                     <span style={{ background: '#d1fae5', color: '#065f46', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700 }}>✓ Verified Client</span>
+                  </div>
+                </article>
+              ))}
+            </ManualCarousel>
           </div>
         </section>
 
-        <section className="section-white">
+        <section className="section-white" id="projects">
           <div className="container">
             <div className="section-heading">
               <span className="section-pill">Our Work</span>
-              <h2>Project Gallery</h2>
-              <p>
-                A showcase of our most impactful installations and deployments across India.
-              </p>
+              <h2>BECS Project Portfolio</h2>
+              <p>Explore our recent and ongoing deployments across IoT, Automation, Hardware, and Software.</p>
             </div>
 
-            <div className="gallery-grid">
-              {gallery.map((item) => (
-                <article className={`gallery-card ${item.className || ''}`} key={item.title}>
-                  <img src={item.image} alt={item.title} />
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', marginBottom: '40px' }}>
+              {['All', 'IoT Projects', 'Automation Projects', 'Hardware Projects', 'Software Projects'].map(cat => (
+                <button 
+                  key={cat} 
+                  onClick={() => setActiveProjectCategory(cat)}
+                  style={{ 
+                    padding: '8px 20px', borderRadius: '30px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.3s',
+                    background: activeProjectCategory === cat ? 'var(--accent)' : '#f8fafc',
+                    color: activeProjectCategory === cat ? '#fff' : 'var(--navy)',
+                    border: `1px solid ${activeProjectCategory === cat ? 'var(--accent)' : 'var(--line)'}`
+                  }}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px' }}>
+              {projects.filter(p => activeProjectCategory === 'All' || p.category === activeProjectCategory).map((project) => (
+                <article key={project.id} onClick={() => setSelectedProject(project)} style={{ 
+                  background: '#fff', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--line)', 
+                  cursor: 'pointer', transition: 'transform 0.3s, box-shadow 0.3s', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' 
+                }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.1)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)'; }}>
+                  <div style={{ position: 'relative', height: '200px' }}>
+                    <img src={project.image} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <span style={{ 
+                      position: 'absolute', top: '16px', right: '16px', padding: '6px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700,
+                      background: project.status === 'Completed' ? '#10b981' : '#3b82f6', color: '#fff'
+                    }}>{project.status}</span>
+                  </div>
+                  <div style={{ padding: '24px' }}>
+                    <span style={{ color: 'var(--accent)', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{project.category}</span>
+                    <h3 style={{ margin: '8px 0 16px', fontSize: '1.3rem', color: 'var(--navy)' }}>{project.title}</h3>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {project.tech.map(t => <span key={t} style={{ background: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600 }}>{t}</span>)}
+                    </div>
+                  </div>
                 </article>
               ))}
             </div>
           </div>
         </section>
+
+        {/* Project Modal */}
+        {selectedProject && (
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+            <div style={{ background: '#fff', borderRadius: '20px', width: '100%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
+              <button onClick={() => setSelectedProject(null)} style={{ position: 'absolute', top: '20px', right: '20px', background: '#f1f5f9', border: 'none', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', fontSize: '1.2rem', zIndex: 10 }}>✕</button>
+              
+              <div style={{ height: '300px', width: '100%' }}>
+                <img src={selectedProject.image} alt={selectedProject.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              
+              <div style={{ padding: '40px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                  <span style={{ color: 'var(--accent)', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase' }}>{selectedProject.category}</span>
+                  <span style={{ background: selectedProject.status === 'Completed' ? '#d1fae5' : '#dbeafe', color: selectedProject.status === 'Completed' ? '#065f46' : '#1e40af', padding: '4px 10px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700 }}>{selectedProject.status}</span>
+                </div>
+                
+                <h2 style={{ fontSize: '2.5rem', marginBottom: '24px', color: 'var(--navy)' }}>{selectedProject.title}</h2>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '30px', '@media (min-width: 768px)': { gridTemplateColumns: '2fr 1fr' } }}>
+                  <div>
+                    <h4 style={{ fontSize: '1.2rem', marginBottom: '12px' }}>Project Overview</h4>
+                    <p style={{ color: '#475569', lineHeight: 1.7, marginBottom: '24px' }}>{selectedProject.overview}</p>
+                    
+                    <h4 style={{ fontSize: '1.2rem', marginBottom: '12px' }}>Business Impact</h4>
+                    <p style={{ color: '#475569', lineHeight: 1.7, background: '#f8fafc', padding: '16px', borderRadius: '12px', borderLeft: '4px solid var(--accent)' }}>{selectedProject.impact}</p>
+                  </div>
+                  
+                  <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px' }}>
+                    <h4 style={{ fontSize: '1.1rem', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--line)' }}>Technologies Used</h4>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {selectedProject.tech.map(t => <li key={t} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#334155' }}><span style={{ color: 'var(--accent)' }}>⚡</span> {t}</li>)}
+                    </ul>
+                    
+                    <h4 style={{ fontSize: '1.1rem', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--line)' }}>Timeline</h4>
+                    <p style={{ fontWeight: 600, color: '#334155', margin: 0 }}>{selectedProject.timeline}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <section className="section-cream section-cream--partner">
           <div className="container partner-wrap">
