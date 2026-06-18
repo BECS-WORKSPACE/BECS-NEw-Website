@@ -418,10 +418,10 @@ function Home() {
   // Banner state
   const [currentBanner, setCurrentBanner] = useState(0);
   const banners = [
-    { id: 1, title: 'Smart Automation Systems', subtitle: 'Industrial Controllers', discount: 'Up To 30% Off', cta: 'Shop Now', bg: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', img: 'https://via.placeholder.com/300/1e3a8a/ffffff?text=Automation' },
-    { id: 2, title: 'IoT Development Kits', subtitle: 'ESP32, Arduino, Sensors', discount: 'Starting ₹499', cta: 'Explore Kits', bg: 'linear-gradient(135deg, #0f766e, #14b8a6)', img: 'https://via.placeholder.com/300/0f766e/ffffff?text=IoT+Kits' },
-    { id: 3, title: 'Industrial Electronics', subtitle: 'Best Seller Collection', discount: 'Free Shipping', cta: 'View Collection', bg: 'linear-gradient(135deg, #374151, #6b7280)', img: 'https://via.placeholder.com/300/374151/ffffff?text=Industrial' },
-    { id: 4, title: 'Smart Home Collection', subtitle: 'Limited Time Offer', discount: 'Flat 20% Off', cta: 'Upgrade Home', bg: 'linear-gradient(135deg, #4c1d95, #8b5cf6)', img: 'https://via.placeholder.com/300/4c1d95/ffffff?text=Smart+Home' },
+    { id: 1, title: 'Smart Automation Systems', subtitle: 'Industrial Controllers', discount: 'Up To 30% Off', cta: 'Shop Now', bg: 'linear-gradient(135deg, rgba(30,58,138,0.85), rgba(59,130,246,0.85))', bgImg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1920&q=80', img: 'https://via.placeholder.com/300/1e3a8a/ffffff?text=Automation' },
+    { id: 2, title: 'IoT Development Kits', subtitle: 'ESP32, Arduino, Sensors', discount: 'Starting ₹499', cta: 'Explore Kits', bg: 'linear-gradient(135deg, rgba(15,118,110,0.85), rgba(20,184,166,0.85))', bgImg: 'https://images.unsplash.com/photo-1677092419414-e974582c492c?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', img: 'https://via.placeholder.com/300/0f766e/ffffff?text=IoT+Kits' },
+    { id: 3, title: 'Industrial Electronics', subtitle: 'Best Seller Collection', discount: 'Free Shipping', cta: 'View Collection', bg: 'linear-gradient(135deg, rgba(55,65,81,0.85), rgba(107,114,128,0.85))', bgImg: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1920&q=80', img: 'https://via.placeholder.com/300/374151/ffffff?text=Industrial' },
+    { id: 4, title: 'Smart Home Collection', subtitle: 'Limited Time Offer', discount: 'Flat 20% Off', cta: 'Upgrade Home', bg: 'linear-gradient(135deg, rgba(76,29,149,0.85), rgba(139,92,246,0.85))', bgImg: 'https://plus.unsplash.com/premium_photo-1661297461253-ae1968b5d46c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', img: 'https://via.placeholder.com/300/4c1d95/ffffff?text=Smart+Home' },
   ];
 
   useEffect(() => {
@@ -586,15 +586,20 @@ function Home() {
       {/* SECTION 1: Store Banner Carousel */}
       <section style={{ position: 'relative', overflow: 'hidden', height: '400px', background: '#000' }}>
         {banners.map((banner, idx) => (
-          <div key={banner.id} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: banner.bg, opacity: currentBanner === idx ? 1 : 0, transition: 'opacity 0.8s ease', display: 'flex', alignItems: 'center', padding: '0 5%', justifyContent: 'space-between', zIndex: currentBanner === idx ? 1 : 0 }}>
-            <div style={{ color: '#fff', maxWidth: '500px' }}>
-              <div style={{ fontSize: '1rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px', color: 'rgba(255,255,255,0.8)' }}>{banner.discount}</div>
-              <h2 style={{ fontSize: '3rem', margin: '0 0 16px', lineHeight: 1.1 }}>{banner.title}</h2>
-              <p style={{ fontSize: '1.2rem', marginBottom: '30px', color: 'rgba(255,255,255,0.9)' }}>{banner.subtitle}</p>
-              <button className="action-button action-button--solid" style={{ background: '#fff', color: '#000', padding: '14px 32px', fontSize: '1.1rem' }}>{banner.cta}</button>
-            </div>
-            <div style={{ display: 'none', '@media (min-width: 768px)': { display: 'block' } }}>
-              <img src={banner.img} alt={banner.title} style={{ width: '300px', height: '300px', objectFit: 'contain', mixBlendMode: 'luminosity' }} />
+          <div key={banner.id} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: currentBanner === idx ? 1 : 0, transition: 'opacity 0.8s ease', zIndex: currentBanner === idx ? 1 : 0 }}>
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${banner.bgImg})`, backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 1 }}></div>
+            <div style={{ position: 'absolute', inset: 0, background: banner.bg, zIndex: 2 }}></div>
+            
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: '0 5%', justifyContent: 'space-between', zIndex: 3 }}>
+              <div style={{ color: '#fff', maxWidth: '500px' }}>
+                <div style={{ fontSize: '1rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px', color: 'rgba(255,255,255,0.8)' }}>{banner.discount}</div>
+                <h2 style={{ fontSize: '3rem', margin: '0 0 16px', lineHeight: 1.1 }}>{banner.title}</h2>
+                <p style={{ fontSize: '1.2rem', marginBottom: '30px', color: 'rgba(255,255,255,0.9)' }}>{banner.subtitle}</p>
+                <button className="action-button action-button--solid" style={{ background: '#fff', color: '#000', padding: '14px 32px', fontSize: '1.1rem' }}>{banner.cta}</button>
+              </div>
+              <div style={{ display: 'none', '@media (min-width: 768px)': { display: 'block' } }}>
+                <img src={banner.img} alt={banner.title} style={{ width: '300px', height: '300px', objectFit: 'contain', mixBlendMode: 'luminosity' }} />
+              </div>
             </div>
           </div>
         ))}
