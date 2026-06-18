@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { sendContactMessage } from '../api';
 
 const ecommerceUrl = import.meta.env.VITE_ECOMMERCE_URL || 'http://localhost:5174';
@@ -105,8 +105,24 @@ const products = [
     name: 'Power Backup Module',
     detail: '2000VA + Auto Switchover',
     price: '15,000',
-    rating: '(81)',
+    rating: '(4.9)',
   },
+];
+
+const storeCategories = [
+  { name: 'Electronic Components', icon: 'idea', count: '500+ Items' },
+  { name: 'Automation Systems', icon: 'auto', count: '50+ Items' },
+  { name: 'IoT Devices', icon: 'yr', count: '120+ Items' },
+  { name: 'Smart Home Solutions', icon: 'maintain', count: '80+ Items' },
+  { name: 'Educational Kits', icon: 'train', count: '35+ Items' },
+  { name: 'Industrial Equipment', icon: 'install', count: '40+ Items' },
+];
+
+const storeStats = [
+  { value: '100+', label: 'Products' },
+  { value: '10+', label: 'Categories' },
+  { value: 'Fast', label: 'Delivery' },
+  { value: 'Secure', label: 'Payments' }
 ];
 
 const tech = [
@@ -328,6 +344,7 @@ const ManualCarousel = ({ children, headingTitle, headingPill, headingText, spee
 };
 
 const Landing = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [contactName, setContactName] = useState('');
@@ -617,43 +634,129 @@ const Landing = () => {
           </div>
         </section>
 
-        <section className="section-cream" id="products">
+        <section className="section-cream store-showcase-section" id="products">
           <div className="container">
-            <div className="section-split">
-              <div className="section-heading section-heading--left">
+            <div className="store-showcase-grid">
+              
+              <div className="store-showcase-content">
                 <span className="section-pill">Online Store</span>
                 <h2>BECS Store</h2>
-                <p>Premium electronic kits, components & smart devices.</p>
-              </div>
-              <a className="pill-button pill-button--ghost" href={ecommerceUrl}>
-                View All Products
-              </a>
-            </div>
+                <h3 className="store-highlight-text">
+                  Premium Electronics,<br/>
+                  IoT Devices,<br/>
+                  Automation Components,<br/>
+                  Smart Kits &<br/>
+                  Professional Hardware.
+                </h3>
+                <p className="store-desc">
+                  Discover a curated collection of industry-grade electronic components and kits designed for professionals, educators, and hobbyists alike.
+                </p>
 
-            <div className="product-grid">
-              {products.map((product) => (
-                <a
-                  className="product-card product-card--link"
-                  href={`${ecommerceUrl}/?product=${encodeURIComponent(product.name)}`}
-                  key={product.name}
-                >
-                  {product.badge ? <span className="product-badge">{product.badge}</span> : null}
-                  <span className="wish-button" aria-hidden="true">
-                    o
-                  </span>
-                  <div className="product-image">
-                    <img src={product.image} alt={product.name} />
+                <div className="store-stats-row">
+                  {storeStats.map((stat, idx) => (
+                    <div key={idx} className="store-stat-item">
+                      <strong>{stat.value}</strong>
+                      <span>{stat.label}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="store-cta-group">
+                  <button 
+                    className="pill-button" 
+                    onClick={() => {
+                      if (user) {
+                        window.location.href = ecommerceUrl;
+                      } else {
+                        navigate('/login');
+                      }
+                    }}
+                  >
+                    Explore Store
+                  </button>
+                  <a href={ecommerceUrl} className="pill-button pill-button--ghost">
+                    View Categories
+                  </a>
+                </div>
+              </div>
+
+              <div className="store-featured-products">
+                {/* Product 1 */}
+                <a href={ecommerceUrl} className="store-featured-card">
+                  <div className="featured-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=600&q=80" alt="Industrial Automation Kit" />
                   </div>
-                  <div className="product-rating">5/5 {product.rating}</div>
-                  <h3>{product.name}</h3>
-                  <p>{product.detail}</p>
-                  <div className="product-footer">
-                    <strong>Rs. {product.price}</strong>
-                    <span className="product-footer-action">View Product</span>
+                  <div className="featured-info">
+                    <span className="featured-badge">Best Seller</span>
+                    <h4>Industrial Automation Kit</h4>
+                    <div className="featured-price">₹12,999</div>
                   </div>
                 </a>
-              ))}
+
+                {/* Product 2 */}
+                <a href={ecommerceUrl} className="store-featured-card">
+                  <div className="featured-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80" alt="Smart IoT Controller" />
+                  </div>
+                  <div className="featured-info">
+                    <span className="featured-badge" style={{ background: 'rgba(249, 115, 22, 0.1)', color: '#f97316' }}>Trending</span>
+                    <h4>Smart IoT Controller</h4>
+                    <div className="featured-price">₹7,999</div>
+                  </div>
+                </a>
+
+                {/* Product 3 */}
+                <a href={ecommerceUrl} className="store-featured-card">
+                  <div className="featured-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?auto=format&fit=crop&w=600&q=80" alt="Embedded Development Board" />
+                  </div>
+                  <div className="featured-info">
+                    <span className="featured-badge" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>New Arrival</span>
+                    <h4>Embedded Development Board</h4>
+                    <div className="featured-price">₹4,999</div>
+                  </div>
+                </a>
+
+                {/* Floating Preview */}
+                <div className="store-floating-preview">
+                  <div className="floating-preview-icon">🔥</div>
+                  <div className="floating-preview-info">
+                    <p>Smart Home Kit</p>
+                    <span>
+                      <strong style={{ color: '#f59e0b' }}>4.8 ★</strong> Rating • 120+ Sold
+                    </span>
+                  </div>
+                </div>
+              </div>
+
             </div>
+
+            <div className="store-bottom-section">
+              <h4>Browse by Category</h4>
+              <div className="store-mini-categories">
+                {storeCategories.map((cat, idx) => (
+                  <div key={idx} className="mini-category-card" onClick={() => window.location.href = ecommerceUrl}>
+                    {cat.name}
+                  </div>
+                ))}
+              </div>
+              <div className="store-final-cta">
+                <h3>Explore 100+ Electronics Products</h3>
+                <button 
+                  className="pill-button"
+                  onClick={() => {
+                    if (user) {
+                      window.location.href = ecommerceUrl;
+                    } else {
+                      navigate('/login');
+                    }
+                  }}
+                >
+                  Visit BECS Store →
+                </button>
+              </div>
+            </div>
+
           </div>
         </section>
 

@@ -7,6 +7,7 @@ import autoTable from 'jspdf-autotable';
 const STORAGE_KEYS = {
   cart: 'becs_ecommerce_cart',
   user: 'becs_user',
+  wishlist: 'becs_ecommerce_wishlist',
 };
 
 const defaultCheckout = {
@@ -83,6 +84,7 @@ function ShopProvider({ children }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cartItems, setCartItems] = useState(() => safeRead(STORAGE_KEYS.cart, []));
+  const [wishlistItems, setWishlistItems] = useState(() => safeRead(STORAGE_KEYS.wishlist, []));
   const [orders, setOrders] = useState([]);
   const [checkout, setCheckout] = useState(defaultCheckout);
   const [message, setMessage] = useState('');
@@ -118,6 +120,7 @@ function ShopProvider({ children }) {
   }, [user]);
 
   useEffect(() => { window.localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(cartItems)); }, [cartItems]);
+  useEffect(() => { window.localStorage.setItem(STORAGE_KEYS.wishlist, JSON.stringify(wishlistItems)); }, [wishlistItems]);
   useEffect(() => { 
     if (user) {
       window.localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
@@ -187,6 +190,19 @@ function ShopProvider({ children }) {
     setCartItems((current) => current.filter((item) => item._id !== productId));
   };
 
+  const handleToggleWishlist = (product) => {
+    setWishlistItems((current) => {
+      const exists = current.find((item) => item._id === product._id);
+      if (exists) {
+        setMessage(`${product.name} removed from wishlist.`);
+        return current.filter((item) => item._id !== product._id);
+      } else {
+        setMessage(`${product.name} added to wishlist.`);
+        return [...current, { _id: product._id, name: product.name, price: product.price, image: product.image, rating: product.rating }];
+      }
+    });
+  };
+
   const handleLogin = async (credentials) => {
     try {
       const { data } = await apiLogin(credentials);
@@ -216,8 +232,8 @@ function ShopProvider({ children }) {
 
   return (
     <ShopContext.Provider value={{
-      products, loading, cartItems, setCartItems, orders, setOrders, checkout, setCheckout,
-      cartSummary, handleAddToCart, handleQuantityChange, handleRemoveItem,
+      products, loading, cartItems, setCartItems, wishlistItems, setWishlistItems, orders, setOrders, checkout, setCheckout,
+      cartSummary, handleAddToCart, handleQuantityChange, handleRemoveItem, handleToggleWishlist,
       message, setMessage, defaultCheckout, user, handleLogin, handleRegister, handleLogout,
       getInclusivePrice, shippingSpeed, setShippingSpeed, calculateEDD
     }}>
@@ -227,7 +243,7 @@ function ShopProvider({ children }) {
 }
 
 function Navbar() {
-  const { cartSummary, user, handleLogout } = React.useContext(ShopContext);
+  const { cartSummary, user, handleLogout, wishlistItems } = React.useContext(ShopContext);
   const location = useLocation();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -261,6 +277,7 @@ function Navbar() {
         </div>
         <div className="shop-topbar-actions">
           <Link className={`topbar-tab ${location.pathname === '/' ? 'topbar-tab--active' : ''}`} to="/">Shop</Link>
+          <Link className={`topbar-tab ${location.pathname === '/wishlist' ? 'topbar-tab--active' : ''}`} to="/wishlist">Wishlist ({wishlistItems.length})</Link>
           <Link className={`topbar-tab ${location.pathname === '/cart' ? 'topbar-tab--active' : ''}`} to="/cart">Cart ({cartSummary.quantity})</Link>
           <Link className={`topbar-tab ${location.pathname === '/orders' ? 'topbar-tab--active' : ''}`} to="/orders">Orders</Link>
           {user ? (
@@ -350,8 +367,13 @@ function LoginPage() {
 }
 
 function Home() {
-  const { products, loading, handleAddToCart, getInclusivePrice } = React.useContext(ShopContext);
+  const { products, loading, handleAddToCart, getInclusivePrice, cartItems, handleQuantityChange, wishlistItems, handleToggleWishlist } = React.useContext(ShopContext);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [priceRange, setPriceRange] = useState('All');
+  const [availability, setAvailability] = useState('All');
+  const [minRating, setMinRating] = useState('All');
+  const [sortBy, setSortBy] = useState('Newest');
+
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search') || '';
@@ -359,13 +381,37 @@ function Home() {
   const categories = useMemo(() => ['All', ...new Set(products.map((product) => product.category))], [products]);
 
   const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
+    let result = products.filter((product) => {
       const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
       const term = searchQuery.trim().toLowerCase();
       const matchesSearch = !term || product.name.toLowerCase().includes(term) || product.category.toLowerCase().includes(term) || product.description.toLowerCase().includes(term);
-      return matchesCategory && matchesSearch;
+      
+      let matchesPrice = true;
+      const price = getInclusivePrice(product.price);
+      if (priceRange === 'Under ₹1000') matchesPrice = price < 1000;
+      else if (priceRange === '₹1000 - ₹5000') matchesPrice = price >= 1000 && price <= 5000;
+      else if (priceRange === '₹5000 - ₹10000') matchesPrice = price > 5000 && price <= 10000;
+      else if (priceRange === 'Above ₹10000') matchesPrice = price > 10000;
+
+      let matchesAvailability = true;
+      const stock = product.stock !== undefined ? product.stock : 15;
+      if (availability === 'In Stock') matchesAvailability = stock > 0;
+      else if (availability === 'Out Of Stock') matchesAvailability = stock === 0;
+
+      let matchesRating = true;
+      if (minRating === '4★+') matchesRating = product.rating >= 4;
+      else if (minRating === '3★+') matchesRating = product.rating >= 3;
+
+      return matchesCategory && matchesSearch && matchesPrice && matchesAvailability && matchesRating;
     });
-  }, [activeCategory, searchQuery, products]);
+
+    if (sortBy === 'Price: Low to High') result.sort((a, b) => getInclusivePrice(a.price) - getInclusivePrice(b.price));
+    else if (sortBy === 'Price: High to Low') result.sort((a, b) => getInclusivePrice(b.price) - getInclusivePrice(a.price));
+    else if (sortBy === 'Highest Rated') result.sort((a, b) => b.rating - a.rating);
+    else if (sortBy === 'Most Reviews') result.sort((a, b) => (b.reviews || 0) - (a.reviews || 0));
+
+    return result;
+  }, [activeCategory, searchQuery, priceRange, availability, minRating, sortBy, products, getInclusivePrice]);
 
   if (loading) return <div className="container" style={{ textAlign: 'center', padding: '100px' }}><h2>Loading products...</h2></div>;
 
@@ -377,25 +423,96 @@ function Home() {
         <p>Browse our selection of premium automation controllers, IoT kits, and smart devices.</p>
       </div>
       
-      <div className="chip-row" style={{ justifyContent: 'center', marginBottom: '40px' }}>
-        {categories.map((category) => (
-          <button className={`chip ${activeCategory === category ? 'chip--active' : ''}`} key={category} type="button" onClick={() => setActiveCategory(category)}>{category}</button>
-        ))}
-      </div>
-      
-      <div className="results-bar">
-        <span>{filteredProducts.length} products found {searchQuery && `for "${searchQuery}"`}</span>
-      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '40px', alignItems: 'start' }}>
+        {/* Sidebar Filters */}
+        <aside className="filters-sidebar" style={{ background: '#f8fafc', padding: '24px', borderRadius: '12px', border: '1px solid var(--line)', position: 'sticky', top: '100px' }}>
+          <h3 style={{ marginBottom: '20px', fontSize: '1.2rem', borderBottom: '1px solid var(--line)', paddingBottom: '12px' }}>Filters</h3>
+          
+          <div style={{ marginBottom: '24px' }}>
+            <h4 style={{ fontSize: '0.9rem', marginBottom: '12px', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Category</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {categories.map(c => (
+                <label key={c} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                  <input type="radio" name="category" checked={activeCategory === c} onChange={() => setActiveCategory(c)} style={{ width: '16px', height: '16px' }} />
+                  <span style={{ fontSize: '0.95rem', fontWeight: activeCategory === c ? 600 : 400 }}>{c}</span>
+                </label>
+              ))}
+            </div>
+          </div>
 
-      <div className="product-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '30px' }}>
+          <div style={{ marginBottom: '24px' }}>
+            <h4 style={{ fontSize: '0.9rem', marginBottom: '12px', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Price Range</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {['All', 'Under ₹1000', '₹1000 - ₹5000', '₹5000 - ₹10000', 'Above ₹10000'].map(p => (
+                <label key={p} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                  <input type="radio" name="price" checked={priceRange === p} onChange={() => setPriceRange(p)} style={{ width: '16px', height: '16px' }} />
+                  <span style={{ fontSize: '0.95rem', fontWeight: priceRange === p ? 600 : 400 }}>{p}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '24px' }}>
+            <h4 style={{ fontSize: '0.9rem', marginBottom: '12px', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Availability</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {['All', 'In Stock', 'Out Of Stock'].map(a => (
+                <label key={a} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                  <input type="radio" name="availability" checked={availability === a} onChange={() => setAvailability(a)} style={{ width: '16px', height: '16px' }} />
+                  <span style={{ fontSize: '0.95rem', fontWeight: availability === a ? 600 : 400 }}>{a}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '24px' }}>
+            <h4 style={{ fontSize: '0.9rem', marginBottom: '12px', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Minimum Rating</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {['All', '4★+', '3★+'].map(r => (
+                <label key={r} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                  <input type="radio" name="rating" checked={minRating === r} onChange={() => setMinRating(r)} style={{ width: '16px', height: '16px' }} />
+                  <span style={{ fontSize: '0.95rem', fontWeight: minRating === r ? 600 : 400 }}>{r}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Products Area */}
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid var(--line)' }}>
+            <span style={{ fontSize: '1.1rem', color: 'var(--muted)' }}><strong>{filteredProducts.length}</strong> products found {searchQuery && `for "${searchQuery}"`}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ color: 'var(--muted)', fontSize: '0.95rem', fontWeight: 600 }}>Sort By:</span>
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--line)', background: 'white', fontSize: '0.95rem', fontWeight: 600, cursor: 'pointer' }}>
+                {['Newest', 'Price: Low to High', 'Price: High to Low', 'Highest Rated', 'Most Reviews'].map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="product-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '30px' }}>
         {filteredProducts.map((product) => {
           const inclusivePrice = getInclusivePrice(product.price);
           const inclusiveOriginal = getInclusivePrice(product.originalPrice || product.price);
           const discountAmount = inclusiveOriginal - inclusivePrice;
           const discountPercent = Math.round((discountAmount / inclusiveOriginal) * 100);
 
+          const cartItem = cartItems.find((item) => item._id === product._id);
+          const stock = product.stock !== undefined ? product.stock : 15; // fallback
+          const isPreOrder = product.isPreOrder || false;
+
+          const isWishlisted = wishlistItems.some(item => item._id === product._id);
+
           return (
-          <article className="product-card" key={product._id} style={{ display: 'flex', flexDirection: 'column' }}>
+          <article className="product-card" key={product._id} style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
+            <button 
+              onClick={() => handleToggleWishlist(product)} 
+              style={{ position: 'absolute', top: '16px', right: '16px', background: 'white', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', cursor: 'pointer', zIndex: 10, fontSize: '1.2rem', color: isWishlisted ? '#ef4444' : '#9ca3af' }}
+              title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+            >
+              {isWishlisted ? '❤️' : '♡'}
+            </button>
             <span className="product-badge">{product.badge}</span>
             <Link to={`/product/${product._id}`} className="product-image">
               <img src={product.image} alt={product.name} />
@@ -403,7 +520,21 @@ function Home() {
             <div className="product-meta"><span>{product.category}</span><span>⭐ {product.rating}/5</span></div>
             <Link to={`/product/${product._id}`}><h3>{product.name}</h3></Link>
             <p style={{ flexGrow: 1 }}>{product.description}</p>
-            <div className="price-row" style={{ marginTop: 'auto', paddingTop: '16px', flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+            
+            {/* Stock Visibility */}
+            <div style={{ marginTop: '10px' }}>
+              {stock === 0 ? (
+                <div style={{ color: '#dc2626', fontWeight: 600, fontSize: '0.9rem' }}>Out Of Stock</div>
+              ) : isPreOrder ? (
+                <div style={{ color: '#3b82f6', fontWeight: 600, fontSize: '0.9rem' }}>Available For Pre Order</div>
+              ) : stock <= 5 ? (
+                <div style={{ color: '#ea580c', fontWeight: 600, fontSize: '0.9rem' }}>Only {stock} Left</div>
+              ) : (
+                <div style={{ color: '#16a34a', fontWeight: 600, fontSize: '0.9rem' }}>✓ In Stock</div>
+              )}
+            </div>
+
+            <div className="price-row" style={{ marginTop: '12px', paddingTop: '16px', flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <strong style={{ fontSize: '1.6rem' }}>{formatPrice(inclusivePrice)}</strong>
                 {discountPercent > 0 && <span className="mrp-strikethrough">{formatPrice(inclusiveOriginal)}</span>}
@@ -411,24 +542,75 @@ function Home() {
               {discountPercent > 0 && <div className="save-amount">You Save: {formatPrice(discountAmount)} ({discountPercent}% OFF)</div>}
               <small style={{ color: 'var(--muted)', fontSize: '0.8rem', marginTop: '2px' }}>MRP (Inclusive of all taxes)</small>
             </div>
-            <div className="card-actions" style={{ marginTop: '20px' }}>
-              <Link to={`/product/${product._id}`} className="action-button action-button--ghost" style={{ flex: 1, display: 'grid', placeItems: 'center' }}>View Details</Link>
-              <button className="action-button action-button--solid" style={{ flex: 1 }} type="button" onClick={() => handleAddToCart(product)}>Add to Cart</button>
+            
+            <div className="card-actions" style={{ marginTop: '20px', alignItems: cartItem ? 'flex-end' : 'stretch' }}>
+              <Link to={`/product/${product._id}`} className="action-button action-button--ghost" style={{ flex: 1, display: 'grid', placeItems: 'center', height: cartItem ? '100%' : 'auto' }}>View Details</Link>
+              
+              {cartItem ? (
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ color: '#16a34a', fontSize: '0.85rem', fontWeight: 700, textAlign: 'center' }}>✓ Added To Cart</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', padding: '6px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                    <button onClick={() => handleQuantityChange(product._id, -1)} style={{ background: 'white', border: '1px solid var(--line)', width: '32px', height: '32px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>-</button>
+                    <span style={{ fontWeight: 'bold', width: '20px', textAlign: 'center' }}>{cartItem.quantity}</span>
+                    <button onClick={() => handleQuantityChange(product._id, 1)} style={{ background: 'white', border: '1px solid var(--line)', width: '32px', height: '32px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
+                  </div>
+                </div>
+              ) : (
+                <button 
+                  className="action-button action-button--solid" 
+                  style={{ flex: 1, opacity: stock === 0 ? 0.5 : 1, cursor: stock === 0 ? 'not-allowed' : 'pointer' }} 
+                  type="button" 
+                  onClick={() => handleAddToCart(product)}
+                  disabled={stock === 0}
+                >
+                  {isPreOrder ? 'Pre Order' : 'Add to Cart'}
+                </button>
+              )}
             </div>
           </article>
           );
         })}
       </div>
+      </div>
+    </div>
     </div>
   );
 }
 
 function ProductDetail() {
   const { id } = useParams();
-  const { handleAddToCart, getInclusivePrice } = React.useContext(ShopContext);
+  const { handleAddToCart, getInclusivePrice, wishlistItems, handleToggleWishlist, user } = React.useContext(ShopContext);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [affiliateLink, setAffiliateLink] = useState('');
   const navigate = useNavigate();
+
+  const handleGenerateAffiliate = () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    const link = `${window.location.origin}/product/${product._id}?ref=${user._id || user.id || 'AFF' + Math.floor(Math.random()*10000)}`;
+    setAffiliateLink(link);
+  };
+
+  const handleShare = (platform) => {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent(`Check out ${product.name} at BECS Store!`);
+    let shareUrl = '';
+    
+    switch (platform) {
+      case 'whatsapp': shareUrl = `https://api.whatsapp.com/send?text=${text} ${url}`; break;
+      case 'facebook': shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`; break;
+      case 'telegram': shareUrl = `https://t.me/share/url?url=${url}&text=${text}`; break;
+      case 'email': shareUrl = `mailto:?subject=${text}&body=${url}`; break;
+      case 'copy': 
+        navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+        return;
+    }
+    if (shareUrl) window.open(shareUrl, '_blank', 'width=600,height=400');
+  };
 
   useEffect(() => {
     const getProduct = async () => {
@@ -451,6 +633,7 @@ function ProductDetail() {
   const inclusiveOriginal = getInclusivePrice(product.originalPrice || product.price);
   const discountAmount = inclusiveOriginal - inclusivePrice;
   const discountPercent = Math.round((discountAmount / inclusiveOriginal) * 100);
+  const isWishlisted = wishlistItems.some(item => item._id === product._id);
 
   return (
     <div className="container app-shell" style={{ paddingTop: '40px' }}>
@@ -485,10 +668,44 @@ function ProductDetail() {
             {product.specs?.map((spec) => (<li key={spec} style={{ fontSize: '1.1rem', marginBottom: '10px' }}>{spec}</li>))}
           </ul>
           
-          <div className="detail-actions" style={{ gap: '20px', display: 'flex' }}>
+          <div className="detail-actions" style={{ gap: '20px', display: 'flex', marginBottom: '30px' }}>
             <button className="action-button action-button--solid" style={{ flex: 1, minHeight: '64px', fontSize: '1.2rem' }} type="button" onClick={() => handleAddToCart(product)}>Add to Cart</button>
             <button className="action-button action-button--ghost" style={{ flex: 1, minHeight: '64px', fontSize: '1.2rem' }} type="button" onClick={() => { handleAddToCart(product); navigate('/cart'); }}>Buy Now</button>
+            <button 
+              className="action-button action-button--ghost" 
+              style={{ width: '64px', minHeight: '64px', fontSize: '1.8rem', display: 'grid', placeItems: 'center', color: isWishlisted ? '#ef4444' : 'inherit' }} 
+              type="button" 
+              onClick={() => handleToggleWishlist(product)}
+              title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+            >
+              {isWishlisted ? '❤️' : '♡'}
+            </button>
           </div>
+          
+          {/* Share & Affiliate Section */}
+          <div className="product-share-section" style={{ padding: '20px', background: '#f8fafc', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <h4 style={{ marginBottom: '12px', fontSize: '1rem', color: 'var(--navy)' }}>Share this product</h4>
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <button onClick={() => handleShare('copy')} style={{ padding: '8px 16px', background: 'white', border: '1px solid var(--line)', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>🔗 Copy Link</button>
+              <button onClick={() => handleShare('whatsapp')} style={{ padding: '8px 16px', background: '#25D366', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>WhatsApp</button>
+              <button onClick={() => handleShare('facebook')} style={{ padding: '8px 16px', background: '#1877F2', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Facebook</button>
+              <button onClick={() => handleShare('telegram')} style={{ padding: '8px 16px', background: '#0088cc', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Telegram</button>
+              <button onClick={() => handleShare('email')} style={{ padding: '8px 16px', background: 'var(--muted)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Email</button>
+            </div>
+            
+            <div style={{ borderTop: '1px solid var(--line)', paddingTop: '16px' }}>
+              <h4 style={{ marginBottom: '12px', fontSize: '1rem', color: 'var(--navy)' }}>Earn with BECS</h4>
+              {affiliateLink ? (
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input type="text" readOnly value={affiliateLink} style={{ flex: 1, padding: '10px', borderRadius: '6px', border: '1px solid var(--line)', background: 'white' }} />
+                  <button onClick={() => { navigator.clipboard.writeText(affiliateLink); alert('Affiliate Link Copied!'); }} className="action-button action-button--solid" style={{ padding: '0 20px', height: '42px' }}>Copy</button>
+                </div>
+              ) : (
+                <button onClick={handleGenerateAffiliate} className="action-button action-button--ghost" style={{ padding: '8px 20px', fontSize: '0.9rem' }}>Generate Affiliate Link</button>
+              )}
+            </div>
+          </div>
+          
           <div className="delivery-note" style={{ marginTop: '24px', fontSize: '1.1rem' }}>🚚 {product.delivery}</div>
         </div>
       </div>
@@ -1310,6 +1527,70 @@ function Orders() {
   );
 }
 
+function Wishlist() {
+  const { wishlistItems, handleAddToCart, handleToggleWishlist } = React.useContext(ShopContext);
+
+  if (wishlistItems.length === 0) {
+    return (
+      <div className="container app-shell" style={{ textAlign: 'center', paddingTop: '100px' }}>
+        <div style={{ fontSize: '4rem', marginBottom: '20px' }}>❤️</div>
+        <h1>Your Wishlist is Empty</h1>
+        <p style={{ color: 'var(--muted)', marginBottom: '30px' }}>Save items you love here to easily find them later.</p>
+        <Link to="/" className="action-button action-button--solid" style={{ display: 'inline-block', padding: '12px 30px' }}>Continue Shopping</Link>
+      </div>
+    );
+  }
+
+  const handleShareWishlist = () => {
+    navigator.clipboard.writeText(window.location.href);
+    alert('Wishlist link copied to clipboard!');
+  };
+
+  return (
+    <div className="container app-shell" style={{ paddingTop: '40px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <div className="catalog-header" style={{ marginBottom: 0, textAlign: 'left' }}>
+          <span className="eyebrow">My Saved Items</span>
+          <h1 style={{ fontSize: '2.5rem' }}>Wishlist</h1>
+        </div>
+        <button onClick={handleShareWishlist} className="action-button action-button--ghost" style={{ padding: '8px 20px' }}>🔗 Share Wishlist</button>
+      </div>
+
+      <div className="product-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '30px' }}>
+        {wishlistItems.map((product) => (
+          <article className="product-card" key={product._id} style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
+            <button 
+              onClick={() => handleToggleWishlist(product)} 
+              style={{ position: 'absolute', top: '16px', right: '16px', background: 'white', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', cursor: 'pointer', zIndex: 10, fontSize: '1.2rem', color: '#ef4444' }}
+              title="Remove from Wishlist"
+            >
+              ❤️
+            </button>
+            <Link to={`/product/${product._id}`} className="product-image">
+              <img src={product.image} alt={product.name} />
+            </Link>
+            <div className="product-meta"><span>⭐ {product.rating}/5</span></div>
+            <Link to={`/product/${product._id}`}><h3>{product.name}</h3></Link>
+            <div className="price-row" style={{ marginTop: 'auto', paddingTop: '16px' }}>
+              <strong style={{ fontSize: '1.4rem' }}>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(product.price)}</strong>
+            </div>
+            <div className="card-actions" style={{ marginTop: '20px' }}>
+              <button 
+                className="action-button action-button--solid" 
+                style={{ flex: 1 }} 
+                type="button" 
+                onClick={() => { handleAddToCart(product); handleToggleWishlist(product); }}
+              >
+                Move to Cart
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const routerBasename = import.meta.env.DEV ? '' : (import.meta.env.VITE_SUBDOMAIN_DEPLOY === 'true' ? '' : '/store');
   return (
@@ -1328,6 +1609,7 @@ export default function App() {
           <div style={{ flex: 1 }}>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
