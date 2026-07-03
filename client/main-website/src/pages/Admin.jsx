@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const adminUrl = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5175';
+const adminUrl = import.meta.env.VITE_ADMIN_URL || 'https://admin.becsofficial.com';
 
 const Admin = () => {
   useEffect(() => {

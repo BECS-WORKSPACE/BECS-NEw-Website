@@ -12,7 +12,7 @@ function Navbar() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173';
+  const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'https://www.becsofficial.com';
 
   const handleSearch = (e) => {
     if (e.key === 'Enter') {

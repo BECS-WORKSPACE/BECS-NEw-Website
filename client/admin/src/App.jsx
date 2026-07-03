@@ -104,7 +104,7 @@ const AdminApp = () => {
   const [uploadStatus, setUploadStatus] = useState('');
   const [notification, setNotification] = useState(null); // Real-time notification
 
-  const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173';
+  const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'https://www.becsofficial.com';
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {

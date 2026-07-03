@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const ecommerceUrl = import.meta.env.VITE_ECOMMERCE_URL || 'http://localhost:5174';
+const ecommerceUrl = import.meta.env.VITE_ECOMMERCE_URL || 'https://store.becsofficial.com';
 
 const Ecommerce = () => {
   useEffect(() => {

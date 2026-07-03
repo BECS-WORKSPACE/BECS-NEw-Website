@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { sendContactMessage } from '../api';
 
-const ecommerceUrl = import.meta.env.VITE_ECOMMERCE_URL || 'http://localhost:5174';
-const trainingUrl = import.meta.env.VITE_TRAINING_URL || 'http://localhost:5176';
+const ecommerceUrl = import.meta.env.VITE_ECOMMERCE_URL || 'https://store.becsofficial.com';
+const trainingUrl = import.meta.env.VITE_TRAINING_URL || 'https://vidyapeeth.becsofficial.com';
 
 const stats = [
   { icon: 'yr', value: '15+', label: 'Years Experience' },

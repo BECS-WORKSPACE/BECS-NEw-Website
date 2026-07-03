@@ -137,7 +137,7 @@ function App() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173';
+  const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'https://www.becsofficial.com';
 
   useEffect(() => {
     const savedUser = localStorage.getItem('becs_user');
