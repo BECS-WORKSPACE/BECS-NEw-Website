@@ -16,7 +16,7 @@ import Profile from './pages/Profile';
 import Notifications from './pages/Notifications';
 
 export default function App() {
-  const routerBasename = import.meta.env.DEV ? '' : (import.meta.env.VITE_SUBDOMAIN_DEPLOY === 'true' ? '' : '/store');
+  const routerBasename = '';
   return (
     <ShopProvider>
       <Router basename={routerBasename}>
