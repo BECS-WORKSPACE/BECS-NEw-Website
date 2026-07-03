@@ -429,6 +429,7 @@ const Landing = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [contactName, setContactName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [contactSubject, setContactSubject] = useState('');
@@ -568,7 +569,7 @@ const Landing = () => {
                   boxShadow: 'var(--shadow)', border: '1px solid var(--line)', 
                   minWidth: '220px', display: 'flex', flexDirection: 'column', gap: '12px', zIndex: 100 
                 }}>
-                  <div style={{ borderBottom: '1px solid var(--line)', paddingBottom: '12px', marginBottom: '4px' }}>
+                  <div style={{ borderBottom: '1px solid var(--line)', paddingBottom: '12px', margin: '0 0 4px' }}>
                     <div style={{ fontWeight: 700, color: 'var(--text)' }}>{user.name}</div>
                     <div style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>{user.email || 'user@becs.com'}</div>
                   </div>
@@ -592,8 +593,38 @@ const Landing = () => {
               </button>
             </div>
           )}
+
+          <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)}>
+            ☰
+          </button>
         </div>
       </header>
+
+      {/* Mobile Sidebar Overlay */}
+      <div className={`mobile-sidebar-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}></div>
+      <div className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div className="mobile-sidebar-header">
+          <a className="brand" href="#home" onClick={() => setIsMobileMenuOpen(false)}>
+            <img src="/logo.png" alt="BECS Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+            <span className="brand-name">BECS</span>
+          </a>
+          <button className="close-btn" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
+        </div>
+        <nav className="mobile-nav">
+          <a href="#home" onClick={() => setIsMobileMenuOpen(false)}>Home</a>
+          <a href="#about" onClick={() => setIsMobileMenuOpen(false)}>About</a>
+          <a href="#services" onClick={() => setIsMobileMenuOpen(false)}>Services</a>
+          <a href={ecommerceUrl} onClick={() => setIsMobileMenuOpen(false)}>BECS Store</a>
+          <a href="#projects" onClick={() => setIsMobileMenuOpen(false)}>Portfolio</a>
+          <a href={trainingUrl} onClick={() => setIsMobileMenuOpen(false)}>Vidyapeeth</a>
+          <a href="#contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</a>
+          {!user && (
+            <button className="pill-button pill-button--ghost" style={{ marginTop: '20px', width: '100%' }} onClick={() => { setIsMobileMenuOpen(false); navigate('/login'); }}>
+              Client Portal
+            </button>
+          )}
+        </nav>
+      </div>
 
       <main>
         <section className="hero-section" id="home">

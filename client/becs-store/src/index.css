@@ -830,8 +830,16 @@ a {
 
 @media (max-width: 940px) {
   .shop-topbar-inner {
-    grid-template-columns: 1fr;
+    grid-template-columns: auto 1fr;
     padding: 16px 0;
+  }
+  .shop-topbar-actions {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+  }
+  .shop-search-wrap {
+    grid-column: 1 / -1;
+    order: 3;
   }
 
   .shop-topbar-actions,
@@ -863,12 +871,17 @@ a {
   .topbar-tab,
   .action-button,
   .shop-link {
-    width: 100%;
+    width: auto;
     text-align: center;
     justify-content: center;
   }
 
   .cart-item {
     grid-template-columns: 1fr;
+  }
+  
+  .shop-topbar-actions {
+    gap: 8px;
+    justify-content: center;
   }
 }
