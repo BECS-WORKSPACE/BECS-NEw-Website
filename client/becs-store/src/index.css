@@ -834,12 +834,12 @@ a {
     padding: 16px 0;
   }
   .shop-topbar-actions {
-    grid-column: 1 / -1;
-    justify-content: space-between;
+    grid-column: 2;
+    justify-content: flex-end;
   }
   .shop-search-wrap {
     grid-column: 1 / -1;
-    order: 3;
+    margin-top: 10px;
   }
 
   .shop-topbar-actions,
@@ -883,5 +883,113 @@ a {
   .shop-topbar-actions {
     gap: 8px;
     justify-content: center;
+  }
+}
+
+.shop-layout-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+.hero-title {
+  font-size: 3rem;
+}
+.hero-subtitle {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .shop-layout-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  .hero-badge {
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile Sidebar & Responsive Overrides */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--navy);
+  padding: 0;
+  margin-left: 10px;
+}
+.desktop-only {
+  display: block;
+}
+.mobile-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.mobile-sidebar-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 280px;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 1001;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+  transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+.mobile-sidebar.open {
+  right: 0;
+}
+.mobile-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--line);
+}
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 16px;
+}
+.mobile-nav a {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--navy);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+}
+
+@media (max-width: 940px) {
+  .hamburger-btn {
+    display: block;
+  }
+  .desktop-only {
+    display: none !important;
   }
 }

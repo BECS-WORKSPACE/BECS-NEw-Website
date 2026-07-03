@@ -137,6 +137,7 @@ function App() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'https://www.becsofficial.com';
 
   useEffect(() => {
@@ -243,8 +244,25 @@ function App() {
             <a href="#study" className="nav-item" onClick={(e) => handleNavClick(e, 'study')}>Study Material</a>
             <a href="#results" className="nav-item" onClick={(e) => handleNavClick(e, 'results')}>Results</a>
           </div>
+          <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
         </div>
       </nav>
+
+      {/* Mobile Sidebar Overlay */}
+      <div className={`mobile-sidebar-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}></div>
+      <div className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div className="mobile-sidebar-header">
+          <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>Menu</span>
+          <button className="close-btn" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
+        </div>
+        <nav className="mobile-nav">
+          <a href="#courses" onClick={(e) => { setIsMobileMenuOpen(false); handleNavClick(e, 'home', 'courses'); }}>Offline Courses</a>
+          <a href="#centers" onClick={(e) => { setIsMobileMenuOpen(false); handleNavClick(e, 'home', 'centers'); }}>Our Centers</a>
+          <a href="#study" onClick={(e) => { setIsMobileMenuOpen(false); handleNavClick(e, 'study'); }}>Study Material</a>
+          <a href="#results" onClick={(e) => { setIsMobileMenuOpen(false); handleNavClick(e, 'results'); }}>Results</a>
+          <a href={frontendUrl} onClick={() => setIsMobileMenuOpen(false)} style={{ color: 'var(--accent)', marginTop: '20px' }}>Back to Main Website</a>
+        </nav>
+      </div>
     </>
   );
 

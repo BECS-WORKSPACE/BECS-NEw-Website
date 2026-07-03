@@ -218,4 +218,73 @@ a { text-decoration: none; color: inherit; }
   .courses-grid, .features-grid, .centers-grid, .footer-grid { grid-template-columns: 1fr; }
   .hero-content h1 { font-size: 3rem; }
   .whatsapp-button { bottom: 20px; right: 20px; width: 55px; height: 55px; }
+  .hamburger-btn { display: block; }
+}
+
+/* Mobile Sidebar & Responsive Overrides */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--primary);
+  padding: 0;
+  margin-left: 10px;
+}
+.mobile-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.mobile-sidebar-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 280px;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 2001;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+  transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+.mobile-sidebar.open {
+  right: 0;
+}
+.mobile-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 16px;
+}
+.mobile-nav a {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
 }

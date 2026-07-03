@@ -185,9 +185,9 @@ function Home() {
             
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: '0 5%', justifyContent: 'space-between', zIndex: 3 }}>
               <div style={{ color: '#fff', maxWidth: '500px' }}>
-                <div style={{ fontSize: '1rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px', color: 'rgba(255,255,255,0.8)' }}>{banner.discount}</div>
-                <h2 style={{ fontSize: '3rem', margin: '0 0 16px', lineHeight: 1.1 }}>{banner.title}</h2>
-                <p style={{ fontSize: '1.2rem', marginBottom: '30px', color: 'rgba(255,255,255,0.9)' }}>{banner.subtitle}</p>
+                <div className="hero-badge" style={{ fontSize: '1rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px', color: 'rgba(255,255,255,0.8)' }}>{banner.discount}</div>
+                <h2 className="hero-title" style={{ margin: '0 0 16px', lineHeight: 1.1 }}>{banner.title}</h2>
+                <p className="hero-subtitle" style={{ marginBottom: '30px', color: 'rgba(255,255,255,0.9)' }}>{banner.subtitle}</p>
                 <button className="action-button action-button--solid" style={{ background: '#fff', color: '#000', padding: '14px 32px', fontSize: '1.1rem' }}>{banner.cta}</button>
               </div>
               <div style={{ display: 'none', '@media (min-width: 768px)': { display: 'block' } }}>
@@ -264,7 +264,7 @@ function Home() {
           <h2 style={{ fontSize: '2.5rem', margin: '10px 0' }}>Explore All Products</h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '40px', alignItems: 'start' }}>
+        <div className="shop-layout-grid">
           
           {/* Enhanced Sticky Sidebar Filters */}
           <aside style={{ position: 'sticky', top: '100px', background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid var(--line)' }}>

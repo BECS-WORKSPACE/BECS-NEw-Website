@@ -11,6 +11,7 @@ function Navbar() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'https://www.becsofficial.com';
 
@@ -22,7 +23,7 @@ function Navbar() {
 
   return (
     <header className="shop-topbar" style={{ padding: '16px 0', borderBottom: '1px solid var(--line)', background: '#fff', position: 'sticky', top: 0, zIndex: 100 }}>
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '40px' }}>
+      <div className="container shop-topbar-inner">
         <Link className="shop-brand" to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <img src={`${import.meta.env.BASE_URL}logo.png`} alt="BECS Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
           <div style={{ color: 'var(--navy)' }}>
@@ -31,7 +32,7 @@ function Navbar() {
           </div>
         </Link>
         
-        <div style={{ flex: 1, maxWidth: '600px', position: 'relative' }}>
+        <div className="shop-search-wrap" style={{ flex: 1, maxWidth: '600px', position: 'relative' }}>
           <div style={{ display: 'flex', alignItems: 'center', background: '#f1f5f9', borderRadius: '8px', padding: '0 16px', border: '1px solid transparent', transition: 'border 0.2s ease' }} onFocus={(e) => e.currentTarget.style.border = '1px solid var(--accent)'} onBlur={(e) => e.currentTarget.style.border = '1px solid transparent'}>
             <span style={{ fontSize: '1.2rem', color: 'var(--muted)', marginRight: '8px' }}>🔍</span>
             <input 
@@ -45,26 +46,26 @@ function Navbar() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+        <div className="shop-topbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           <Link to="/wishlist" style={{ textDecoration: 'none', color: 'var(--navy)', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>♡</span>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Wishlist</span>
+            <span className="desktop-only" style={{ fontSize: '0.75rem', fontWeight: 600 }}>Wishlist</span>
             {wishlistItems.length > 0 && <span style={{ position: 'absolute', top: '-6px', right: '-4px', background: 'var(--accent)', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{wishlistItems.length}</span>}
           </Link>
           
           <Link to="/orders" style={{ textDecoration: 'none', color: 'var(--navy)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>📦</span>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Orders</span>
+            <span className="desktop-only" style={{ fontSize: '0.75rem', fontWeight: 600 }}>Orders</span>
           </Link>
 
           <Link to="/cart" style={{ textDecoration: 'none', color: 'var(--navy)', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>🛒</span>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>Cart</span>
+            <span className="desktop-only" style={{ fontSize: '0.75rem', fontWeight: 600 }}>Cart</span>
             {cartSummary.quantity > 0 && <span style={{ position: 'absolute', top: '-6px', right: '-6px', background: 'var(--accent)', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{cartSummary.quantity}</span>}
           </Link>
 
           {user ? (
-            <div style={{ position: 'relative' }}>
+            <div className="desktop-only" style={{ position: 'relative' }}>
               <div 
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
                 onClick={() => setShowDropdown(!showDropdown)}
@@ -98,9 +99,35 @@ function Navbar() {
               )}
             </div>
           ) : (
-            <Link to="/login" className="action-button action-button--solid" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', height: '40px', padding: '0 24px', borderRadius: '20px', fontSize: '0.95rem' }}>Login</Link>
+            <Link to="/login" className="action-button action-button--solid desktop-only" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', height: '40px', padding: '0 24px', borderRadius: '20px', fontSize: '0.95rem' }}>Login</Link>
           )}
+          
+          <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
         </div>
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      <div className={`mobile-sidebar-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}></div>
+      <div className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div className="mobile-sidebar-header">
+          <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--navy)' }}>Menu</span>
+          <button className="close-btn" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
+        </div>
+        <nav className="mobile-nav">
+          <a href={frontendUrl} onClick={() => setIsMobileMenuOpen(false)}>Main Website</a>
+          <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>Store Home</Link>
+          <Link to="/wishlist" onClick={() => setIsMobileMenuOpen(false)}>Wishlist</Link>
+          <Link to="/orders" onClick={() => setIsMobileMenuOpen(false)}>Orders</Link>
+          <Link to="/cart" onClick={() => setIsMobileMenuOpen(false)}>Cart</Link>
+          {!user ? (
+            <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} style={{ marginTop: '20px', color: 'var(--accent)' }}>Login to Account</Link>
+          ) : (
+            <>
+              <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>My Profile</Link>
+              <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} style={{ width: '100%', textAlign: 'left', padding: '10px 0', background: 'none', border: 'none', borderTop: '1px solid var(--line)', cursor: 'pointer', color: '#ef4444', fontWeight: 600, fontSize: '1.1rem', marginTop: '16px' }}>Logout</button>
+            </>
+          )}
+        </nav>
       </div>
     </header>
   );
