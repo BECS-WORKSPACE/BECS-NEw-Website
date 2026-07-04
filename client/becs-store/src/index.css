@@ -943,18 +943,19 @@ a {
 .mobile-sidebar {
   position: fixed;
   top: 0;
-  right: -300px;
+  right: 0;
+  transform: translateX(100%);
   width: 280px;
   height: 100vh;
   background: #ffffff;
   z-index: 1001;
   box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
-  transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
 }
 .mobile-sidebar.open {
-  right: 0;
+  transform: translateX(0);
 }
 .mobile-sidebar-header {
   display: flex;
