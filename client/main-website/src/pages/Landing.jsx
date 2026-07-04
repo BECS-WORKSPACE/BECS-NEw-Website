@@ -614,9 +614,9 @@ const Landing = () => {
           <a href="#home" onClick={() => setIsMobileMenuOpen(false)}>Home</a>
           <a href="#about" onClick={() => setIsMobileMenuOpen(false)}>About</a>
           <a href="#services" onClick={() => setIsMobileMenuOpen(false)}>Services</a>
-          <a href={ecommerceUrl} onClick={() => setIsMobileMenuOpen(false)}>BECS Store</a>
+          <a href={ecommerceUrl} onClick={(e) => { e.preventDefault(); window.location.href = ecommerceUrl; }}>BECS Store</a>
           <a href="#projects" onClick={() => setIsMobileMenuOpen(false)}>Portfolio</a>
-          <a href={trainingUrl} onClick={() => setIsMobileMenuOpen(false)}>Vidyapeeth</a>
+          <a href={trainingUrl} onClick={(e) => { e.preventDefault(); window.location.href = trainingUrl; }}>Vidyapeeth</a>
           <a href="#contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</a>
           {!user && (
             <button className="pill-button pill-button--ghost" style={{ marginTop: '20px', width: '100%' }} onClick={() => { setIsMobileMenuOpen(false); navigate('/login'); }}>
