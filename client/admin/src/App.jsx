@@ -90,6 +90,7 @@ const AdminApp = () => {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Global State
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -727,24 +728,28 @@ const AdminApp = () => {
         onAdd={handleCreateProduct} 
       />
       
-      <aside className="sidebar">
+      {/* Mobile Sidebar Overlay */}
+      <div className={`mobile-sidebar-overlay ${isMobileSidebarOpen ? 'open' : ''}`} onClick={() => setIsMobileSidebarOpen(false)}></div>
+      
+      <aside className={`sidebar ${isMobileSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-brand" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <img src={`${import.meta.env.BASE_URL}logo.png`} alt="BECS Logo" style={{ width: '45px', height: '45px', objectFit: 'contain' }} /> 
           BECS Admin
+          <button className="close-sidebar-btn mobile-only" onClick={() => setIsMobileSidebarOpen(false)}>✕</button>
         </div>
         <nav className="sidebar-nav">
           <div style={{ padding: '10px 15px', fontSize: '0.8rem', color: 'var(--text-light)', textTransform: 'uppercase', fontWeight: 800, marginTop: '10px' }}>E-Commerce</div>
-          <button className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard Overview</button>
-          <button className={`nav-link ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>Global Users Database</button>
-          <button className={`nav-link ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}>Store Orders</button>
-          <button className={`nav-link ${activeTab === 'products' ? 'active' : ''}`} onClick={() => setActiveTab('products')}>Store Inventory</button>
+          <button className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setIsMobileSidebarOpen(false); }}>Dashboard Overview</button>
+          <button className={`nav-link ${activeTab === 'users' ? 'active' : ''}`} onClick={() => { setActiveTab('users'); setIsMobileSidebarOpen(false); }}>Global Users Database</button>
+          <button className={`nav-link ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => { setActiveTab('orders'); setIsMobileSidebarOpen(false); }}>Store Orders</button>
+          <button className={`nav-link ${activeTab === 'products' ? 'active' : ''}`} onClick={() => { setActiveTab('products'); setIsMobileSidebarOpen(false); }}>Store Inventory</button>
           
           <div style={{ padding: '10px 15px', fontSize: '0.8rem', color: 'var(--text-light)', textTransform: 'uppercase', fontWeight: 800, marginTop: '20px' }}>Main Website</div>
-          <button className={`nav-link ${activeTab === 'contacts' ? 'active' : ''}`} onClick={() => setActiveTab('contacts')}>Contact Forms & Leads</button>
+          <button className={`nav-link ${activeTab === 'contacts' ? 'active' : ''}`} onClick={() => { setActiveTab('contacts'); setIsMobileSidebarOpen(false); }}>Contact Forms & Leads</button>
 
           <div style={{ padding: '10px 15px', fontSize: '0.8rem', color: 'var(--text-light)', textTransform: 'uppercase', fontWeight: 800, marginTop: '20px' }}>Vidyapeeth</div>
-          <button className={`nav-link ${activeTab === 'enquiries' ? 'active' : ''}`} onClick={() => setActiveTab('enquiries')}>Student Enquiries</button>
-          <button className={`nav-link ${activeTab === 'courses' ? 'active' : ''}`} onClick={() => setActiveTab('courses')}>Course Catalog</button>
+          <button className={`nav-link ${activeTab === 'enquiries' ? 'active' : ''}`} onClick={() => { setActiveTab('enquiries'); setIsMobileSidebarOpen(false); }}>Student Enquiries</button>
+          <button className={`nav-link ${activeTab === 'courses' ? 'active' : ''}`} onClick={() => { setActiveTab('courses'); setIsMobileSidebarOpen(false); }}>Course Catalog</button>
           
           <div style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
             <a href={frontendUrl} className="nav-link logout-link">← Exit to Frontend</a>
@@ -754,6 +759,10 @@ const AdminApp = () => {
       </aside>
 
       <main className="main-content">
+        <div className="mobile-header mobile-only">
+          <button className="hamburger-btn" onClick={() => setIsMobileSidebarOpen(true)}>☰</button>
+          <h2 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--primary)' }}>BECS Admin</h2>
+        </div>
         {notification && (
           <div className="toast-notification">
             {notification}
