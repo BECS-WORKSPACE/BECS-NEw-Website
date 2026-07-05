@@ -149,405 +149,411 @@ function App() {
 
   useEffect(() => {
     const getCourses = async () => {
-      try {
-        const data = await fetchCourses();
-        if (data && data.length > 0) {
-          const normalized = data.map(c => ({
-            ...c,
-            id: c._id,
-            syllabus: c.syllabus || [
-              'Comprehensive Curriculum Coverage',
-              'Weekly Offline Tests & Feedback',
-              'Regular Doubt Clearing Sessions',
-              'Industry-Standard Lab Exercises'
-            ]
-          }));
-          setCourses(normalized);
-        } else {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        
+        try {
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/courses`, { signal: controller.signal });
+          clearTimeout(timeoutId);
+          if (!res.ok) throw new Error('Failed');
+          const data = await res.json();
+          if (data && data.length > 0) {
+            const normalized = data.map(c => ({
+              ...c,
+              id: c._id,
+              syllabus: c.syllabus || [
+                'Comprehensive Curriculum Coverage',
+                'Weekly Offline Tests & Feedback',
+                'Regular Doubt Clearing Sessions',
+                'Industry-Standard Lab Exercises'
+              ]
+            }));
+            setCourses(normalized);
+          } else {
+            setCourses(DEFAULT_COURSES);
+          }
+        } catch (error) {
+          console.error('Failed to fetch courses, using default fallback courses:', error);
           setCourses(DEFAULT_COURSES);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error('Failed to fetch courses from backend, using default fallback courses:', error);
-        setCourses(DEFAULT_COURSES);
-      } finally {
-        setLoading(false);
-      }
+      };
+      getCourses();
+    }, []);
+  
+    const handleLogout = () => {
+      localStorage.removeItem('becs_user');
+      setUser(null);
     };
-    getCourses();
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('becs_user');
-    setUser(null);
-  };
-
-  const navigateTo = (view, course = null) => {
-    setSelectedCourse(course);
-    setCurrentView(view);
-    window.scrollTo(0, 0);
-  };
-
-  const handleNavClick = (e, view, targetId = null) => {
-    e.preventDefault();
-    if (currentView !== view) {
+  
+    const navigateTo = (view, course = null) => {
+      setSelectedCourse(course);
       setCurrentView(view);
-      setSelectedCourse(null);
-    }
-    if (targetId) {
-      setTimeout(() => {
-        const el = document.getElementById(targetId);
-        if (el) {
-          const y = el.getBoundingClientRect().top + window.scrollY - 100;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        }
-      }, 50);
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-
-  const centers = [
-    { city: 'Kolkata', address: 'Tech Park, Sector 5, Salt Lake', phone: '+91 98765 43210' },
-    { city: 'Delhi', address: 'Connaught Place, Block A', phone: '+91 98765 43211' },
-    { city: 'Bangalore', address: 'Koramangala, 4th Block', phone: '+91 98765 43212' }
-  ];
-
-  const renderNavbar = () => (
-    <>
-      <div className="top-strip">
-        <div className="marquee-container">
-          <div className="marquee-content">
-            <span onClick={() => navigateTo('home')}>🎉 Admissions Open for 2026-27 Batches! Register Now!</span>
-            <span onClick={() => navigateTo('results')}>⭐ Congratulations to our students for dominating GATE 2024!</span>
-            <span onClick={() => navigateTo('home')}>🔥 Flat 25% OFF on Foundation Batches this week!</span>
-            <span>📞 Call us at +91 98765 43210 for free counseling.</span>
-            <span onClick={() => navigateTo('home')}>🎉 Admissions Open for 2026-27 Batches! Register Now!</span>
-            <span onClick={() => navigateTo('results')}>⭐ Congratulations to our students for dominating GATE 2024!</span>
-            <span onClick={() => navigateTo('home')}>🔥 Flat 25% OFF on Foundation Batches this week!</span>
-            <span>📞 Call us at +91 98765 43210 for free counseling.</span>
-          </div>
-        </div>
-      </div>
-      <nav className="navbar">
-        <div className="container navbar-inner">
-          <a href="#" className="brand" onClick={(e) => handleNavClick(e, 'home')}>
-            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="BECS Logo" className="brand-logo" />
-            <div className="brand-text-container">
-              <span className="brand-text">BECS Vidyapeeth</span>
-              <span className="brand-subtext">Offline Coaching Center</span>
-            </div>
-          </a>
-          <div className="nav-links">
-            <a href="#courses" className="nav-item" onClick={(e) => handleNavClick(e, 'home', 'courses')}>Offline Courses</a>
-            <a href="#centers" className="nav-item" onClick={(e) => handleNavClick(e, 'home', 'centers')}>Our Centers</a>
-            <a href="#study" className="nav-item" onClick={(e) => handleNavClick(e, 'study')}>Study Material</a>
-            <a href="#results" className="nav-item" onClick={(e) => handleNavClick(e, 'results')}>Results</a>
-          </div>
-          <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
-        </div>
-      </nav>
-
-      {/* Mobile Sidebar Overlay */}
-      <div className={`mobile-sidebar-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}></div>
-      <div className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
-        <div className="mobile-sidebar-header">
-          <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>Menu</span>
-          <button className="close-btn" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
-        </div>
-        <nav className="mobile-nav">
-          <a href="#courses" onClick={(e) => { setIsMobileMenuOpen(false); handleNavClick(e, 'home', 'courses'); }}>Offline Courses</a>
-          <a href="#centers" onClick={(e) => { setIsMobileMenuOpen(false); handleNavClick(e, 'home', 'centers'); }}>Our Centers</a>
-          <a href="#study" onClick={(e) => { setIsMobileMenuOpen(false); handleNavClick(e, 'study'); }}>Study Material</a>
-          <a href="#results" onClick={(e) => { setIsMobileMenuOpen(false); handleNavClick(e, 'results'); }}>Results</a>
-          <a href={frontendUrl} onClick={() => setIsMobileMenuOpen(false)} style={{ color: 'var(--accent)', marginTop: '20px' }}>Back to Main Website</a>
-        </nav>
-      </div>
-    </>
-  );
-
-  const HomeView = () => (
-    <>
-      <section className="hero">
-        <div className="container hero-inner">
-          <div className="hero-content">
-            <div className="badge">🎯 ADMISSIONS OPEN FOR 2026-27</div>
-            <h1>
-              India's Most Trusted <br />
-              <span className="highlight">Offline Coaching</span> for Engineers
-            </h1>
-            <p>
-              Experience the power of traditional classroom learning combined with state-of-the-art practical labs. Learn from industry veterans at our offline centers.
-            </p>
-            <div className="hero-buttons">
-              <a href="#courses" className="btn-solid-lg">Explore Offline Batches</a>
-              <a href="#centers" className="btn-outline-lg">Find Nearest Center</a>
-            </div>
-            <div className="hero-features">
-              <span>✅ Best Faculty</span>
-              <span>✅ Smart Classrooms</span>
-              <span>✅ Practical Labs</span>
-            </div>
-          </div>
-          <div className="hero-image-wrapper">
-            <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80" alt="Students in classroom" className="hero-image" />
-            <div className="floating-stat">
-              <div className="stat-num">10,000+</div>
-              <div className="stat-text">Students Selected</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="stats-section">
-        <div className="container stats-grid">
-          <div className="stat-box">
-            <h3>50+</h3>
-            <p>Expert Faculty</p>
-          </div>
-          <div className="stat-box">
-            <h3>15+</h3>
-            <p>Offline Centers</p>
-          </div>
-          <div className="stat-box">
-            <h3>98%</h3>
-            <p>Placement Rate</p>
-          </div>
-          <div className="stat-box">
-            <h3>Top 100</h3>
-            <p>All India Ranks</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="courses-section" id="courses">
-        <div className="container">
-          <div className="section-header">
-            <h2>Our Premium <span className="highlight">Offline Batches</span></h2>
-            <p>Enroll in our structured classroom programs designed for competitive success.</p>
-          </div>
-          <div className="courses-grid">
-            {courses.map(course => (
-              <div className="course-card" key={course.id} onClick={() => navigateTo('details', course)} style={{ cursor: 'pointer' }}>
-                <div className="course-image-container">
-                  <img src={course.image} alt={course.title} />
-                  <span className="discount-badge">{course.discount}</span>
-                </div>
-                <div className="course-body">
-                  <div className="course-tags">
-                    <span className="tag mode-tag">🏫 {course.mode}</span>
-                    <span className="tag center-tag">📍 {course.center}</span>
-                  </div>
-                  <h3 className="course-title">{course.title}</h3>
-                  <p className="course-target">Target: {course.target}</p>
-                  <p className="course-duration">Duration: {course.duration}</p>
-                  <div className="course-features">
-                    <div>✔️ Printed Study Material</div>
-                    <div>✔️ Weekly Offline Tests</div>
-                    <div>✔️ Doubt Solving Sessions</div>
-                  </div>
-                  <div className="course-footer">
-                    <div className="price-container">
-                      <span className="price">{course.price}</span>
-                      <span className="original-price">{course.originalPrice}</span>
-                    </div>
-                    <button className="btn-solid" onClick={(e) => { e.stopPropagation(); navigateTo('details', course); }}>View Details</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="why-offline-section">
-        <div className="container">
-          <div className="section-header">
-            <h2>Why Choose BECS <span className="highlight">Offline Centers?</span></h2>
-            <p>The traditional classroom experience powered by modern technology.</p>
-          </div>
-          <div className="features-grid">
-            <div className="feature-card">
-              <div className="feature-icon">👨‍🏫</div>
-              <h3>Face-to-Face Interaction</h3>
-              <p>Direct interaction with top educators. Ask questions and clear doubts instantly in the classroom.</p>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">🤝</div>
-              <h3>Competitive Environment</h3>
-              <p>Study among the brightest minds. The peer-to-peer learning environment pushes you to perform your best.</p>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">🔬</div>
-              <h3>State-of-the-Art Labs</h3>
-              <p>Access our premium hardware labs equipped with PLCs, IoT kits, and robotics components.</p>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">📚</div>
-              <h3>Printed Study Material</h3>
-              <p>Comprehensive, researched, and updated hardcopy study materials provided directly to offline students.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="centers-section" id="centers">
-        <div className="container">
-          <div className="section-header">
-            <h2>Find a Center <span className="highlight">Near You</span></h2>
-            <p>Walk in for free counseling and demo classes.</p>
-          </div>
-          <div className="centers-grid">
-            {centers.map((center, index) => (
-              <div className="center-card" key={index}>
-                <h3>📍 {center.city} Center</h3>
-                <p>{center.address}</p>
-                <div className="center-phone">📞 {center.phone}</div>
-                <button className="btn-outline-sm">Get Directions</button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </>
-  );
-
-  const CourseDetailsView = () => {
-    if (!selectedCourse) return null;
-    return (
-      <div className="details-view container" style={{ padding: '40px 24px', minHeight: '80vh' }}>
-        <button className="btn-outline-sm" onClick={() => navigateTo('home')} style={{ marginBottom: '20px' }}>
-          ← Back to All Courses
-        </button>
-        <div className="details-header" style={{ marginBottom: '40px' }}>
-          <div className="course-tags" style={{ marginBottom: '10px' }}>
-            <span className="tag mode-tag">🏫 {selectedCourse.mode}</span>
-            <span className="tag center-tag">📍 {selectedCourse.center}</span>
-          </div>
-          <h1 style={{ fontSize: '2.5rem', color: 'var(--primary)', fontFamily: 'Outfit', fontWeight: 800 }}>{selectedCourse.title}</h1>
-          <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>{selectedCourse.target}</p>
-        </div>
-
-        <div className="details-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '40px' }}>
-          <div className="details-main">
-            <img src={selectedCourse.image} alt={selectedCourse.title} style={{ width: '100%', borderRadius: '20px', marginBottom: '30px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
-            
-            <h2 style={{ fontSize: '1.8rem', color: 'var(--primary)', marginBottom: '16px', fontFamily: 'Outfit' }}>About the Program</h2>
-            <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--text)', marginBottom: '40px' }}>{selectedCourse.description}</p>
-            
-            <h2 style={{ fontSize: '1.8rem', color: 'var(--primary)', marginBottom: '16px', fontFamily: 'Outfit' }}>Faculty & Schedule</h2>
-            <div style={{ background: 'var(--surface)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)', marginBottom: '40px' }}>
-              <p><strong>👨‍🏫 Lead Faculty:</strong> {selectedCourse.faculty}</p>
-              <p style={{ marginTop: '10px' }}><strong>⏰ Schedule:</strong> {selectedCourse.schedule}</p>
-              <p style={{ marginTop: '10px' }}><strong>⏳ Duration:</strong> {selectedCourse.duration}</p>
-            </div>
-
-            <h2 style={{ fontSize: '1.8rem', color: 'var(--primary)', marginBottom: '16px', fontFamily: 'Outfit' }}>Syllabus Highlights</h2>
-            <ul style={{ background: 'var(--surface)', padding: '24px 24px 24px 40px', borderRadius: '16px', border: '1px solid var(--border)', lineHeight: '2', fontSize: '1.1rem', color: 'var(--text)' }}>
-              {selectedCourse.syllabus.map((item, index) => (
-                <li key={index} style={{ marginBottom: '10px' }}>{item}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="details-sidebar">
-            <div style={{ background: 'white', padding: '30px', borderRadius: '20px', border: '1px solid var(--accent)', boxShadow: '0 20px 40px rgba(255, 112, 72, 0.1)', position: 'sticky', top: '100px' }}>
-              <h3 style={{ fontSize: '1.4rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '20px' }}>Enrollment Details</h3>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', marginBottom: '10px' }}>
-                <span style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--primary)', lineHeight: 1 }}>{selectedCourse.price}</span>
-                <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)', textDecoration: 'line-through', paddingBottom: '4px' }}>{selectedCourse.originalPrice}</span>
-              </div>
-              <p style={{ color: '#22c55e', fontWeight: 700, marginBottom: '24px' }}>Includes {selectedCourse.discount}</p>
-              
-              <ul style={{ listStyle: 'none', padding: 0, marginBottom: '30px', lineHeight: 2 }}>
-                <li>✅ Full Classroom Access</li>
-                <li>✅ Printed Hardcopy Material</li>
-                <li>✅ 24/7 Doubt Forum Access</li>
-                <li>✅ Free Lab Components Usage</li>
-              </ul>
-              
-              <button className="btn-solid-lg" style={{ width: '100%', textAlign: 'center' }} onClick={() => navigateTo('enroll', selectedCourse)}>
-                Proceed to Enroll
-              </button>
-              <p style={{ textAlign: 'center', marginTop: '16px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Seats are limited per batch.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const EnrollmentView = () => {
-    const [formData, setFormData] = useState({ name: '', email: '', phone: '', college: '', year: '' });
-    const [submitted, setSubmitted] = useState(false);
-
-    if (!selectedCourse) return null;
-
-    const handleSubmit = async (e) => {
+      window.scrollTo(0, 0);
+    };
+  
+    const handleNavClick = (e, view, targetId = null) => {
       e.preventDefault();
-      try {
-        await createEnquiry({
-          name: formData.name,
-          phone: formData.phone,
-          courseId: String(selectedCourse.id || selectedCourse._id),
-          courseName: selectedCourse.title,
-          type: 'Enrollment'
-        });
-        setSubmitted(true);
-        window.scrollTo(0, 0);
-      } catch (err) {
-        alert(err.message || 'Failed to submit application. Please try again.');
+      if (currentView !== view) {
+        setCurrentView(view);
+        setSelectedCourse(null);
+      }
+      if (targetId) {
+        setTimeout(() => {
+          const el = document.getElementById(targetId);
+          if (el) {
+            const y = el.getBoundingClientRect().top + window.scrollY - 100;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }
+        }, 50);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     };
-
-    if (submitted) {
+  
+  
+    const centers = [
+      { city: 'Kolkata', address: 'Tech Park, Sector 5, Salt Lake', phone: '+91 98765 43210' },
+      { city: 'Delhi', address: 'Connaught Place, Block A', phone: '+91 98765 43211' },
+      { city: 'Bangalore', address: 'Koramangala, 4th Block', phone: '+91 98765 43212' }
+    ];
+  
+    const renderNavbar = () => (
+      <>
+        <div className="top-strip">
+          <div className="marquee-container">
+            <div className="marquee-content">
+              <span onClick={() => navigateTo('home')}>🎉 Admissions Open for 2026-27 Batches! Register Now!</span>
+              <span onClick={() => navigateTo('results')}>⭐ Congratulations to our students for dominating GATE 2024!</span>
+              <span onClick={() => navigateTo('home')}>🔥 Flat 25% OFF on Foundation Batches this week!</span>
+              <span>📞 Call us at +91 98765 43210 for free counseling.</span>
+              <span onClick={() => navigateTo('home')}>🎉 Admissions Open for 2026-27 Batches! Register Now!</span>
+              <span onClick={() => navigateTo('results')}>⭐ Congratulations to our students for dominating GATE 2024!</span>
+              <span onClick={() => navigateTo('home')}>🔥 Flat 25% OFF on Foundation Batches this week!</span>
+              <span>📞 Call us at +91 98765 43210 for free counseling.</span>
+            </div>
+          </div>
+        </div>
+        <nav className="navbar">
+          <div className="container navbar-inner">
+            <a href="#" className="brand" onClick={(e) => handleNavClick(e, 'home')}>
+              <img src={`${import.meta.env.BASE_URL}logo.png`} alt="BECS Logo" className="brand-logo" />
+              <div className="brand-text-container">
+                <span className="brand-text">BECS Vidyapeeth</span>
+                <span className="brand-subtext">Offline Coaching Center</span>
+              </div>
+            </a>
+            <div className="nav-links">
+              <a href="#courses" className="nav-item" onClick={(e) => handleNavClick(e, 'home', 'courses')}>Offline Courses</a>
+              <a href="#centers" className="nav-item" onClick={(e) => handleNavClick(e, 'home', 'centers')}>Our Centers</a>
+              <a href="#study" className="nav-item" onClick={(e) => handleNavClick(e, 'study')}>Study Material</a>
+              <a href="#results" className="nav-item" onClick={(e) => handleNavClick(e, 'results')}>Results</a>
+            </div>
+            <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
+          </div>
+        </nav>
+  
+        {/* Mobile Sidebar Overlay */}
+        <div className={`mobile-sidebar-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}></div>
+        <div className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+          <div className="mobile-sidebar-header">
+            <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>Menu</span>
+            <button className="close-btn" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
+          </div>
+          <nav className="mobile-nav">
+            <a href="#courses" onClick={(e) => { setIsMobileMenuOpen(false); handleNavClick(e, 'home', 'courses'); }}>Offline Courses</a>
+            <a href="#centers" onClick={(e) => { setIsMobileMenuOpen(false); handleNavClick(e, 'home', 'centers'); }}>Our Centers</a>
+            <a href="#study" onClick={(e) => { setIsMobileMenuOpen(false); handleNavClick(e, 'study'); }}>Study Material</a>
+            <a href="#results" onClick={(e) => { setIsMobileMenuOpen(false); handleNavClick(e, 'results'); }}>Results</a>
+            <a href={frontendUrl} onClick={() => setIsMobileMenuOpen(false)} style={{ color: 'var(--accent)', marginTop: '20px' }}>Back to Main Website</a>
+          </nav>
+        </div>
+      </>
+    );
+  
+    const HomeView = () => (
+      <>
+        <section className="hero">
+          <div className="container hero-inner">
+            <div className="hero-content">
+              <div className="badge">🎯 ADMISSIONS OPEN FOR 2026-27</div>
+              <h1 className="responsive-heading">
+                India's Most Trusted <br />
+                <span className="highlight">Offline Coaching</span> for Engineers
+              </h1>
+              <p>
+                Experience the power of traditional classroom learning combined with state-of-the-art practical labs. Learn from industry veterans at our offline centers.
+              </p>
+              <div className="hero-buttons">
+                <a href="#courses" className="btn-solid-lg">Explore Offline Batches</a>
+                <a href="#centers" className="btn-outline-lg">Find Nearest Center</a>
+              </div>
+              <div className="hero-features">
+                <span>✅ Best Faculty</span>
+                <span>✅ Smart Classrooms</span>
+                <span>✅ Practical Labs</span>
+              </div>
+            </div>
+            <div className="hero-image-wrapper">
+              <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80" alt="Students in classroom" className="hero-image" />
+              <div className="floating-stat">
+                <div className="stat-num">10,000+</div>
+                <div className="stat-text">Students Selected</div>
+              </div>
+            </div>
+          </div>
+        </section>
+  
+        <section className="stats-section">
+          <div className="container stats-grid">
+            <div className="stat-box">
+              <h3 className="responsive-stat">50+</h3>
+              <p>Expert Faculty</p>
+            </div>
+            <div className="stat-box">
+              <h3 className="responsive-stat">15+</h3>
+              <p>Offline Centers</p>
+            </div>
+            <div className="stat-box">
+              <h3 className="responsive-stat">98%</h3>
+              <p>Placement Rate</p>
+            </div>
+            <div className="stat-box">
+              <h3 className="responsive-stat">Top 100</h3>
+              <p>All India Ranks</p>
+            </div>
+          </div>
+        </section>
+  
+        <section className="courses-section" id="courses">
+          <div className="container">
+            <div className="section-header">
+              <h2 className="responsive-heading">Our Premium <span className="highlight">Offline Batches</span></h2>
+              <p>Enroll in our structured classroom programs designed for competitive success.</p>
+            </div>
+            <div className="courses-grid">
+              {courses.map(course => (
+                <div className="course-card" key={course.id} onClick={() => navigateTo('details', course)} style={{ cursor: 'pointer' }}>
+                  <div className="course-image-container">
+                    <img src={course.image} alt={course.title} />
+                    <span className="discount-badge">{course.discount}</span>
+                  </div>
+                  <div className="course-body">
+                    <div className="course-tags">
+                      <span className="tag mode-tag">🏫 {course.mode}</span>
+                      <span className="tag center-tag">📍 {course.center}</span>
+                    </div>
+                    <h3 className="course-title">{course.title}</h3>
+                    <p className="course-target">Target: {course.target}</p>
+                    <p className="course-duration">Duration: {course.duration}</p>
+                    <div className="course-features">
+                      <div>✔️ Printed Study Material</div>
+                      <div>✔️ Weekly Offline Tests</div>
+                      <div>✔️ Doubt Solving Sessions</div>
+                    </div>
+                    <div className="course-footer">
+                      <div className="price-container">
+                        <span className="price">{course.price}</span>
+                        <span className="original-price">{course.originalPrice}</span>
+                      </div>
+                      <button className="btn-solid" onClick={(e) => { e.stopPropagation(); navigateTo('details', course); }}>View Details</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+  
+        <section className="why-offline-section">
+          <div className="container">
+            <div className="section-header">
+              <h2 className="responsive-heading">Why Choose BECS <span className="highlight">Offline Centers?</span></h2>
+              <p>The traditional classroom experience powered by modern technology.</p>
+            </div>
+            <div className="features-grid">
+              <div className="feature-card">
+                <div className="feature-icon">👨‍🏫</div>
+                <h3>Face-to-Face Interaction</h3>
+                <p>Direct interaction with top educators. Ask questions and clear doubts instantly in the classroom.</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">🤝</div>
+                <h3>Competitive Environment</h3>
+                <p>Study among the brightest minds. The peer-to-peer learning environment pushes you to perform your best.</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">🔬</div>
+                <h3>State-of-the-Art Labs</h3>
+                <p>Access our premium hardware labs equipped with PLCs, IoT kits, and robotics components.</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">📚</div>
+                <h3>Printed Study Material</h3>
+                <p>Comprehensive, researched, and updated hardcopy study materials provided directly to offline students.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+  
+        <section className="centers-section" id="centers">
+          <div className="container">
+            <div className="section-header">
+              <h2 className="responsive-heading">Find a Center <span className="highlight">Near You</span></h2>
+              <p>Walk in for free counseling and demo classes.</p>
+            </div>
+            <div className="centers-grid">
+              {centers.map((center, index) => (
+                <div className="center-card" key={index}>
+                  <h3>📍 {center.city} Center</h3>
+                  <p>{center.address}</p>
+                  <div className="center-phone">📞 {center.phone}</div>
+                  <button className="btn-outline-sm">Get Directions</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  
+    const CourseDetailsView = () => {
+      if (!selectedCourse) return null;
       return (
-        <div className="container" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ textAlign: 'center', background: 'white', padding: '50px', borderRadius: '20px', border: '1px solid var(--border)', maxWidth: '600px' }}>
-            <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎉</div>
-            <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '16px' }}>Application Received!</h2>
-            <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '30px', lineHeight: '1.6' }}>
-              Thank you, <strong>{formData.name}</strong>. Your enrollment request for <strong>{selectedCourse.title}</strong> has been successfully submitted. Our admission counselor will call you at {formData.phone} within 24 hours to complete the process.
-            </p>
-            <button className="btn-solid" onClick={() => navigateTo('home')}>Return to Home</button>
+        <div className="details-view container">
+          <button className="btn-outline-sm back-btn" onClick={() => navigateTo('home')}>
+            ← Back to All Courses
+          </button>
+          <div className="details-header">
+            <div className="course-tags">
+              <span className="tag mode-tag">🏫 {selectedCourse.mode}</span>
+              <span className="tag center-tag">📍 {selectedCourse.center}</span>
+            </div>
+            <h1 className="responsive-heading details-title">{selectedCourse.title}</h1>
+            <p className="details-target">{selectedCourse.target}</p>
+          </div>
+  
+          <div className="details-grid">
+            <div className="details-main">
+              <img src={selectedCourse.image} alt={selectedCourse.title} className="details-image" />
+              
+              <h2 className="responsive-heading-sm section-title">About the Program</h2>
+              <p className="details-desc">{selectedCourse.description}</p>
+              
+              <h2 className="responsive-heading-sm section-title">Faculty & Schedule</h2>
+              <div className="info-box">
+                <p><strong>👨‍🏫 Lead Faculty:</strong> {selectedCourse.faculty}</p>
+                <p className="mt-10"><strong>⏰ Schedule:</strong> {selectedCourse.schedule}</p>
+                <p className="mt-10"><strong>⏳ Duration:</strong> {selectedCourse.duration}</p>
+              </div>
+  
+              <h2 className="responsive-heading-sm section-title">Syllabus Highlights</h2>
+              <ul className="syllabus-list">
+                {selectedCourse.syllabus.map((item, index) => (
+                  <li key={index} style={{ marginBottom: '10px' }}>{item}</li>
+                ))}
+              </ul>
+            </div>
+  
+            <div className="details-sidebar">
+              <div className="enroll-card">
+                <h3 className="responsive-heading-sm card-title">Enrollment Details</h3>
+                <div className="price-row">
+                  <span className="price-main">{selectedCourse.price}</span>
+                  <span className="price-strike">{selectedCourse.originalPrice}</span>
+                </div>
+                <p className="discount-text">Includes {selectedCourse.discount}</p>
+                
+                <ul className="features-list">
+                  <li>✅ Full Classroom Access</li>
+                  <li>✅ Printed Hardcopy Material</li>
+                  <li>✅ 24/7 Doubt Forum Access</li>
+                  <li>✅ Free Lab Components Usage</li>
+                </ul>
+                
+                <button className="btn-solid-lg w-full" onClick={() => navigateTo('enroll', selectedCourse)}>
+                  Proceed to Enroll
+                </button>
+                <p className="seats-text">Seats are limited per batch.</p>
+              </div>
+            </div>
           </div>
         </div>
       );
-    }
-
-    return (
-      <div className="container" style={{ padding: '60px 24px', minHeight: '80vh', maxWidth: '800px', margin: '0 auto' }}>
-        <button className="btn-outline-sm" onClick={() => navigateTo('details', selectedCourse)} style={{ marginBottom: '30px' }}>
-          ← Back to Course
-        </button>
-        <h1 style={{ fontSize: '2.5rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '10px' }}>Enrollment Form</h1>
-        <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '40px' }}>You are enrolling in <strong>{selectedCourse.title}</strong> at <strong>{selectedCourse.center}</strong>.</p>
-
-        <form onSubmit={handleSubmit} style={{ background: 'white', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-            <div>
-              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Full Name</label>
-              <input type="text" required placeholder="John Doe" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
-            </div>
-            <div>
-              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Email Address</label>
-              <input type="email" required placeholder="john@example.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+    };
+  
+    const EnrollmentView = () => {
+      const [formData, setFormData] = useState({ name: '', email: '', phone: '', college: '', year: '' });
+      const [submitted, setSubmitted] = useState(false);
+  
+      if (!selectedCourse) return null;
+  
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+          await createEnquiry({
+            name: formData.name,
+            phone: formData.phone,
+            courseId: String(selectedCourse.id || selectedCourse._id),
+            courseName: selectedCourse.title,
+            type: 'Enrollment'
+          });
+          setSubmitted(true);
+          window.scrollTo(0, 0);
+        } catch (err) {
+          alert(err.message || 'Failed to submit application. Please try again.');
+        }
+      };
+  
+      if (submitted) {
+        return (
+          <div className="container" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ textAlign: 'center', background: 'white', padding: '50px', borderRadius: '20px', border: '1px solid var(--border)', maxWidth: '600px' }}>
+              <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎉</div>
+              <h2 className="responsive-heading" style={{ fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '16px' }}>Application Received!</h2>
+              <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '30px', lineHeight: '1.6' }}>
+                Thank you, <strong>{formData.name}</strong>. Your enrollment request for <strong>{selectedCourse.title}</strong> has been successfully submitted. Our admission counselor will call you at {formData.phone} within 24 hours to complete the process.
+              </p>
+              <button className="btn-solid" onClick={() => navigateTo('home')}>Return to Home</button>
             </div>
           </div>
-          
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Phone Number (WhatsApp preferred)</label>
-            <input type="tel" required placeholder="+91 98765 43210" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
-            <div>
-              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>College/University</label>
-              <input type="text" required placeholder="Institute of Engineering" value={formData.college} onChange={e => setFormData({...formData, college: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+        );
+      }
+  
+      return (
+        <div className="container" style={{ padding: '60px 24px', minHeight: '80vh', maxWidth: '800px', margin: '0 auto' }}>
+          <button className="btn-outline-sm" onClick={() => navigateTo('details', selectedCourse)} style={{ marginBottom: '30px' }}>
+            ← Back to Course
+          </button>
+          <h1 className="responsive-heading" style={{ fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '10px' }}>Enrollment Form</h1>
+          <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '40px' }}>You are enrolling in <strong>{selectedCourse.title}</strong> at <strong>{selectedCourse.center}</strong>.</p>
+  
+          <form onSubmit={handleSubmit} className="enroll-form" style={{ background: 'white', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+            <div className="form-grid">
+              <div>
+                <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Full Name</label>
+                <input type="text" required placeholder="John Doe" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Email Address</label>
+                <input type="email" required placeholder="john@example.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+              </div>
             </div>
-            <div>
-              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Expected Graduation Year</label>
-              <select required value={formData.year} onChange={e => setFormData({...formData, year: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem', background: 'white' }}>
+            
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Phone Number (WhatsApp preferred)</label>
+              <input type="tel" required placeholder="+91 98765 43210" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+            </div>
+  
+            <div className="form-grid" style={{ marginBottom: '40px' }}>
+              <div>
+                <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>College/University</label>
+                <input type="text" required placeholder="Institute of Engineering" value={formData.college} onChange={e => setFormData({...formData, college: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Expected Graduation Year</label>
+                <select required value={formData.year} onChange={e => setFormData({...formData, year: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem', background: 'white' }}>
                 <option value="">Select Year</option>
                 <option value="2024">2024</option>
                 <option value="2025">2025</option>
