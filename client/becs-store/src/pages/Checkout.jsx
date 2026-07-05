@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ShopContext, formatPrice } from '../context/ShopContext';
 import { jsPDF } from "jspdf";
@@ -13,6 +13,7 @@ function Checkout() {
   const [errors, setErrors] = useState({});
   const [latestOrder, setLatestOrder] = useState(null);
   const [showTaxes, setShowTaxes] = useState(false);
+  const paymentRef = useRef();
   
   const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
@@ -218,7 +219,7 @@ function Checkout() {
           {checkoutStep === 3 && (
             <section className="panel payment-panel">
               <div className="panel-header"><div><span className="eyebrow">Payment Step</span><h2>Complete your payment</h2></div></div>
-              <MockPaymentUI onSuccess={handlePaymentSuccess} onBack={handleBackStep} amount={cartSummary.total} />
+              <MockPaymentUI ref={paymentRef} onSuccess={handlePaymentSuccess} onBack={handleBackStep} amount={cartSummary.total} />
             </section>
           )}
 
@@ -256,7 +257,7 @@ function Checkout() {
         </div>
 
         {checkoutStep < 4 && (
-          <aside className="summary-sidebar" style={{ marginTop: '144px' }}>
+          <aside className="summary-sidebar summary-sidebar--checkout">
             <div className="premium-summary-card">
               <h3>Order Summary</h3>
               <div className="summary-details">
@@ -270,39 +271,33 @@ function Checkout() {
                 </div>
                 <div className="summary-line">
                   <span>Shipping Fee:</span>
-                  <span>{cartSummary.shipping === 0 ? <span style={{color: '#007600'}}>FREE</span> : formatPrice(cartSummary.shipping)}</span>
+                  <span>{cartSummary.shipping === 0 ? 'Free' : formatPrice(cartSummary.shipping)}</span>
                 </div>
                 
                 <div style={{ textAlign: 'right', marginTop: '4px' }}>
-                  <span 
-                    onClick={() => setShowTaxes(!showTaxes)} 
-                    style={{ fontSize: '0.75rem', color: '#007185', cursor: 'pointer', textDecoration: 'none' }}
-                  >
-                    View tax breakdown {showTaxes ? '▲' : '▼'}
-                  </span>
+                  <button className="text-button" type="button" onClick={() => setShowTaxes(!showTaxes)} style={{ fontSize: '0.75rem' }}>View tax breakdown ▼</button>
                 </div>
-
                 {showTaxes && (
-                  <div className="summary-expanded-content" style={{ padding: '10px', background: '#f8f9fa', borderRadius: '4px', fontSize: '0.8rem', color: '#565959', marginTop: '8px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}><span>Base Amount:</span><span>{formatPrice(cartSummary.subtotal / 1.18)}</span></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}><span>CGST (9%):</span><span>{formatPrice((cartSummary.subtotal - (cartSummary.subtotal / 1.18)) / 2)}</span></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}><span>SGST (9%):</span><span>{formatPrice((cartSummary.subtotal - (cartSummary.subtotal / 1.18)) / 2)}</span></div>
-                    <div style={{ borderTop: '1px dashed #ccc', marginTop: '6px', paddingTop: '6px', fontSize: '0.75rem' }}>GST Registration No: 27AADCB2230M1Z2</div>
+                  <div style={{ background: '#f9f9f9', padding: '8px 12px', borderRadius: '4px', fontSize: '0.8rem', marginTop: '8px' }}>
+                    <div className="summary-line"><span>Item Amount:</span><span>{formatPrice(cartSummary.total * 0.82)}</span></div>
+                    <div className="summary-line"><span>IGST (18%):</span><span>{formatPrice(cartSummary.total * 0.18)}</span></div>
                   </div>
                 )}
               </div>
               
-              <div className="summary-total" style={{ borderTop: '1px solid #e7e7e7', marginTop: '12px', paddingTop: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 700, fontSize: '1.2rem', color: '#0f1111' }}>Order Total:</span>
-                  <span style={{ fontWeight: 800, fontSize: '1.5rem', color: '#B12704' }}>{formatPrice(cartSummary.total)}</span>
+              <div className="summary-total" style={{ borderTop: '1px solid #d5d9d9', paddingTop: '16px', marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong style={{ fontSize: '1rem', color: '#0f1111' }}>Order Total:</strong>
+                <div style={{ textAlign: 'right' }}>
+                  <strong style={{ fontSize: '1.4rem', color: '#B12704' }}>{formatPrice(cartSummary.total)}</strong>
+                  <div style={{ fontSize: '0.7rem', color: '#565959' }}>(Inclusive of all taxes)</div>
                 </div>
-                <div style={{ textAlign: 'right', fontSize: '0.75rem', color: '#565959', marginTop: '2px' }}>(Inclusive of all taxes)</div>
               </div>
               
-              <div className="savings-callout" style={{ color: '#007600', background: '#f6fdf6', padding: '10px 12px', borderRadius: '4px', fontWeight: '600', fontSize: '0.9rem', marginTop: '16px', border: '1px solid #a3d9a5', textAlign: 'center' }}>
-                Yay! Your total savings are {formatPrice(cartSummary.discount)}
-              </div>
+              {cartSummary.discount > 0 && (
+                <div style={{ marginTop: '16px', padding: '8px', background: '#ecf9ec', color: '#007600', borderRadius: '4px', textAlign: 'center', fontSize: '0.8rem', fontWeight: '500', border: '1px solid #c9e8c9' }}>
+                  Yay! Your total savings are {formatPrice(cartSummary.discount)}
+                </div>
+              )}
 
               <div style={{ marginTop: '16px', padding: '12px', background: '#f0f2f2', borderRadius: '8px', borderLeft: '4px solid #007185' }}>
                   <strong style={{ display: 'block', color: '#007185', marginBottom: '4px', fontSize: '0.9rem' }}>Estimated Delivery:</strong>
@@ -323,10 +318,22 @@ function Checkout() {
           </aside>
         )}
         
-        {checkoutStep < 3 && (
+        {checkoutStep < 4 && (
           <div className="step-actions mobile-only" style={{ marginTop: '20px', width: '100%' }}>
             <button className="action-button action-button--ghost" style={{ minHeight: '56px', padding: '0 32px', flex: 1 }} type="button" onClick={handleBackStep}>Back</button>
-            {checkoutStep === 2 ? <button className="action-button action-button--solid" style={{ minHeight: '56px', padding: '0 40px', flex: 1 }} type="button" onClick={handleProceedToPayment}>Proceed</button> : <button className="action-button action-button--solid" style={{ minHeight: '56px', padding: '0 40px', flex: 1 }} type="button" onClick={handleNextStep}>Continue</button>}
+            {checkoutStep === 1 && <button className="action-button action-button--solid" style={{ minHeight: '56px', padding: '0 40px', flex: 1 }} type="button" onClick={handleNextStep}>Continue</button>}
+            {checkoutStep === 2 && <button className="action-button action-button--solid" style={{ minHeight: '56px', padding: '0 40px', flex: 1 }} type="button" onClick={handleProceedToPayment}>Proceed to Payment</button>}
+            {checkoutStep === 3 && (
+              <button 
+                className="action-button action-button--solid" 
+                style={{ minHeight: '56px', padding: '0 40px', flex: 1 }} 
+                type="button" 
+                onClick={() => paymentRef.current?.submitPayment()}
+                disabled={paymentRef.current?.isProcessing}
+              >
+                {paymentRef.current?.isProcessing ? 'Processing...' : paymentRef.current?.activeTab === 'qr' ? `I have scanned & paid ₹${cartSummary.total}` : `Pay ₹${cartSummary.total}`}
+              </button>
+            )}
           </div>
         )}
       </div>

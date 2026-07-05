@@ -1051,7 +1051,20 @@ a {
   padding: 30px;
 }
 
+.summary-sidebar--cart {
+  margin-top: 136px;
+}
+
+.summary-sidebar--checkout {
+  margin-top: 30px;
+}
+
 @media (max-width: 768px) {
+  .summary-sidebar--cart,
+  .summary-sidebar--checkout {
+    margin-top: 30px;
+  }
+
   .desktop-only {
     display: none !important;
   }

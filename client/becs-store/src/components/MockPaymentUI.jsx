@@ -1,11 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
-import { ShopContext } from '../context/ShopContext';
-import { jsPDF } from "jspdf";
-import autoTable from 'jspdf-autotable';
-import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister, createPaymentIntent } from '../api';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 
-function MockPaymentUI({ onSuccess, onBack, amount }) {
+const MockPaymentUI = forwardRef(({ onSuccess, onBack, amount }, ref) => {
   const [activeTab, setActiveTab] = useState('upi-id');
   const [upiId, setUpiId] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -30,6 +25,12 @@ function MockPaymentUI({ onSuccess, onBack, amount }) {
       }, 1000);
     }, 2500);
   };
+
+  useImperativeHandle(ref, () => ({
+    submitPayment: handlePay,
+    isProcessing,
+    activeTab
+  }));
 
   return (
     <div className="mock-payment-ui" style={{ width: '100%' }}>
@@ -100,7 +101,7 @@ function MockPaymentUI({ onSuccess, onBack, amount }) {
 
       {message && <div style={{ color: message === 'Payment Successful' ? 'var(--success)' : '#d94343', marginTop: '16px', fontWeight: 'bold', textAlign: 'center' }}>{message}</div>}
       
-      <div className="step-actions" style={{ marginTop: '30px' }}>
+      <div className="step-actions desktop-only" style={{ marginTop: '30px' }}>
         <button className="action-button action-button--ghost" style={{ minHeight: '56px', padding: '0 32px' }} type="button" onClick={onBack} disabled={isProcessing}>Back</button>
         <button className="action-button action-button--solid" style={{ minHeight: '56px', padding: '0 40px', flex: 1 }} type="button" onClick={handlePay} disabled={isProcessing}>
           {isProcessing ? 'Processing Payment...' : activeTab === 'qr' ? `I have scanned & paid ₹${amount}` : `Pay ₹${amount}`}
@@ -108,6 +109,6 @@ function MockPaymentUI({ onSuccess, onBack, amount }) {
       </div>
     </div>
   );
-}
+});
 
 export default MockPaymentUI;

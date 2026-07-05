@@ -50,7 +50,7 @@ function Cart() {
         </div>
         
         {cartItems.length > 0 && (
-          <aside className="summary-sidebar" style={{ marginTop: '136px' }}>
+          <aside className="summary-sidebar summary-sidebar--cart">
             <section className="panel" style={{ padding: '30px' }}>
               <div className="panel-header"><div><span className="eyebrow">Order Summary</span><h2 style={{ fontSize: '1.8rem' }}>{cartSummary.quantity} items</h2></div></div>
               <div className="summary-row" style={{ fontSize: '1.1rem' }}><span>Subtotal</span><strong>{formatPrice(cartSummary.subtotal)}</strong></div>
