@@ -114,7 +114,7 @@ function Navbar() {
           <button className="close-btn" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
         </div>
         <nav className="mobile-nav">
-          <a href={frontendUrl} onClick={() => setIsMobileMenuOpen(false)}>Main Website</a>
+          <a href={frontendUrl} onClick={(e) => { e.preventDefault(); window.location.href = frontendUrl; }}>Main Website</a>
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>Store Home</Link>
           <Link to="/wishlist" onClick={() => setIsMobileMenuOpen(false)}>Wishlist</Link>
           <Link to="/orders" onClick={() => setIsMobileMenuOpen(false)}>Orders</Link>
