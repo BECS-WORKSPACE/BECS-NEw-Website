@@ -862,7 +862,7 @@ a {
 
 @media (max-width: 640px) {
   .container {
-    padding: 0 16px;
+    padding: 0 24px;
   }
 
   .product-grid {
@@ -991,9 +991,10 @@ a {
   .hamburger-btn {
     display: block;
   }
-  .desktop-only {
-    display: none !important;
-  }
+}
+
+.mobile-only {
+  display: none !important;
 }
 
 @media (min-width: 941px) {
@@ -1001,5 +1002,125 @@ a {
   .mobile-sidebar-overlay,
   .hamburger-btn {
     display: none !important;
+  }
+}
+
+.product-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.checkout-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 400px;
+  gap: 40px;
+  align-items: start;
+}
+
+.checkout-shell-done {
+  grid-template-columns: 1fr;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 24px;
+}
+
+.addresses-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.review-panel, 
+.payment-panel {
+  padding: 30px;
+}
+
+.success-panel {
+  padding: 80px 40px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.success-order {
+  text-align: left;
+  padding: 30px;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  
+  .mobile-only {
+    display: flex !important;
+  }
+
+  .review-grid,
+  .form-grid--two {
+    grid-template-columns: 1fr !important;
+  }
+
+  .review-panel, 
+  .payment-panel, 
+  .success-panel {
+    padding: 20px !important;
+  }
+  
+  .success-order {
+    padding: 16px !important;
+  }
+  
+  .success-panel h2 {
+    font-size: 1.8rem !important;
+  }
+
+  .product-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .detail-card h1 {
+    font-size: 2.2rem !important;
+  }
+  
+  .product-image {
+    height: 300px !important;
+  }
+  
+  .detail-actions {
+    flex-direction: column;
+  }
+
+  .checkout-shell {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .cart-item {
+    grid-template-columns: 100px 1fr;
+    gap: 16px;
+  }
+  
+  .cart-item img {
+    width: 100px !important;
+    height: 100px !important;
+  }
+
+  .addresses-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stepper {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .summary-sidebar {
+    margin-top: 0 !important;
   }
 }

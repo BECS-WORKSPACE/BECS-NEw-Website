@@ -96,7 +96,13 @@ function Checkout() {
     const orderData = {
       items: cartItems.map(item => ({ product: item._id, name: item.name, quantity: item.quantity, price: getInclusivePrice(item.price), image: item.image })),
       shippingDetails: {
-        name: checkout.name, email: checkout.email, phone: checkout.phone, address: checkout.address, city: checkout.city, state: checkout.state, pincode: checkout.pincode,
+        name: checkout.name || user?.name || 'Customer', 
+        email: checkout.email || user?.email || 'customer@example.com', 
+        phone: checkout.phone || '0000000000', 
+        address: checkout.address || 'N/A', 
+        city: checkout.city || 'N/A', 
+        state: checkout.state || 'N/A', 
+        pincode: checkout.pincode || '000000',
       },
       paymentMethod: 'UPI / Card',
       totalPrice: cartSummary.total,
@@ -111,7 +117,8 @@ function Checkout() {
       setCheckoutStep(3);
     } catch (error) {
       console.error('Failed to initialize order', error);
-      setMessage('Failed to initialize order. Please try again.');
+      const errMsg = error.response?.data?.message || error.message;
+      setMessage(`Failed to initialize order: ${errMsg}`);
     }
   };
 
@@ -129,7 +136,7 @@ function Checkout() {
 
   return (
     <div className="container app-shell" style={{ paddingTop: '40px' }}>
-      <div className="checkout-shell" style={{ gridTemplateColumns: checkoutStep === 4 ? '1fr' : 'minmax(0, 1.2fr) 400px' }}>
+      <div className={`checkout-shell ${checkoutStep === 4 ? 'checkout-shell-done' : ''}`}>
         <div className="checkout-main">
           {checkoutStep < 4 && (
             <>
@@ -157,7 +164,7 @@ function Checkout() {
               </div>
 
               {!isAddingNewAddress ? (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div className="addresses-grid">
                   {addresses.map((addr) => (
                     <div 
                       key={addr.id} 
@@ -194,7 +201,7 @@ function Checkout() {
           )}
 
           {checkoutStep === 2 && (
-            <section className="panel" style={{ padding: '30px' }}>
+            <section className="panel review-panel">
               <div className="panel-header"><div><span className="eyebrow">Review Order</span><h2>Confirm Details</h2></div></div>
               <div className="review-grid">
                 <article className="review-card"><strong>Shipping To</strong><p>{checkout.name}<br />{checkout.address}<br />{checkout.city}, {checkout.state} - {checkout.pincode}<br />{checkout.phone}</p></article>
@@ -209,27 +216,27 @@ function Checkout() {
           )}
 
           {checkoutStep === 3 && (
-            <section className="panel" style={{ padding: '30px' }}>
+            <section className="panel payment-panel">
               <div className="panel-header"><div><span className="eyebrow">Payment Step</span><h2>Complete your payment</h2></div></div>
               <MockPaymentUI onSuccess={handlePaymentSuccess} onBack={handleBackStep} amount={cartSummary.total} />
             </section>
           )}
 
           {checkoutStep === 4 && (
-            <section className="panel panel--success" style={{ padding: '80px 40px', maxWidth: '800px', margin: '0 auto' }}>
+            <section className="panel panel--success success-panel">
               <div className="success-badge" style={{ transform: 'scale(1.5)', marginBottom: '30px' }}>🎉 Order Confirmed</div>
               <h2 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>Thank you for your purchase!</h2>
               <p style={{ fontSize: '1.2rem', marginBottom: '40px' }}>Your order has been successfully placed and is being processed.</p>
               {latestOrder && (
-                <div className="success-order" style={{ textAlign: 'left', padding: '30px' }}>
+                <div className="success-order">
                   <p><strong>Order Number:</strong> #{latestOrder._id}</p>
                   <p><strong>Payment Method:</strong> {latestOrder.paymentMethod}</p>
                   <p><strong>Payment Status:</strong> <span style={{ color: 'var(--success)', fontWeight: 'bold' }}>{latestOrder.isPaid ? 'Paid' : 'Pending'}</span></p>
                   <p><strong>Delivery Estimate:</strong> Arrives between {edd.minStr} – {edd.maxStr}</p>
                   <p><strong>Shipping Address:</strong><br />{latestOrder.shippingDetails?.address}, {latestOrder.shippingDetails?.city}</p>
                   <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
-                    <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>Download Invoice</button>
-                    <button className="action-button action-button--solid" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>Track Order</button>
+                    <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem', flex: 1 }}>Download Invoice</button>
+                    <button className="action-button action-button--solid" style={{ padding: '8px 16px', fontSize: '0.9rem', flex: 1 }}>Track Order</button>
                   </div>
                 </div>
               )}
@@ -241,7 +248,7 @@ function Checkout() {
           )}
 
           {checkoutStep < 3 && (
-            <div className="step-actions" style={{ marginTop: '30px' }}>
+            <div className="step-actions desktop-only" style={{ marginTop: '30px' }}>
               <button className="action-button action-button--ghost" style={{ minHeight: '56px', padding: '0 32px' }} type="button" onClick={handleBackStep}>Back</button>
               {checkoutStep === 2 ? <button className="action-button action-button--solid" style={{ minHeight: '56px', padding: '0 40px' }} type="button" onClick={handleProceedToPayment}>Proceed to Payment</button> : <button className="action-button action-button--solid" style={{ minHeight: '56px', padding: '0 40px' }} type="button" onClick={handleNextStep}>Continue</button>}
             </div>
@@ -314,6 +321,13 @@ function Checkout() {
               </div>
             </div>
           </aside>
+        )}
+        
+        {checkoutStep < 3 && (
+          <div className="step-actions mobile-only" style={{ marginTop: '20px', width: '100%' }}>
+            <button className="action-button action-button--ghost" style={{ minHeight: '56px', padding: '0 32px', flex: 1 }} type="button" onClick={handleBackStep}>Back</button>
+            {checkoutStep === 2 ? <button className="action-button action-button--solid" style={{ minHeight: '56px', padding: '0 40px', flex: 1 }} type="button" onClick={handleProceedToPayment}>Proceed</button> : <button className="action-button action-button--solid" style={{ minHeight: '56px', padding: '0 40px', flex: 1 }} type="button" onClick={handleNextStep}>Continue</button>}
+          </div>
         )}
       </div>
     </div>

@@ -33,7 +33,7 @@ function MockPaymentUI({ onSuccess, onBack, amount }) {
 
   return (
     <div className="mock-payment-ui" style={{ width: '100%' }}>
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid var(--line)', paddingBottom: '10px' }}>
+      <div className="mock-payment-tabs" style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid var(--line)', paddingBottom: '10px' }}>
         {['upi-id', 'apps', 'qr'].map(tab => (
           <button 
             key={tab}
@@ -44,7 +44,8 @@ function MockPaymentUI({ onSuccess, onBack, amount }) {
               fontWeight: activeTab === tab ? 'bold' : 'normal',
               color: activeTab === tab ? 'var(--accent)' : 'var(--text)',
               borderBottom: activeTab === tab ? '2px solid var(--accent)' : 'none',
-              marginBottom: '-11px'
+              marginBottom: '-11px',
+              flex: 1
             }}
           >
             {tab === 'upi-id' ? 'UPI ID' : tab === 'apps' ? 'UPI Apps' : 'Scan QR'}
@@ -68,18 +69,18 @@ function MockPaymentUI({ onSuccess, onBack, amount }) {
 
         {activeTab === 'apps' && (
           <div>
-            <p style={{ fontSize: '0.9rem', color: 'var(--muted)', marginBottom: '16px' }}>Pay directly using your installed UPI apps</p>
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginBottom: '20px' }}>
+            <p style={{ fontSize: '0.9rem', color: 'var(--muted)', marginBottom: '16px', textAlign: 'center' }}>Pay directly using your installed UPI apps</p>
+            <div className="mock-app-icon-container" style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
               <div className="mock-app-icon" onClick={handlePay} style={{ cursor: 'pointer', textAlign: 'center' }}>
-                <div style={{ width: '50px', height: '50px', background: '#f0f0f0', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginBottom: '8px' }}>G</div>
+                <div style={{ width: '50px', height: '50px', background: '#f0f0f0', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginBottom: '8px', margin: '0 auto' }}>G</div>
                 <span style={{ fontSize: '0.8rem' }}>GPay</span>
               </div>
               <div className="mock-app-icon" onClick={handlePay} style={{ cursor: 'pointer', textAlign: 'center' }}>
-                <div style={{ width: '50px', height: '50px', background: '#5f259f', color: 'white', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginBottom: '8px' }}>P</div>
+                <div style={{ width: '50px', height: '50px', background: '#5f259f', color: 'white', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginBottom: '8px', margin: '0 auto' }}>P</div>
                 <span style={{ fontSize: '0.8rem' }}>PhonePe</span>
               </div>
               <div className="mock-app-icon" onClick={handlePay} style={{ cursor: 'pointer', textAlign: 'center' }}>
-                <div style={{ width: '50px', height: '50px', background: '#002e6e', color: 'white', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginBottom: '8px' }}>Pay</div>
+                <div style={{ width: '50px', height: '50px', background: '#002e6e', color: 'white', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginBottom: '8px', margin: '0 auto' }}>Pay</div>
                 <span style={{ fontSize: '0.8rem' }}>Paytm</span>
               </div>
             </div>

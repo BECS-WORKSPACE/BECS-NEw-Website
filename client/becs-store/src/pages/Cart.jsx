@@ -12,7 +12,7 @@ function Cart() {
 
   return (
     <div className="container app-shell" style={{ paddingTop: '40px' }}>
-      <div className="checkout-shell" style={{ gridTemplateColumns: 'minmax(0, 1.2fr) 400px' }}>
+      <div className="checkout-shell">
         <div className="checkout-main">
           <div className="checkout-header">
             <span className="eyebrow">Shopping Cart</span>
@@ -21,7 +21,7 @@ function Cart() {
           <section className="panel" style={{ marginTop: '30px' }}>
             <div className="cart-list">
               {cartItems.length ? cartItems.map((item) => (
-                <article className="cart-item" key={item._id} style={{ gridTemplateColumns: '140px 1fr', padding: '20px' }}>
+                <article className="cart-item" key={item._id} style={{ padding: '20px' }}>
                   <Link to={`/product/${item._id}`}><img src={item.image} alt={item.name} style={{ width: '140px', height: '140px', borderRadius: '16px' }} /></Link>
                   <div className="cart-item-info" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                     <Link to={`/product/${item._id}`}><strong style={{ fontSize: '1.3rem' }}>{item.name}</strong></Link>

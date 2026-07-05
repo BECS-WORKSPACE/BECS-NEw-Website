@@ -75,7 +75,7 @@ function ProductDetail() {
     <div className="container app-shell" style={{ paddingTop: '40px' }}>
       <Link to="/" style={{ display: 'inline-block', marginBottom: '30px', color: 'var(--muted)', fontWeight: 700, fontSize: '1.1rem' }}>← Back to Products</Link>
       
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'start' }}>
+      <div className="product-detail-grid">
         <div>
           <div className="product-image" style={{ height: '500px', borderRadius: '30px', marginBottom: '20px', overflow: 'hidden', cursor: 'zoom-in' }}>
             <img 
