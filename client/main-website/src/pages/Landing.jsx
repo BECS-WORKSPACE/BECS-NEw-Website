@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { sendContactMessage } from '../api';
+import toast from 'react-hot-toast';
 
 const ecommerceUrl = import.meta.env.VITE_ECOMMERCE_URL || 'https://store.becsofficial.com';
 const trainingUrl = import.meta.env.VITE_TRAINING_URL || 'https://vidyapeeth.becsofficial.com';
@@ -434,8 +435,6 @@ const Landing = () => {
   const [contactEmail, setContactEmail] = useState('');
   const [contactSubject, setContactSubject] = useState('');
   const [contactMessage, setContactMessage] = useState('');
-  const [contactSuccess, setContactSuccess] = useState('');
-  const [contactError, setContactError] = useState('');
   const [contactLoading, setContactLoading] = useState(false);
   const [serviceState, setServiceState] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -477,26 +476,33 @@ const Landing = () => {
 
   const handleContactSubmit = async (e) => {
     e.preventDefault();
-    setContactSuccess('');
-    setContactError('');
     setContactLoading(true);
-    try {
-      const { data } = await sendContactMessage({
-        name: contactName,
-        email: contactEmail,
-        subject: contactSubject,
-        message: contactMessage,
-      });
-      setContactSuccess(data.message || 'Message sent successfully!');
-      setContactName('');
-      setContactEmail('');
-      setContactSubject('');
-      setContactMessage('');
-    } catch (err) {
-      setContactError(err.response?.data?.message || 'Failed to send message. Please try again.');
-    } finally {
-      setContactLoading(false);
-    }
+
+    const submitPromise = sendContactMessage({
+      name: contactName,
+      email: contactEmail,
+      subject: contactSubject,
+      message: contactMessage,
+    });
+
+    toast.promise(
+      submitPromise,
+      {
+        loading: 'Sending message...',
+        success: (data) => {
+          setContactName('');
+          setContactEmail('');
+          setContactSubject('');
+          setContactMessage('');
+          setContactLoading(false);
+          return data.data?.message || 'Message sent successfully!';
+        },
+        error: (err) => {
+          setContactLoading(false);
+          return err.response?.data?.message || 'Failed to send message. Please try again.';
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -516,36 +522,18 @@ const Landing = () => {
       <header className={`topbar ${isScrolled ? 'topbar--scrolled' : ''}`}>
         <div className="container topbar-inner">
           <a className="brand" href="#home">
-            <img src="/logo.png" alt="BECS Logo" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
+            <img src="/logo.png" alt="BECS Logo" style={{ width: '60px', height: '50px', objectFit: 'contain' }} />
             <span className="brand-name">BECS</span>
           </a>
 
           <nav className="main-nav">
             <a href="#home">Home</a>
             <a href="#about">About</a>
-            <div className="nav-dropdown">
-              <a href="#services" style={{ cursor: 'pointer' }}>Services ▼</a>
-              <div className="mega-menu">
-                <a href="#services">Automation</a>
-                <a href="#services">IoT Solutions</a>
-                <a href="#services">Training</a>
-                <a href="#services">Consultancy</a>
-                <a href="#services">Product Supply</a>
-              </div>
-            </div>
-            <div className="nav-dropdown">
-              <a href={ecommerceUrl} style={{ cursor: 'pointer' }}>BECS Store ▼</a>
-              <div className="mega-menu">
-                <a href={ecommerceUrl}>Electronics Components</a>
-                <a href={ecommerceUrl}>IoT Devices</a>
-                <a href={ecommerceUrl}>Smart Automation</a>
-                <a href={ecommerceUrl}>Industrial Equipment</a>
-              </div>
-            </div>
+            <a href="#services">Services</a>
+            <a href="#products">BECS Store</a>
             <a href="#projects">Portfolio</a>
-            <a href={trainingUrl}>Vidyapeeth</a>
             <a href="#contact">Contact</a>
-            </nav>
+          </nav>
 
           {user ? (
             <div style={{ position: 'relative' }}>
@@ -587,10 +575,13 @@ const Landing = () => {
               )}
             </div>
           ) : (
-            <div className="topbar-login">
+            <div className="topbar-login" style={{ display: 'flex', gap: '10px' }}>
               <button className="pill-button pill-button--ghost" onClick={() => navigate('/login')}>
                 Client Portal
               </button>
+              <a href={trainingUrl} className="pill-button pill-button--solid" style={{ textDecoration: 'none' }}>
+                Vidyapeeth
+              </a>
             </div>
           )}
 
@@ -653,10 +644,11 @@ const Landing = () => {
               </div>
 
               <div className="hero-trust-metrics">
-                <div className="trust-item"><span className="trust-check">✓</span> Electronics Solutions</div>
-                <div className="trust-item"><span className="trust-check">✓</span> Automation Projects</div>
-                <div className="trust-item"><span className="trust-check">✓</span> Educational Programs</div>
-                <div className="trust-item"><span className="trust-check">✓</span> E-Commerce Platform</div>
+                <div className="trust-item"><span className="trust-check" style={{ color: '#10b981' }}>✓</span> Electronics Solutions</div>
+                <div className="trust-item"><span className="trust-check" style={{ color: '#10b981' }}>✓</span> Automation Projects</div>
+                <div className="trust-item"><span className="trust-check" style={{ color: '#10b981' }}>✓</span> Educational Programs</div>
+                <div className="trust-item"><span className="trust-check" style={{ color: '#10b981' }}>✓</span> E-Commerce Platform</div>
+                <div className="trust-item"><span className="trust-check" style={{ color: '#10b981' }}>✓</span> Software Solutions</div>
               </div>
             </div>
 
@@ -708,36 +700,8 @@ const Landing = () => {
               <p>
                 Banerjee Electronics Consultancy Services has been at the forefront
                 of electronic innovation, delivering world-class solutions for over a decade.
+                Our journey started with a vision to revolutionize the electronics industry by providing end-to-end consulting, robust automation, and high-quality product supply. Today, we stand as a beacon of excellence, empowering businesses, educating the next generation of engineers, and shaping the future of technology through dedication and expertise.
               </p>
-            </div>
-
-            <div className="stats-grid">
-              {stats.map((item) => (
-                <article className="stat-card" key={item.label}>
-                  <div className="soft-icon">
-                    <Icon kind={item.icon} />
-                  </div>
-                  <strong>{item.value}</strong>
-                  <span>{item.label}</span>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="quote-section">
-          <div className="container quote-card">
-            <span className="quote-mark">"</span>
-            <h2>Excellence in electronics starts with innovation and education.</h2>
-            <div className="quote-author">
-              <img
-                src="/ceo.jpg"
-                alt="Mr. Banerjee"
-              />
-              <div>
-                <strong>Mr. Banerjee</strong>
-                <span>CEO, BECS</span>
-              </div>
             </div>
           </div>
         </section>
@@ -784,7 +748,10 @@ const Landing = () => {
               
               <div className="store-showcase-content">
                 <span className="section-pill">Online Store</span>
-                <h2>BECS Store</h2>
+                <h2 style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '3rem', fontWeight: 900, textTransform: 'uppercase' }}>
+                  <img src="/logo.png" alt="BECS Logo" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
+                  BECS Store
+                </h2>
                 <h3 className="store-highlight-text">
                   Premium Electronics,<br/>
                   IoT Devices,<br/>
@@ -795,15 +762,6 @@ const Landing = () => {
                 <p className="store-desc">
                   Discover a curated collection of industry-grade electronic components and kits designed for professionals, educators, and hobbyists alike.
                 </p>
-
-                <div className="store-stats-row">
-                  {storeStats.map((stat, idx) => (
-                    <div key={idx} className="store-stat-item">
-                      <strong>{stat.value}</strong>
-                      <span>{stat.label}</span>
-                    </div>
-                  ))}
-                </div>
 
                 <div className="store-cta-group">
                   <button 
@@ -826,7 +784,7 @@ const Landing = () => {
 
               <div className="store-featured-products">
                 {/* Product 1 */}
-                <a href={ecommerceUrl} className="store-featured-card">
+                <a href={ecommerceUrl} className="store-featured-card" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                   <div className="featured-img-wrapper">
                     <img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=600&q=80" alt="Industrial Automation Kit" />
                   </div>
@@ -838,7 +796,7 @@ const Landing = () => {
                 </a>
 
                 {/* Product 2 */}
-                <a href={ecommerceUrl} className="store-featured-card">
+                <a href={ecommerceUrl} className="store-featured-card" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                   <div className="featured-img-wrapper">
                     <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80" alt="Smart IoT Controller" />
                   </div>
@@ -850,7 +808,7 @@ const Landing = () => {
                 </a>
 
                 {/* Product 3 */}
-                <a href={ecommerceUrl} className="store-featured-card">
+                <a href={ecommerceUrl} className="store-featured-card" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                   <div className="featured-img-wrapper">
                     <img src="https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=600&q=80" alt="Embedded Development Board" />
                   </div>
@@ -864,30 +822,6 @@ const Landing = () => {
 
             </div>
 
-            <div className="store-bottom-section">
-              <h4>Browse by Category</h4>
-              <div className="store-mini-categories">
-                {storeCategories.map((cat, idx) => (
-                  <div key={idx} className="mini-category-card" onClick={() => window.location.href = ecommerceUrl}>
-                    {cat.name}
-                  </div>
-                ))}
-              </div>
-              <div className="store-final-cta">
-                <h3>Explore 100+ Electronics Products</h3>
-                <button 
-                  className="pill-button"
-                  onClick={() => {
-                    if (user) {
-                      window.location.href = ecommerceUrl;
-                    } else {
-                      navigate('/login');
-                    }
-                  }}
-                >
-                  Visit BECS Store →
-                </button>
-              </div>
             </div>
 
           </div>
@@ -998,12 +932,9 @@ const Landing = () => {
                   
                   <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px' }}>
                     <h4 style={{ fontSize: '1.1rem', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--line)' }}>Technologies Used</h4>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: '0', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       {selectedProject.tech.map(t => <li key={t} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#334155' }}><span style={{ color: 'var(--accent)' }}>⚡</span> {t}</li>)}
                     </ul>
-                    
-                    <h4 style={{ fontSize: '1.1rem', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--line)' }}>Timeline</h4>
-                    <p style={{ fontWeight: 600, color: '#334155', margin: 0 }}>{selectedProject.timeline}</p>
                   </div>
                 </div>
               </div>
@@ -1172,7 +1103,7 @@ const Landing = () => {
           <div className="footer-brand">
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
               <img src="/logo.png" alt="BECS Logo" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
-              <h2 style={{ margin: 0, color: '#fff' }}>BECS.</h2>
+              <h2 style={{ margin: 0, color: 'var(--accent)' }}>BECS.</h2>
             </div>
             <p>
               Banerjee Electronics Consultancy Services. Your trusted partner for
@@ -1187,16 +1118,6 @@ const Landing = () => {
 
           <form className="contact-form" onSubmit={handleContactSubmit}>
             <h3>Contact Us</h3>
-            {contactSuccess && (
-              <div style={{ background: '#d1fae5', color: '#065f46', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.9rem', fontWeight: 600 }}>
-                {contactSuccess}
-              </div>
-            )}
-            {contactError && (
-              <div style={{ background: '#fee2e2', color: '#991b1b', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.9rem', fontWeight: 600 }}>
-                {contactError}
-              </div>
-            )}
             <div className="form-row">
               <input
                 type="text"
