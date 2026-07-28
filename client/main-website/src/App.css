@@ -182,3 +182,4 @@
     border-right-color: var(--border);
   }
 }
+.nav-dropdown-wrapper:hover .mega-dropdown { opacity: 1 !important; visibility: visible !important; transform: translateX(-50%) translateY(10px) !important; }

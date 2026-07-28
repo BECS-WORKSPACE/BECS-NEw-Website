@@ -531,6 +531,26 @@ const Landing = () => {
             <a href="#about">About</a>
             <a href="#services">Services</a>
             <a href="#products">BECS Store</a>
+            <div className="nav-dropdown-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+              <a href="#partners" className="nav-item-dropdown" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>Partners</a>
+              <div className="mega-dropdown" style={{ 
+                position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', 
+                background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(16px)', 
+                borderRadius: '18px', padding: '24px', width: '380px', 
+                boxShadow: '0 20px 40px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', 
+                opacity: 0, visibility: 'hidden', transition: 'all 0.3s ease', zIndex: 1000 
+              }}>
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                  <img src="/krit-logo.png" alt="KRIT Consultancy" style={{ width: '60px', height: '60px', objectFit: 'contain', background: '#f8fafc', padding: '8px', borderRadius: '12px' }} onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=KRIT&background=2563EB&color=fff&size=60'; }} />
+                  <div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981', background: '#d1fae5', padding: '4px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Official Technology Partner</span>
+                    <h4 style={{ margin: '8px 0 4px', fontSize: '1.2rem', color: 'var(--navy)' }}>KRIT Consultancy</h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', lineHeight: 1.5 }}>AI, Cloud, Software Development, Data Analytics & Digital Transformation.</p>
+                    <a href="https://kritconsultancy.com/" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '12px', fontSize: '0.9rem', fontWeight: 600, color: 'var(--accent)', textDecoration: 'none' }}>Visit Website ↗</a>
+                  </div>
+                </div>
+              </div>
+            </div>
             <a href="#projects">Portfolio</a>
             <a href="#contact">Contact</a>
           </nav>
@@ -823,6 +843,56 @@ const Landing = () => {
           </div>
         </section>
 
+        <section className="section-white" id="partners">
+          <div className="container">
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '60px', alignItems: 'center' }}>
+              
+              {/* Left Column (40%) */}
+              <div style={{ flex: '1 1 35%', minWidth: '300px' }}>
+                <div className="section-heading" style={{ textAlign: 'left', marginBottom: '32px' }}>
+                  <span className="section-pill">Strategic Partners</span>
+                  <h2>Our Strategic Technology Partner</h2>
+                  <p>Collaborating with trusted technology leaders to deliver innovative digital solutions.</p>
+                </div>
+                <a href="#contact" className="pill-button pill-button--solid">
+                  Become a Partner
+                </a>
+              </div>
+
+              {/* Right Column (60%) */}
+              <div style={{ flex: '1 1 55%', minWidth: '350px' }}>
+                <article className="service-card" style={{ padding: '40px', transition: 'all 0.4s ease', cursor: 'default' }} 
+                  onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)'; e.currentTarget.style.borderColor = 'var(--accent)'; }} 
+                  onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'var(--shadow-soft)'; e.currentTarget.style.borderColor = 'var(--line)'; }}>
+                  
+                  <img src="/krit-logo.png" alt="KRIT Consultancy Logo" style={{ width: '140px', height: '60px', objectFit: 'contain', marginBottom: '24px' }} />
+                  
+                  <span style={{ display: 'inline-block', fontSize: '0.8rem', fontWeight: 800, color: '#10b981', background: '#d1fae5', padding: '6px 12px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>
+                    Official Technology Partner
+                  </span>
+                  
+                  <h3 style={{ fontSize: '1.8rem', marginBottom: '16px' }}>KRIT Consultancy</h3>
+                  <p style={{ fontWeight: 600, color: 'var(--navy)', marginBottom: '8px' }}>Delivering expertise in:</p>
+                  
+                  <ul style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>
+                    <li>Artificial Intelligence</li>
+                    <li>Cloud Computing</li>
+                    <li>Custom Software Development</li>
+                    <li>Data Analytics</li>
+                    <li>DevOps</li>
+                    <li>Digital Transformation</li>
+                  </ul>
+                  
+                  <a href="https://kritconsultancy.com/" target="_blank" rel="noreferrer" style={{ marginTop: '32px' }}>
+                    Visit Website ↗
+                  </a>
+                </article>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
         <section className="section-white">
           <div className="container">
             <div className="section-heading">
@@ -1111,6 +1181,7 @@ const Landing = () => {
               <li>+91 98765 43210</li>
             </ul>
           </div>
+
 
           <form className="contact-form" onSubmit={handleContactSubmit}>
             <h3>Contact Us</h3>
