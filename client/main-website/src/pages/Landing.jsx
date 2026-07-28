@@ -580,7 +580,7 @@ const Landing = () => {
                 Client Portal
               </button>
               <a href={trainingUrl} className="pill-button pill-button--solid" style={{ textDecoration: 'none' }}>
-                Vidyapeeth
+                BECS Udaan
               </a>
             </div>
           )}
