@@ -84,7 +84,7 @@ body.theme-dark .navbar {
 .brand-logo { width: 56px; height: 56px; object-fit: contain; transition: transform 0.3s ease; }
 .brand-logo:hover { transform: scale(1.05); }
 .brand-text-container { display: flex; flex-direction: column; justify-content: center; }
-.brand-text { font-family: 'Poppins', sans-serif; font-size: 1.7rem; font-weight: 800; background: linear-gradient(90deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; letter-spacing: -0.5px; }
+.brand-text { font-family: 'Poppins', sans-serif; font-size: 1.7rem; font-weight: 800; background: linear-gradient(90deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; letter-spacing: -0.5px; }
 .brand-subtext { font-family: 'Inter', sans-serif; font-size: 1.0rem; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 1.9px; opacity: 0.85; }
 
 .nav-links { display: flex; align-items: center; gap: 32px; height: 100%; flex-grow: 1; padding-left: 48px; }
@@ -354,9 +354,16 @@ body.theme-dark .mobile-nav a {
 
 @media (max-width: 768px) {
   .strip-left, .nav-links { display: none; }
+  .nav-cta { display: none !important; }
+  .theme-toggle-btn { padding: 8px !important; margin-right: 4px; }
+  
+  .brand-logo { width: 42px !important; height: 42px !important; }
+  .brand-text { font-size: 1.3rem !important; }
+  .brand-subtext { font-size: 0.7rem !important; letter-spacing: 0.5px !important; }
+
   .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 20px; }
   .courses-grid, .features-grid, .centers-grid, .memberships-grid, .testimonials-grid, .footer-grid { grid-template-columns: 1fr !important; }
-  .hero-content h1 { font-size: 2.2rem !important; }
+  .hero-content h1 { font-size: 2rem !important; word-wrap: break-word; overflow-wrap: break-word; hyphens: auto; line-height: 1.25; }
   .whatsapp-button { bottom: 20px; right: 20px; width: 55px; height: 55px; }
   .hamburger-btn { display: block; }
   
@@ -440,3 +447,5 @@ body.theme-dark .mobile-nav a {
   border-bottom: 1px solid var(--border);
   text-decoration: none;
 }
+
+.stats-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }

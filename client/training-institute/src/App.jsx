@@ -322,7 +322,7 @@ function App() {
   const HomeView = () => (
     <>
       <section className="hero" style={{ background: 'var(--bg)', paddingTop: '60px', paddingBottom: '60px' }}>
-        <div className="container hero-inner" style={{ display: 'flex', alignItems: 'center', gap: '50px' }}>
+        <div className="container hero-inner">
           <div className="hero-content" style={{ flex: '1' }}>
             <h1 className="responsive-heading" style={{ fontSize: '3.5rem', lineHeight: 1.1, marginBottom: '20px', color: 'var(--primary)', fontFamily: 'Outfit, sans-serif', fontWeight: 800 }}>
               Advance Your Career with <br />
@@ -335,7 +335,7 @@ function App() {
               <a href="#courses" className="btn-solid-lg" style={{ background: 'var(--accent)', boxShadow: '0 10px 25px rgba(245, 158, 11, 0.3)' }}>Explore Courses</a>
               <a href="#courses" className="btn-outline-lg">Enroll Now</a>
             </div>
-            <div className="hero-features" style={{ marginTop: '30px', display: 'flex', gap: '20px', color: 'var(--text-muted)', fontWeight: 600 }}>
+            <div className="hero-features" style={{ marginTop: '30px', color: 'var(--text-muted)', fontWeight: 600 }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Expert Mentors</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Lifetime Access</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Certificates</span>
@@ -347,30 +347,9 @@ function App() {
         </div>
       </section>
 
-      {/* Modern Filter Section */}
-      <section style={{ padding: '40px 0', borderBottom: '1px solid var(--border)', position: 'sticky', top: '70px', background: 'var(--surface-transparent)', backdropFilter: 'blur(10px)', zIndex: 100 }}>
-        <div className="container" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <input type="text" placeholder="Search courses..." style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', flex: '1', minWidth: '250px', background: 'var(--surface)', color: 'var(--text)' }} />
-          <select style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)' }}>
-            <option>Category filter</option>
-            <option>Government Exams</option>
-            <option>MAKAUT</option>
-          </select>
-          <select style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)' }}>
-            <option>Language filter</option>
-            <option>English</option>
-            <option>Hindi</option>
-          </select>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button className="pill-button" style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer' }}>Newest</button>
-            <button className="pill-button" style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer' }}>Popular</button>
-            <button className="pill-button" style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer' }}>Discount</button>
-          </div>
-        </div>
-      </section>
 
       <section className="stats-section" style={{ background: 'var(--surface)', padding: '60px 0' }}>
-        <div className="container stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '30px', textAlign: 'center' }}>
+        <div className="container stats-grid" style={{ display: 'grid', gap: '30px', textAlign: 'center' }}>
           <div className="stat-box" style={{ background: 'var(--bg)', padding: '30px', borderRadius: '20px' }}>
             <h3 className="responsive-stat" style={{ color: 'var(--primary)', fontSize: '2.5rem', fontWeight: 900 }}>10+</h3>
             <p style={{ color: 'var(--text)', fontWeight: 600, margin: 0 }}>Students</p>
@@ -395,6 +374,25 @@ function App() {
           <div className="section-header">
             <h2 className="responsive-heading">Our Premium <span className="highlight">Offline/Online Batches</span></h2>
             <p>Enroll in our structured classroom programs designed for competitive success.</p>
+          </div>
+
+          <div className="course-filters" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '40px', background: 'var(--surface)', padding: '20px', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+            <input type="text" placeholder="Search courses..." style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', flex: '1 1 250px', background: 'var(--bg)', color: 'var(--text)' }} />
+            <select style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', flex: '1 1 150px' }}>
+              <option>Category filter</option>
+              <option>Government Exams</option>
+              <option>MAKAUT</option>
+            </select>
+            <select style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', flex: '1 1 150px' }}>
+              <option>Language filter</option>
+              <option>English</option>
+              <option>Hindi</option>
+            </select>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', flex: '1 1 250px', justifyContent: 'flex-start' }}>
+              <button className="pill-button" style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', cursor: 'pointer', flex: '1 1 auto' }}>Newest</button>
+              <button className="pill-button" style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', cursor: 'pointer', flex: '1 1 auto' }}>Popular</button>
+              <button className="pill-button" style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', cursor: 'pointer', flex: '1 1 auto' }}>Discount</button>
+            </div>
           </div>
           <div className="courses-grid">
             {courses.map(course => (
