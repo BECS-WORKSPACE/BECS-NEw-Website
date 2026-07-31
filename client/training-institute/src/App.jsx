@@ -208,6 +208,16 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [languageFilter, setLanguageFilter] = useState('');
+  
+  // Lifted state for EnrollmentView
+  const [enrollFormData, setEnrollFormData] = useState({ name: '', email: '', phone: '', college: '', year: '' });
+  const [enrollSubmitted, setEnrollSubmitted] = useState(false);
+  
+  // Lifted state for StudyMaterialView
+  const [studySelectedMat, setStudySelectedMat] = useState(null);
+  const [studyFormData, setStudyFormData] = useState({ name: '', phone: '' });
+  const [studyDownloading, setStudyDownloading] = useState(false);
+
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'https://www.becsofficial.com';
 
   useEffect(() => {
@@ -665,36 +675,33 @@ function App() {
   };
 
   const EnrollmentView = () => {
-    const [formData, setFormData] = useState({ name: '', email: '', phone: '', college: '', year: '' });
-    const [submitted, setSubmitted] = useState(false);
-
     if (!selectedCourse) return null;
 
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
         await createEnquiry({
-          name: formData.name,
-          phone: formData.phone,
+          name: enrollFormData.name,
+          phone: enrollFormData.phone,
           courseId: String(selectedCourse.id || selectedCourse._id),
           courseName: selectedCourse.title,
           type: 'Enrollment'
         });
-        setSubmitted(true);
+        setEnrollSubmitted(true);
         window.scrollTo(0, 0);
       } catch (err) {
         alert(err.message || 'Failed to submit application. Please try again.');
       }
     };
 
-    if (submitted) {
+    if (enrollSubmitted) {
       return (
         <div className="container" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ textAlign: 'center', background: 'var(--surface)', padding: '50px', borderRadius: '20px', border: '1px solid var(--border)', maxWidth: '600px' }}>
             <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎉</div>
             <h2 className="responsive-heading" style={{ fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '16px' }}>Application Received!</h2>
             <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '30px', lineHeight: '1.6' }}>
-              Thank you, <strong>{formData.name}</strong>. Your enrollment request for <strong>{selectedCourse.title}</strong> has been successfully submitted. Our admission counselor will call you at {formData.phone} within 24 hours to complete the process.
+              Thank you, <strong>{enrollFormData.name}</strong>. Your enrollment request for <strong>{selectedCourse.title}</strong> has been successfully submitted. Our admission counselor will call you at {enrollFormData.phone} within 24 hours to complete the process.
             </p>
             <button className="btn-solid" onClick={() => navigateTo('home')}>Return to Home</button>
           </div>
@@ -714,27 +721,27 @@ function App() {
           <div className="form-grid">
             <div>
               <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Full Name</label>
-              <input type="text" required placeholder="John Doe" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+              <input type="text" required placeholder="John Doe" value={enrollFormData.name} onChange={e => setEnrollFormData({ ...enrollFormData, name: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
             </div>
             <div>
               <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Email Address</label>
-              <input type="email" required placeholder="john@example.com" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+              <input type="email" required placeholder="john@example.com" value={enrollFormData.email} onChange={e => setEnrollFormData({ ...enrollFormData, email: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
             </div>
           </div>
 
           <div style={{ marginBottom: '24px' }}>
             <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Phone Number (WhatsApp preferred)</label>
-            <input type="tel" required placeholder="+91 98765 43210" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+            <input type="tel" required placeholder="+91 98765 43210" value={enrollFormData.phone} onChange={e => setEnrollFormData({ ...enrollFormData, phone: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
           </div>
 
           <div className="form-grid" style={{ marginBottom: '40px' }}>
             <div>
               <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>College/University</label>
-              <input type="text" required placeholder="Institute of Engineering" value={formData.college} onChange={e => setFormData({ ...formData, college: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+              <input type="text" required placeholder="Institute of Engineering" value={enrollFormData.college} onChange={e => setEnrollFormData({ ...enrollFormData, college: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
             </div>
             <div>
               <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Expected Graduation Year</label>
-              <select required value={formData.year} onChange={e => setFormData({ ...formData, year: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem', background: 'var(--surface)' }}>
+              <select required value={enrollFormData.year} onChange={e => setEnrollFormData({ ...enrollFormData, year: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem', background: 'var(--surface)' }}>
                 <option value="">Select Year</option>
                 <option value="2024">2024</option>
                 <option value="2025">2025</option>
@@ -755,55 +762,51 @@ function App() {
   };
 
   const StudyMaterialView = () => {
-    const [selectedMat, setSelectedMat] = useState(null);
-    const [formData, setFormData] = useState({ name: '', phone: '' });
-    const [downloading, setDownloading] = useState(false);
-
     const handleDownloadRequest = (mat) => {
-      setSelectedMat(mat);
-      setDownloading(false);
-      setFormData({ name: '', phone: '' });
+      setStudySelectedMat(mat);
+      setStudyDownloading(false);
+      setStudyFormData({ name: '', phone: '' });
     };
 
     const handleFormSubmit = async (e) => {
       e.preventDefault();
-      setDownloading(true);
+      setStudyDownloading(true);
       try {
         await createEnquiry({
-          name: formData.name,
-          phone: formData.phone,
-          courseName: selectedMat.title,
+          name: studyFormData.name,
+          phone: studyFormData.phone,
+          courseName: studySelectedMat.title,
           type: 'StudyMaterial'
         });
-        alert(`Thank you ${formData.name}! Your download for ${selectedMat.title} will begin shortly. A brochure has also been sent to ${formData.phone}.`);
-        setSelectedMat(null);
+        alert(`Thank you ${studyFormData.name}! Your download for ${studySelectedMat.title} will begin shortly. A brochure has also been sent to ${studyFormData.phone}.`);
+        setStudySelectedMat(null);
       } catch (err) {
         alert(err.message || 'Failed to submit download request. Please try again.');
       } finally {
-        setDownloading(false);
+        setStudyDownloading(false);
       }
     };
 
-    if (selectedMat) {
+    if (studySelectedMat) {
       return (
         <div className="container" style={{ padding: '60px 24px', minHeight: '80vh', maxWidth: '600px', margin: '0 auto' }}>
-          <button className="btn-outline-sm" onClick={() => setSelectedMat(null)} style={{ marginBottom: '30px' }}>
+          <button className="btn-outline-sm" onClick={() => setStudySelectedMat(null)} style={{ marginBottom: '30px' }}>
             ← Back to Materials
           </button>
           <h1 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '10px' }}>Download Enquiry</h1>
-          <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '30px' }}>Please provide your details to download <strong>{selectedMat.title}</strong> ({selectedMat.size}).</p>
+          <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '30px' }}>Please provide your details to download <strong>{studySelectedMat.title}</strong> ({studySelectedMat.size}).</p>
 
           <form onSubmit={handleFormSubmit} style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
             <div style={{ marginBottom: '20px' }}>
               <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Full Name</label>
-              <input type="text" required placeholder="Enter your full name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+              <input type="text" required placeholder="Enter your full name" value={studyFormData.name} onChange={e => setStudyFormData({ ...studyFormData, name: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
             </div>
             <div style={{ marginBottom: '30px' }}>
               <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>WhatsApp Number</label>
-              <input type="tel" required placeholder="+91 98765 43210" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+              <input type="tel" required placeholder="+91 98765 43210" value={studyFormData.phone} onChange={e => setStudyFormData({ ...studyFormData, phone: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
             </div>
-            <button type="submit" className="btn-solid-lg" style={{ width: '100%', textAlign: 'center' }} disabled={downloading}>
-              {downloading ? 'Preparing Download...' : 'Submit & Download'}
+            <button type="submit" className="btn-solid-lg" style={{ width: '100%', textAlign: 'center' }} disabled={studyDownloading}>
+              {studyDownloading ? 'Preparing Download...' : 'Submit & Download'}
             </button>
           </form>
         </div>
