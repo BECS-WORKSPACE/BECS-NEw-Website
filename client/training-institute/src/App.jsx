@@ -205,6 +205,9 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [languageFilter, setLanguageFilter] = useState('');
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'https://www.becsofficial.com';
 
   useEffect(() => {
@@ -319,7 +322,18 @@ function App() {
     </>
   );
 
-  const HomeView = () => (
+  const HomeView = () => {
+    let filteredCourses = courses;
+    if (searchQuery) {
+      filteredCourses = filteredCourses.filter(c => c.title.toLowerCase().includes(searchQuery.toLowerCase()) || (c.description && c.description.toLowerCase().includes(searchQuery.toLowerCase())));
+    }
+    if (categoryFilter) {
+      filteredCourses = filteredCourses.filter(c => c.target.includes(categoryFilter) || c.title.includes(categoryFilter) || (c.badge && c.badge.includes(categoryFilter)));
+    }
+    if (languageFilter) {
+      filteredCourses = filteredCourses.filter(c => c.language.includes(languageFilter));
+    }
+    return (
     <>
       <section className="hero" style={{ background: 'var(--bg)', paddingTop: '60px', paddingBottom: '60px' }}>
         <div className="container hero-inner">
@@ -377,25 +391,26 @@ function App() {
           </div>
 
           <div className="course-filters" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '40px', background: 'var(--surface)', padding: '20px', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-            <input type="text" placeholder="Search courses..." style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', flex: '1 1 250px', background: 'var(--bg)', color: 'var(--text)' }} />
-            <select style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', flex: '1 1 150px' }}>
-              <option>Category filter</option>
-              <option>Government Exams</option>
-              <option>MAKAUT</option>
+            <input type="text" placeholder="Search courses..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', flex: '1 1 250px', background: 'var(--bg)', color: 'var(--text)' }} />
+            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', flex: '1 1 150px' }}>
+              <option value="">Category filter</option>
+              <option value="Government">Government Exams</option>
+              <option value="MAKAUT">MAKAUT</option>
+              <option value="Board">Board Exams</option>
             </select>
-            <select style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', flex: '1 1 150px' }}>
-              <option>Language filter</option>
-              <option>English</option>
-              <option>Hindi</option>
+            <select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)} style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', flex: '1 1 150px' }}>
+              <option value="">Language filter</option>
+              <option value="English">English</option>
+              <option value="Hindi">Hindi</option>
+              <option value="Bengali">Bengali</option>
             </select>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', flex: '1 1 250px', justifyContent: 'flex-start' }}>
-              <button className="pill-button" style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', cursor: 'pointer', flex: '1 1 auto' }}>Newest</button>
-              <button className="pill-button" style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', cursor: 'pointer', flex: '1 1 auto' }}>Popular</button>
-              <button className="pill-button" style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', cursor: 'pointer', flex: '1 1 auto' }}>Discount</button>
+              <button className="pill-button" onClick={() => { setSearchQuery(''); setCategoryFilter(''); setLanguageFilter(''); }} style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', cursor: 'pointer', flex: '1 1 auto' }}>Clear Filters</button>
             </div>
           </div>
           <div className="courses-grid">
-            {courses.map(course => (
+            {filteredCourses.length === 0 ? <p style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>No courses found matching your criteria.</p> : null}
+            {filteredCourses.map(course => (
               <div className="course-card" key={course.id} onClick={() => navigateTo('details', course)} style={{ cursor: 'pointer', position: 'relative' }}>
                 <div className="course-image-container">
                   <img src={course.image} alt={course.title} />
@@ -581,7 +596,8 @@ function App() {
         </div>
       </section>
     </>
-  );
+    );
+  };
 
   const CourseDetailsView = () => {
     if (!selectedCourse) return null;
@@ -852,11 +868,11 @@ function App() {
           </div>
         ) : (
           <>
-            {currentView === 'home' && <HomeView />}
-            {currentView === 'details' && <CourseDetailsView />}
-            {currentView === 'enroll' && <EnrollmentView />}
-            {currentView === 'study' && <StudyMaterialView />}
-            {currentView === 'results' && <ResultsView />}
+            {currentView === 'home' && HomeView()}
+            {currentView === 'details' && CourseDetailsView()}
+            {currentView === 'enroll' && EnrollmentView()}
+            {currentView === 'study' && StudyMaterialView()}
+            {currentView === 'results' && ResultsView()}
           </>
         )}
       </main>
@@ -883,9 +899,14 @@ function App() {
           </div>
           <div className="footer-contact">
             <h4 style={{ color: 'white', marginBottom: '20px' }}>Contact Info</h4>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '10px' }}>Helpline: +91 98765 43210</p>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '10px' }}>Email: support@becs.institute</p>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '10px' }}>Head Office: Tech Park, Kolkata</p>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '10px', display: 'flex', gap: '8px' }}><span>📍</span> <span>70/5, Banerjee Para Rd, Kamala Park, Sarsuna, Kolkata, West Bengal 700061</span></p>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '10px', display: 'flex', gap: '8px' }}><span>✉️</span> <a href="mailto:admin@becsofficial.com" style={{ textDecoration: 'none' }}>admin@becsofficial.com</a></p>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '10px', display: 'flex', gap: '8px' }}><span>📞</span> <a href="tel:+919830640683" style={{ textDecoration: 'none' }}>+91 9830640683</a></p>
+            <div style={{ marginTop: '20px', display: 'flex', gap: '15px' }}>
+              <a href="https://www.linkedin.com/company/becselectronics" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', background: 'white', borderRadius: '4px', padding: '2px', transition: 'transform 0.2s', ':hover': { transform: 'scale(1.1)' } }}>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" style={{ width: '24px', height: '24px', display: 'block' }} />
+              </a>
+            </div>
           </div>
         </div>
         <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem', borderTop: '1px solid #374151', paddingTop: '20px' }}>
