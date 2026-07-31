@@ -305,6 +305,7 @@ function App() {
             <button className="theme-toggle-btn" onClick={() => setIsDarkMode(!isDarkMode)} aria-label="Toggle Theme">
               {isDarkMode ? '☀️' : '🌙'}
             </button>
+            <a href={frontendUrl} className="btn-outline-sm desktop-only" style={{ textDecoration: 'none', padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>Main Website</a>
             <a href="#courses" className="btn-solid nav-cta">Enroll Now</a>
             <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
           </div>
