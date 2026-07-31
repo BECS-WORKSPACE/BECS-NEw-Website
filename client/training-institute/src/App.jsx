@@ -278,7 +278,7 @@ function App() {
           <a href="#" className="brand" onClick={(e) => handleNavClick(e, 'home')}>
             <img src={`${import.meta.env.BASE_URL}logo.png`} alt="BECS Udaan Logo" className="brand-logo" />
             <div className="brand-text-container">
-              <span className="brand-text">BECS Udaan</span>
+              <span className="brand-text">BECS Eduverse</span>
               <span className="brand-subtext">Learn • Rise • Lead</span>
             </div>
           </a>
@@ -511,9 +511,9 @@ function App() {
 
       <section className="about-section" id="about" style={{ background: 'var(--bg)', padding: '80px 0' }}>
         <div className="container" style={{ textAlign: 'center', maxWidth: '800px' }}>
-          <h2 className="responsive-heading" style={{ marginBottom: '20px' }}>About <span className="highlight">BECS Udaan</span></h2>
+          <h2 className="responsive-heading" style={{ marginBottom: '20px' }}>About <span className="highlight">BECS Eduverse</span></h2>
           <p style={{ fontSize: '1.1rem', color: 'var(--text)', lineHeight: 1.8 }}>
-            BECS Udaan is a next-generation student success platform dedicated to helping learners excel in academics, competitive examinations, university education, career development, and personal growth through technology-driven learning and expert mentorship.
+            BECS Eduverse is a next-generation student success platform dedicated to helping learners excel in academics, competitive examinations, university education, career development, and personal growth through technology-driven learning and expert mentorship.
           </p>
         </div>
       </section>
@@ -823,7 +823,7 @@ function App() {
   const ResultsView = () => (
     <div className="container" style={{ padding: '60px 24px', minHeight: '80vh' }}>
       <h1 style={{ fontSize: '2.5rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '10px' }}>Our Star Performers</h1>
-      <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '40px' }}>BECS Vidyapeeth students continue to dominate national engineering examinations.</p>
+      <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '40px' }}>BECS Eduverse students continue to dominate national engineering examinations.</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '30px' }}>
         {[
@@ -866,7 +866,7 @@ function App() {
       <footer className="footer" style={{ background: '#111827', color: 'white', padding: '60px 0 20px 0' }}>
         <div className="container footer-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '40px', marginBottom: '40px' }}>
           <div className="footer-brand">
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '15px' }}>BECS <span style={{ color: 'var(--accent)' }}>Udaan</span></h2>
+            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '15px' }}>BECS <span style={{ color: 'var(--accent)' }}>Eduverse</span></h2>
             <p style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>India's next-generation student success platform integrating learning, mentoring, and psychological support.</p>
           </div>
           <div className="footer-links">
@@ -891,7 +891,7 @@ function App() {
           </div>
         </div>
         <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem', borderTop: '1px solid #374151', paddingTop: '20px' }}>
-          &copy; {new Date().getFullYear()} BECS Udaan. All Rights Reserved.
+          &copy; {new Date().getFullYear()} BECS Eduverse. All Rights Reserved.
         </div>
       </footer>
 

@@ -313,32 +313,32 @@ const clientLogos = [
 
 const testimonials = [
   {
-    text: 'Professional and highly skilled team. Their expertise in electronics consultancy is unmatched. Delivery was on time and beyond expectations.',
-    name: 'John Doe',
-    company: 'TechCorp',
+    text: 'BECS transformed our manufacturing unit with their robust industrial automation solutions. The team is incredibly knowledgeable and delivered the project well ahead of schedule.',
+    name: 'Rajesh Sharma',
+    company: 'InnovateTech India',
     image:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
   },
   {
-    text: 'Excellent smart automation support. The team seamlessly integrated cutting-edge automation solutions into our existing infrastructure with zero downtime.',
-    name: 'Sarah Miller',
-    company: 'AutoSystems',
+    text: 'We have partnered with BECS for sourcing IoT components for our smart home projects. Their product quality and dedicated support are truly exceptional and unmatched.',
+    name: 'Priya Desai',
+    company: 'SmartHomes Bangalore',
     image:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
   },
   {
-    text: 'Reliable consultancy and fast service. BECS understood our global requirements and delivered a comprehensive solution that transformed our operations.',
-    name: 'Robert Wilson',
-    company: 'Global Solutions',
+    text: 'The custom PCB design services provided by BECS helped us launch our latest medical device smoothly. Their attention to detail and strict adherence to compliance is phenomenal.',
+    name: 'Amit Patel',
+    company: 'Vidyut Controls',
     image:
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=200&q=80',
   },
   {
-    text: 'Reliable consultancy and fast service. BECS understood our global requirements and delivered a comprehensive solution that transformed our operations.',
-    name: 'Robert Wilson',
-    company: 'Global Solutions',
+    text: 'BECS’s smart agriculture sensors gave us real-time data accuracy that completely optimized our farming operations. I highly recommend their expertise in IoT solutions.',
+    name: 'Sneha Reddy',
+    company: 'AgriTech Solutions',
     image:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80',
   },
 ];
 
@@ -600,7 +600,7 @@ const Landing = () => {
                 Client Portal
               </button>
               <a href={trainingUrl} className="pill-button pill-button--solid" style={{ textDecoration: 'none' }}>
-                BECS Udaan
+                BECS Eduverse
               </a>
             </div>
           )}
@@ -627,7 +627,7 @@ const Landing = () => {
           <a href="#services" onClick={() => setIsMobileMenuOpen(false)}>Services</a>
           <a href={ecommerceUrl} onClick={(e) => { e.preventDefault(); window.location.href = ecommerceUrl; }}>BECS Store</a>
           <a href="#projects" onClick={() => setIsMobileMenuOpen(false)}>Portfolio</a>
-          <a href={trainingUrl} onClick={(e) => { e.preventDefault(); window.location.href = trainingUrl; }}>Vidyapeeth</a>
+          <a href={trainingUrl} onClick={(e) => { e.preventDefault(); window.location.href = trainingUrl; }}>BECS Eduverse</a>
           <a href="#contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</a>
           {!user && (
             <button className="pill-button pill-button--ghost" style={{ marginTop: '20px', width: '100%' }} onClick={() => { setIsMobileMenuOpen(false); navigate('/login'); }}>
@@ -784,18 +784,12 @@ const Landing = () => {
                 </p>
 
                 <div className="store-cta-group">
-                  <button 
-                    className="pill-button" 
-                    onClick={() => {
-                      if (user) {
-                        window.location.href = ecommerceUrl;
-                      } else {
-                        navigate('/login');
-                      }
-                    }}
+                  <a 
+                    href={ecommerceUrl}
+                    className="pill-button"
                   >
                     Explore Store
-                  </button>
+                  </a>
                   <a href={ecommerceUrl} className="pill-button pill-button--ghost">
                     View Categories
                   </a>
@@ -893,7 +887,7 @@ const Landing = () => {
           </div>
         </section>
 
-        <section className="section-white">
+        <section className="section-cream">
           <div className="container">
             <div className="section-heading">
               <span className="section-pill">Expertise</span>
@@ -1008,88 +1002,9 @@ const Landing = () => {
           </div>
         )}
 
-        <section className="section-cream section-cream--partner">
-          <div className="container partner-wrap">
-            <div className="section-heading">
-              <span className="section-pill">Partnerships</span>
-              <h2>
-                Partner with <span>BECS</span>
-              </h2>
-              <p>
-                Join a growing ecosystem of forward-thinking businesses. Together, we create
-                lasting value expanding your reach, accelerating growth, and building the
-                future of premium services.
-              </p>
-            </div>
 
-            <div className="partner-grid">
-              {partnerCards.map((card) => (
-                <article
-                  className={`partner-card ${card.featured ? 'partner-card--featured' : ''}`}
-                  key={card.title}
-                >
-                  {card.featured ? <span className="partner-tag">Most Popular</span> : null}
-                  <div className="soft-icon">
-                    <Icon kind={card.featured ? 'support' : card.title === 'Global Reach' ? 'global' : 'growth'} />
-                  </div>
-                  <h3>{card.title}</h3>
-                  <p>{card.text}</p>
-                  <ul>
-                    {card.points.map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
-            </div>
 
-            <div className="partner-metrics">
-              <div>
-                <strong>500+</strong>
-                <span>Active Partners</span>
-              </div>
-              <div>
-                <strong>40+</strong>
-                <span>Countries Covered</span>
-              </div>
-              <div>
-                <strong>$2B+</strong>
-                <span>Partner Revenue Generated</span>
-              </div>
-              <div>
-                <strong>98%</strong>
-                <span>Partner Satisfaction Rate</span>
-              </div>
-              <div>
-                <strong>24/7</strong>
-                <span>Dedicated Support</span>
-              </div>
-            </div>
-
-            <div className="partner-cta">
-              <p>Ready to grow together? Join hundreds of partners already thriving with BECS Premium.</p>
-              <div className="partner-buttons">
-                <a className="pill-button pill-button--solid" href="#contact">
-                  Become a Partner
-                </a>
-                <a className="pill-button pill-button--ghost" href="#clients">
-                  Watch Partner Story
-                </a>
-              </div>
-              <div className="joined-note">
-                <div className="joined-dots">
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                </div>
-                <span>Joined by 500+ partners worldwide</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="section-white" id="clients">
+        <section className="section-cream" id="clients">
           <div className="container">
             <div className="section-heading">
               <span className="section-pill">Our Clients</span>
@@ -1114,11 +1029,11 @@ const Landing = () => {
 
             <div className="client-metrics">
               <div>
-                <strong>200+</strong>
+                <strong>50+</strong>
                 <span>Global Clients</span>
               </div>
               <div>
-                <strong>15+</strong>
+                <strong>5+</strong>
                 <span>Countries Served</span>
               </div>
               <div>
@@ -1126,18 +1041,18 @@ const Landing = () => {
                 <span>Client Satisfaction</span>
               </div>
               <div>
-                <strong>10+</strong>
+                <strong>1</strong>
                 <span>Years of Trust</span>
               </div>
               <div>
-                <strong>500+</strong>
+                <strong>100+</strong>
                 <span>Projects Delivered</span>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="section-cream testimonials-section">
+        <section className="section-white testimonials-section">
           <div className="container">
             <ManualCarousel 
               headingTitle="What Our Clients Say"
