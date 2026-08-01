@@ -77,10 +77,12 @@ button {
   backdrop-filter: blur(18px);
   background: rgba(251, 253, 255, 0.86);
   border-bottom: 1px solid rgba(232, 237, 246, 0.9);
+  display: flex;
+  align-items: center;
 }
 
 .topbar-inner {
-  height: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 24px;
@@ -1679,13 +1681,13 @@ button {
 
 @media (max-width: 900px) {
   .topbar, .topbar--scrolled {
-    height: auto !important;
+    height: 90px !important;
   }
 
   .topbar-inner {
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 16px 24px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    padding: 0 24px;
     height: auto;
   }
 
@@ -1736,10 +1738,6 @@ button {
 @media (max-width: 640px) {
   .container {
     padding: 0 16px;
-  }
-
-  .topbar-inner {
-    min-height: auto;
   }
 
   .brand {
