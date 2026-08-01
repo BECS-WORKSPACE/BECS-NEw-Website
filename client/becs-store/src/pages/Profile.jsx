@@ -12,7 +12,7 @@ function Profile() {
 
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [customAvatarUrl, setCustomAvatarUrl] = useState('');
-  
+
   const presetAvatars = [
     'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
     'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
@@ -20,6 +20,14 @@ function Profile() {
     'https://api.dicebear.com/7.x/avataaars/svg?seed=Missy',
     'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver',
     'https://api.dicebear.com/7.x/avataaars/svg?seed=Sam',
+    'https://api.dicebear.com/7.x/bottts/svg?seed=Robot1',
+    'https://api.dicebear.com/7.x/bottts/svg?seed=Robot2',
+    'https://api.dicebear.com/7.x/micah/svg?seed=Micah1',
+    'https://api.dicebear.com/7.x/micah/svg?seed=Micah2',
+    'https://api.dicebear.com/7.x/adventurer/svg?seed=Adv1',
+    'https://api.dicebear.com/7.x/adventurer/svg?seed=Adv2',
+    'https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile',
+    'https://api.dicebear.com/7.x/shapes/svg?seed=Shape1',
   ];
 
   const handleUpdateAvatar = (url) => {
@@ -36,23 +44,23 @@ function Profile() {
   return (
     <div className="container app-shell" style={{ paddingTop: '40px', paddingBottom: '80px' }}>
       <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '40px', alignItems: 'start' }}>
-        
+
         {/* Account Sidebar */}
         <aside style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid var(--line)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '30px', paddingBottom: '20px', borderBottom: '1px solid var(--line)' }}>
-             {user.avatar ? (
-               <img src={user.avatar} alt="User Avatar" style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--line)' }} />
-             ) : (
-               <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent), var(--accent-deep))', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 'bold' }}>
-                 {user.name.charAt(0).toUpperCase()}
-               </div>
-             )}
-             <div>
-               <strong style={{ display: 'block', fontSize: '1.2rem', color: 'var(--navy)' }}>{user.name}</strong>
-               <span style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>{user.email}</span>
-             </div>
+            {user.avatar ? (
+              <img src={user.avatar} alt="User Avatar" style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--line)' }} />
+            ) : (
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent), var(--accent-deep))', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 'bold' }}>
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div>
+              <strong style={{ display: 'block', fontSize: '1.2rem', color: 'var(--navy)' }}>{user.name}</strong>
+              <span style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>{user.email}</span>
+            </div>
           </div>
-          
+
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button onClick={() => setActiveTab('profile')} style={{ textAlign: 'left', padding: '12px 16px', borderRadius: '8px', background: activeTab === 'profile' ? 'rgba(0, 86, 210, 0.05)' : 'transparent', color: activeTab === 'profile' ? 'var(--accent)' : 'var(--text)', fontWeight: activeTab === 'profile' ? 700 : 500, border: 'none', cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '12px' }}><span>👤</span> My Profile</button>
             <button onClick={() => navigate('/orders')} style={{ textAlign: 'left', padding: '12px 16px', borderRadius: '8px', background: 'transparent', color: 'var(--text)', fontWeight: 500, border: 'none', cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '12px' }}><span>📦</span> My Orders</button>
@@ -79,30 +87,30 @@ function Profile() {
                     <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Choose your Avatar</h3>
                     <button onClick={() => setShowAvatarModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
                   </div>
-                  
+
                   <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingBottom: '16px', marginBottom: '16px' }}>
                     {presetAvatars.map((url, idx) => (
-                      <img 
-                        key={idx} 
-                        src={url} 
-                        alt="Preset Avatar" 
+                      <img
+                        key={idx}
+                        src={url}
+                        alt="Preset Avatar"
                         onClick={() => handleUpdateAvatar(url)}
-                        style={{ width: '60px', height: '60px', borderRadius: '50%', cursor: 'pointer', border: user.avatar === url ? '3px solid var(--accent)' : '1px solid var(--line)', background: '#fff', flexShrink: 0 }} 
+                        style={{ width: '60px', height: '60px', borderRadius: '50%', cursor: 'pointer', border: user.avatar === url ? '3px solid var(--accent)' : '1px solid var(--line)', background: '#fff', flexShrink: 0 }}
                       />
                     ))}
                   </div>
 
                   <div style={{ display: 'flex', gap: '12px' }}>
-                    <input 
-                      type="text" 
-                      placeholder="Or paste an image URL..." 
-                      value={customAvatarUrl} 
-                      onChange={(e) => setCustomAvatarUrl(e.target.value)} 
+                    <input
+                      type="text"
+                      placeholder="Or paste an image URL..."
+                      value={customAvatarUrl}
+                      onChange={(e) => setCustomAvatarUrl(e.target.value)}
                       style={{ flex: 1, padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--line)' }}
                     />
-                    <button 
-                      onClick={() => { if(customAvatarUrl) handleUpdateAvatar(customAvatarUrl); }} 
-                      className="action-button action-button--solid" 
+                    <button
+                      onClick={() => { if (customAvatarUrl) handleUpdateAvatar(customAvatarUrl); }}
+                      className="action-button action-button--solid"
                       style={{ padding: '0 20px' }}
                     >
                       Apply
@@ -128,7 +136,7 @@ function Profile() {
                   <input type="date" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '1rem' }} />
                 </div>
               </div>
-              <button className="action-button action-button--solid" style={{ marginTop: '40px', padding: '12px 30px' }}>Save Changes</button>
+              <button className="action-button action-button--solid" style={{ marginTop: '40px', padding: '12px 30px' }} onClick={() => alert('Profile updated successfully!')}>Save Changes</button>
             </div>
           )}
 
@@ -136,9 +144,9 @@ function Profile() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', paddingBottom: '16px', borderBottom: '1px solid var(--line)' }}>
                 <h2 style={{ fontSize: '1.8rem', margin: 0 }}>Saved Addresses</h2>
-                <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>+ Add New Address</button>
+                <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={() => alert('Address dialog would open here.')}>+ Add New Address</button>
               </div>
-              
+
               {addresses.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '60px 20px' }}>
                   <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📍</div>
@@ -157,7 +165,7 @@ function Profile() {
                         {addr.phone}
                       </p>
                       <div style={{ display: 'flex', gap: '16px', borderTop: '1px solid var(--line)', paddingTop: '16px' }}>
-                        <button style={{ background: 'none', border: 'none', color: 'var(--accent)', fontWeight: 600, cursor: 'pointer', padding: 0 }}>Edit</button>
+                        <button style={{ background: 'none', border: 'none', color: 'var(--accent)', fontWeight: 600, cursor: 'pointer', padding: 0 }} onClick={() => alert('Edit address modal would open here.')}>Edit</button>
                         <button style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 600, cursor: 'pointer', padding: 0 }} onClick={() => setAddresses(prev => prev.filter(a => a.id !== addr.id))}>Delete</button>
                       </div>
                     </div>
@@ -171,7 +179,7 @@ function Profile() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', paddingBottom: '16px', borderBottom: '1px solid var(--line)' }}>
                 <h2 style={{ fontSize: '1.8rem', margin: 0 }}>Saved Cards & Wallets</h2>
-                <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>+ Add New Card</button>
+                <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem' }} onClick={() => alert('Add payment method dialog would open here.')}>+ Add New Card</button>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
@@ -198,7 +206,7 @@ function Profile() {
                       <p style={{ margin: 0, color: 'var(--muted)', fontSize: '0.9rem' }}>{user.email.split('@')[0]}@oksbi</p>
                     </div>
                   </div>
-                  <button style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 600, cursor: 'pointer', textAlign: 'left', padding: 0 }}>Remove</button>
+                  <button style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 600, cursor: 'pointer', textAlign: 'left', padding: 0 }} onClick={() => alert('Payment method removed.')}>Remove</button>
                 </div>
               </div>
             </div>

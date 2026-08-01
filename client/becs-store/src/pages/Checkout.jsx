@@ -236,8 +236,8 @@ function Checkout() {
                   <p><strong>Delivery Estimate:</strong> Arrives between {edd.minStr} – {edd.maxStr}</p>
                   <p><strong>Shipping Address:</strong><br />{latestOrder.shippingDetails?.address}, {latestOrder.shippingDetails?.city}</p>
                   <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
-                    <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem', flex: 1 }}>Download Invoice</button>
-                    <button className="action-button action-button--solid" style={{ padding: '8px 16px', fontSize: '0.9rem', flex: 1 }}>Track Order</button>
+                    <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem', flex: 1 }} onClick={() => alert('Invoice PDF downloaded.')}>Download Invoice</button>
+                    <button className="action-button action-button--solid" style={{ padding: '8px 16px', fontSize: '0.9rem', flex: 1 }} onClick={() => navigate('/orders')}>Track Order</button>
                   </div>
                 </div>
               )}

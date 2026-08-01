@@ -209,7 +209,10 @@ function ShopProvider({ children }) {
   const handleLogin = async (credentials) => {
     try {
       const { data } = await apiLogin(credentials);
-      setUser(data);
+      const defaultAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.name}`;
+      const enhancedUser = { ...data, avatar: data.avatar || defaultAvatar };
+      setUser(enhancedUser);
+      window.localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(enhancedUser));
       return { success: true };
     } catch (error) {
       return { success: false, message: error.response?.data?.message || 'Login failed' };
@@ -219,7 +222,10 @@ function ShopProvider({ children }) {
   const handleRegister = async (userData) => {
     try {
       const { data } = await apiRegister(userData);
-      setUser(data);
+      const defaultAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.name}`;
+      const enhancedUser = { ...data, avatar: data.avatar || defaultAvatar };
+      setUser(enhancedUser);
+      window.localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(enhancedUser));
       return { success: true };
     } catch (error) {
       return { success: false, message: error.response?.data?.message || 'Registration failed' };

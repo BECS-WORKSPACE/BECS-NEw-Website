@@ -7,11 +7,11 @@ const ecommerceUrl = import.meta.env.VITE_ECOMMERCE_URL || 'https://store.becsof
 const trainingUrl = import.meta.env.VITE_TRAINING_URL || 'https://vidyapeeth.becsofficial.com';
 
 const stats = [
-  { icon: 'yr', value: '15+', label: 'Years Experience' },
-  { icon: 'cl', value: '500+', label: 'Happy Clients' },
-  { icon: 'pj', value: '1.2k', label: 'Projects Completed' },
-  { icon: 'ce', value: '25+', label: 'Certifications Earned' },
-  { icon: 'pd', value: '10k+', label: 'Products Delivered' },
+  { icon: 'yr', value: '1', label: 'Years Experience' },
+  { icon: 'cl', value: '10+', label: 'Happy Clients' },
+  { icon: 'pj', value: '15+', label: 'Projects Completed' },
+  { icon: 'ce', value: '10+', label: 'Certifications Earned' },
+  { icon: 'pd', value: '15+',label: 'Products Delivered' },
 ];
 
 const services = [
@@ -120,7 +120,7 @@ const storeCategories = [
 ];
 
 const storeStats = [
-  { value: '100+', label: 'Products' },
+  { value: '7', label: 'Products' },
   { value: '10+', label: 'Categories' },
   { value: 'Fast', label: 'Delivery' },
   { value: 'Secure', label: 'Payments' }
@@ -791,11 +791,11 @@ const Landing = () => {
           <div className="container fade-in-up" style={{ animationDelay: '0.4s' }}>
             <div className="hero-statistics">
               <div className="stat-box">
-                <strong>100+</strong>
+                <strong>7+</strong>
                 <span>Products</span>
               </div>
               <div className="stat-box">
-                <strong>10+</strong>
+                <strong>20+</strong>
                 <span>Services</span>
               </div>
               <div className="stat-box">
@@ -1152,7 +1152,7 @@ const Landing = () => {
             {/* DESKTOP GRID */}
             <div className="client-grid desktop-only-grid">
               {clientLogos.map(([name, category], index) => (
-                <article className="client-card" key={`desktop-${name}`} style={{ textAlign: 'center', background: '#fff', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+                <article className="client-card" key={`desktop-${name}`} style={{ textAlign: 'center' }}>
                   <div className={`client-logo client-logo--${(index % 8) + 1}`} style={{ margin: '0 auto 16px' }}>{name.slice(0, 1)}</div>
                   <h3 style={{ fontSize: '1.2rem', marginBottom: '8px' }}>{name}</h3>
                   <span style={{ fontSize: '0.9rem', color: '#64748b' }}>{category}</span>
@@ -1165,7 +1165,7 @@ const Landing = () => {
               <div style={{ width: '100%', overflow: 'hidden' }}>
                 <AutoCarousel speed={1} alwaysScroll={true}>
                   {clientLogos.map(([name, category], index) => (
-                    <article className="client-card" key={`mobile-${name}`} style={{ minWidth: '220px', textAlign: 'center', background: '#fff', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', padding: '24px 16px', margin: '0 10px' }}>
+                    <article className="client-card" key={`mobile-${name}`} style={{ minWidth: '220px', textAlign: 'center', margin: '0 10px' }}>
                       <div className={`client-logo client-logo--${(index % 8) + 1}`} style={{ margin: '0 auto 16px' }}>{name.slice(0, 1)}</div>
                       <h3 style={{ fontSize: '1.2rem', marginBottom: '8px' }}>{name}</h3>
                       <span style={{ fontSize: '0.9rem', color: '#64748b' }}>{category}</span>
@@ -1223,11 +1223,11 @@ const Landing = () => {
             </style>
             <div className="client-metrics-responsive">
               <div>
-                <strong>50+</strong>
+                <strong>10+</strong>
                 <span>Global Clients</span>
               </div>
               <div>
-                <strong>5+</strong>
+                <strong>2+</strong>
                 <span>Countries Served</span>
               </div>
               <div>
@@ -1239,7 +1239,7 @@ const Landing = () => {
                 <span>Years of Trust</span>
               </div>
               <div>
-                <strong>100+</strong>
+                <strong>15+</strong>
                 <span>Projects Delivered</span>
               </div>
             </div>

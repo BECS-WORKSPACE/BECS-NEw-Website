@@ -527,7 +527,7 @@ a {
 
 .stepper {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   margin: 24px 0;
 }
@@ -852,7 +852,6 @@ a {
     flex-wrap: wrap;
   }
 
-  .stepper,
   .payment-options,
   .review-grid,
   .form-grid--two {
@@ -894,10 +893,25 @@ a {
   align-items: start;
 }
 .hero-title {
-  font-size: 3rem;
+  font-size: 4.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -2px;
+  margin: 0 0 24px;
 }
 .hero-subtitle {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
+  line-height: 1.6;
+  max-width: 540px;
+  margin-bottom: 40px;
+  font-weight: 500;
+}
+.hero-badge {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
 }
 
 @media (max-width: 768px) {
@@ -1129,11 +1143,99 @@ a {
   }
   
   .stepper {
-    flex-wrap: wrap;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    flex-wrap: nowrap;
     gap: 10px;
+    padding-bottom: 10px;
+  }
+  
+  .stepper-item {
+    min-width: 140px;
   }
   
   .summary-sidebar {
     margin-top: 0 !important;
+  }
+}
+
+.products-layout-flex {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+.products-sidebar-filter {
+  width: 280px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+}
+@media (max-width: 940px) {
+  .products-layout-flex {
+    flex-direction: column;
+  }
+  .products-sidebar-filter {
+    width: 100%;
+    position: static;
+  }
+}
+
+/* --- Auth Pages Responsiveness --- */
+.auth-panel-right {
+  padding: 30px 40px;
+}
+.auth-form-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.auth-btn-group {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .auth-panel-right {
+    padding: 24px 16px !important;
+  }
+  .auth-form-row {
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 0;
+  }
+  .auth-form-row > div {
+    margin-bottom: 12px;
+  }
+  .auth-btn-group {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* --- Mobile Carousel for Product Grids --- */
+.product-grid-responsive {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .product-grid-responsive {
+    display: flex !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 16px;
+    -webkit-overflow-scrolling: touch;
+    gap: 16px !important;
+  }
+  .product-grid-responsive > * {
+    flex: 0 0 calc(60% - 16px);
+    scroll-snap-align: start;
+    min-width: 200px;
+  }
+  .product-grid-responsive::-webkit-scrollbar {
+    display: none;
   }
 }

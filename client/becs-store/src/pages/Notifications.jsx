@@ -17,7 +17,7 @@ function Notifications() {
     <div className="container app-shell" style={{ paddingTop: '40px', paddingBottom: '80px', maxWidth: '800px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
         <h1 style={{ fontSize: '2.2rem', margin: 0 }}>Notifications</h1>
-        <button style={{ background: 'none', border: 'none', color: 'var(--accent)', fontWeight: 600, cursor: 'pointer', fontSize: '1rem' }}>Mark all as read</button>
+        <button style={{ background: 'none', border: 'none', color: 'var(--accent)', fontWeight: 600, cursor: 'pointer', fontSize: '1rem' }} onClick={() => alert('All notifications marked as read.')}>Mark all as read</button>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

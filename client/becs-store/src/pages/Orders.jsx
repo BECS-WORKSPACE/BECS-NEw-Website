@@ -242,7 +242,7 @@ function Orders() {
                   <button className="action-button action-button--ghost" style={{ padding: '8px 20px', fontSize: '0.9rem' }} onClick={(e) => { e.stopPropagation(); generateInvoice(order); }}>Download Invoice</button>
                   <button className="action-button action-button--ghost" style={{ padding: '8px 20px', fontSize: '0.9rem' }} onClick={() => setSelectedOrder(order)}>Buy Again</button>
                   {(order.status === 'Delivered') && (
-                    <button className="action-button action-button--ghost" style={{ padding: '8px 20px', fontSize: '0.9rem', color: '#ef4444', borderColor: '#ef4444' }}>Return Order</button>
+                    <button className="action-button action-button--ghost" style={{ padding: '8px 20px', fontSize: '0.9rem', color: '#ef4444', borderColor: '#ef4444' }} onClick={() => alert('Return request submitted. Support will contact you.')}>Return Order</button>
                   )}
                 </div>
               </article>

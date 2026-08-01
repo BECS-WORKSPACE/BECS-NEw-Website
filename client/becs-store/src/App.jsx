@@ -3,10 +3,16 @@ import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation 
 import { ShopProvider, ShopContext } from './context/ShopContext';
 
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 
 
 import Home from './pages/Home';
+import Products from './pages/Products';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import ForgotPassword from './pages/ForgotPassword';
+import VerifyOTP from './pages/VerifyOTP';
+import ResetPassword from './pages/ResetPassword';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
@@ -33,6 +39,7 @@ export default function App() {
           <div style={{ flex: 1 }}>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/products" element={<Products />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/cart" element={<Cart />} />
@@ -41,8 +48,13 @@ export default function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/verify-otp" element={<VerifyOTP />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
             </Routes>
           </div>
+          <Footer />
         </div>
       </Router>
     </ShopProvider>
