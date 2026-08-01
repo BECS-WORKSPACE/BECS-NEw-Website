@@ -2,28 +2,62 @@ import React, { useState, useEffect } from 'react';
 import './index.css';
 import { fetchCourses, createEnquiry } from './api';
 
+const AutoCarousel = ({ children, speed = 1, reverse = false }) => {
+  return (
+    <div className="auto-carousel-wrapper" style={{ overflow: 'hidden', whiteSpace: 'nowrap', width: '100%', position: 'relative' }}>
+      <style>
+        {`
+          @keyframes scroll-carousel {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          @keyframes scroll-carousel-reverse {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+          }
+          .auto-carousel-track {
+            display: inline-flex;
+            width: max-content;
+            animation: scroll-carousel ${40 / speed}s linear infinite;
+          }
+          .auto-carousel-track.reverse {
+            animation-name: scroll-carousel-reverse;
+          }
+          .auto-carousel-track:hover {
+            animation-play-state: paused;
+          }
+        `}
+      </style>
+      <div className={`auto-carousel-track ${reverse ? 'reverse' : ''}`}>
+        <div style={{ display: 'flex', gap: '20px', paddingRight: '20px' }}>{children}</div>
+        <div style={{ display: 'flex', gap: '20px', paddingRight: '20px' }}>{children}</div>
+      </div>
+    </div>
+  );
+};
+
 const DEFAULT_COURSES = [
   {
     id: 1,
     title: 'Government Exam Preparation',
     target: 'SSC, Railway, Banking, WBCS, WBPSC, Police, Defence, TET, CTET',
-    duration: '6 Months',
+    duration: '10-12 Months',
     mode: 'Online / Offline',
     center: 'All Centers',
-    price: '₹5,999',
-    originalPrice: '₹9,999',
-    discount: '40% OFF',
+    price: '₹5,000 / Mo',
+    originalPrice: '',
+    discount: 'Enrollment: ₹1999',
     image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80',
-    description: 'Indian government aspirants studying for SSC, Railway, Banking, WBCS, Police exams in a modern classroom setting with advanced study materials.',
-    schedule: 'Morning & Evening Batches',
+    description: 'Indian government aspirants studying for SSC, Railway, Banking, WBCS, Police exams. Total 93 classes (186 Hrs total at 2 Hrs/class, 2 classes weekly / 8 monthly).',
+    schedule: '2 Classes Weekly (8 Monthly)',
     faculty: 'Expert Government Officers',
     syllabus: [
       'Comprehensive Coverage of Quant & Reasoning',
       'General Awareness & Current Affairs',
-      'Weekly Mock Tests',
-      'Doubt Clearing Sessions'
+      'Daily practice sets included',
+      'Weekly Mock Tests & Doubt Clearing'
     ],
-    enrollmentFee: '₹199',
+    enrollmentFee: '₹1999',
     badge: 'BESTSELLER',
     rating: 4.9,
     studentCount: '3,200',
@@ -555,7 +589,7 @@ function App() {
               e.target.reset();
             }}
           >
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '20px' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text)' }}>Full Name</label>
                 <input type="text" required placeholder="John Doe" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border)' }} />
@@ -589,7 +623,18 @@ function App() {
             <h2 className="responsive-heading">Success <span className="highlight">Stories</span></h2>
             <p style={{ color: 'var(--text-muted)' }}>Hear from students who have achieved their dreams with us.</p>
           </div>
-          <div className="testimonials-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
+          <style>
+            {`
+              .mobile-success-carousel { display: none; margin-top: 30px; }
+              @media (max-width: 768px) {
+                .desktop-success-grid { display: none !important; }
+                .mobile-success-carousel { display: block; overflow: hidden; width: 100vw; margin-left: -24px; padding: 0 24px; }
+                .testimonial-card-mobile { width: 300px; flex-shrink: 0; white-space: normal; }
+              }
+            `}
+          </style>
+
+          <div className="testimonials-grid desktop-success-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
             {[
               { name: 'Rohan Sharma', role: 'Government Aspirant', text: 'The mentoring I received was exceptional. I cleared SSC CGL on my first attempt thanks to the structured roadmap and mock tests.' },
               { name: 'Priya Das', role: 'Engineering Student', text: 'MAKAUT semester prep became so much easier. The notes and PYQ analysis helped me secure an 9.2 CGPA this year!' },
@@ -603,6 +648,24 @@ function App() {
                 <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{t.role}</div>
               </div>
             ))}
+          </div>
+
+          <div className="mobile-success-carousel">
+            <AutoCarousel speed={1}>
+              {[
+                { name: 'Rohan Sharma', role: 'Government Aspirant', text: 'The mentoring I received was exceptional. I cleared SSC CGL on my first attempt thanks to the structured roadmap and mock tests.' },
+                { name: 'Priya Das', role: 'Engineering Student', text: 'MAKAUT semester prep became so much easier. The notes and PYQ analysis helped me secure an 9.2 CGPA this year!' },
+                { name: 'Amit Gupta', role: 'Parent', text: 'We enrolled our son for the career counselling and board preparation. The psychological support and focus on holistic learning changed his approach completely.' },
+                { name: 'Sneha Verma', role: 'Board Student', text: 'The mock test series and expert suggestions gave me immense confidence before my 12th board exams. Highly recommended!' }
+              ].map((t, i) => (
+                <div key={i} className="testimonial-card-mobile" style={{ background: 'var(--surface)', padding: '30px', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+                  <div style={{ color: 'var(--accent)', fontSize: '1.5rem', marginBottom: '15px' }}>⭐⭐⭐⭐⭐</div>
+                  <p style={{ color: 'var(--text)', fontStyle: 'italic', marginBottom: '20px', lineHeight: 1.6 }}>"{t.text}"</p>
+                  <h4 style={{ margin: '0 0 5px 0', color: 'var(--primary)' }}>{t.name}</h4>
+                  <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{t.role}</div>
+                </div>
+              ))}
+            </AutoCarousel>
           </div>
         </div>
       </section>
