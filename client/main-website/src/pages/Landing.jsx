@@ -1004,7 +1004,18 @@ const Landing = () => {
               </p>
             </div>
 
-            <div className="tech-grid">
+            <style>
+              {`
+                .mobile-tech-carousel { display: none; }
+                @media (max-width: 768px) {
+                  .desktop-tech-grid { display: none !important; }
+                  .mobile-tech-carousel { display: block; overflow: hidden; width: 100vw; margin-left: -24px; padding: 0 24px; margin-top: 30px; }
+                  .tech-card-mobile { width: 280px; flex-shrink: 0; white-space: normal; }
+                }
+              `}
+            </style>
+
+            <div className="tech-grid desktop-tech-grid">
               {tech.map(([title, subtitle], index) => (
                 <article className="tech-card" key={title}>
                   <div className="soft-icon">
@@ -1014,6 +1025,20 @@ const Landing = () => {
                   <span>{subtitle}</span>
                 </article>
               ))}
+            </div>
+
+            <div className="mobile-tech-carousel">
+              <AutoCarousel speed={1}>
+                {tech.map(([title, subtitle], index) => (
+                  <article className="tech-card tech-card-mobile" key={title}>
+                    <div className="soft-icon">
+                      <Icon kind={`tech-${(index % 5) + 1}`} />
+                    </div>
+                    <h3>{title}</h3>
+                    <span>{subtitle}</span>
+                  </article>
+                ))}
+              </AutoCarousel>
             </div>
           </div>
         </section>
