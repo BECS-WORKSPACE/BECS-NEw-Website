@@ -2315,7 +2315,7 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 60px;
-  align-items: stretch; /* Align vertically */
+  align-items: center; /* Align vertically in center */
   margin-bottom: 40px; /* Reduced gap */
 }
 

@@ -170,113 +170,161 @@ const team = [
   },
 ];
 
-const projects = [
+export const projects = [
   {
     id: 1,
-    title: 'Smart Energy Monitoring System',
-    category: 'IoT Projects',
+    title: 'Smart USB Hub',
+    category: 'Hardware & Automation',
     status: 'Completed',
-    image: 'https://media.istockphoto.com/id/2193635891/photo/smart-industry-4-0-mangement-control-system-concept.jpg?s=2048x2048&w=is&k=20&c=tW54C3MnETI-QPj3DOOPjIpPQVBRpCDgOt_SFzihgdg=',
-    tech: ['ESP32', 'Node.js', 'MongoDB', 'MQTT'],
-    overview: 'Developed a highly scalable industrial IoT platform for real-time energy monitoring, reducing wastage and optimizing consumption patterns.',
-    timeline: 'Started: Jan 2025 | Completed: May 2025',
-    impact: 'Reduced energy costs by 20%. Improved anomaly detection speed by 60%.',
-    gallery: ['https://media.istockphoto.com/id/2193635891/photo/smart-industry-4-0-mangement-control-system-concept.jpg?s=2048x2048&w=is&k=20&c=tW54C3MnETI-QPj3DOOPjIpPQVBRpCDgOt_SFzihgdg=']
+    image: 'https://kritconsultancy.com/img/smart-usb-hub.jpeg',
+    tech: ['Hardware', 'IoT', 'API', 'Automation'],
+    overview: 'Our Smart USB Hub is an intelligent device designed to simplify and optimize the management of multiple USB-connected devices from a single platform. Unlike conventional USB hubs, it enables users to individually monitor and control each USB port, allowing devices to be switched ON or OFF remotely or automatically based on predefined conditions.',
+    timeline: 'Status: Completed',
+    impact: 'Individual port switching via scheduling, API, or dashboard. Real-time overload protection and energy-saving automation. Secure and encrypted data transfer for labs, offices, and smart workspaces. Seamless driver integration with Windows, Linux, and custom IoT platforms.',
+    gallery: ['https://kritconsultancy.com/img/smart-usb-hub.jpeg']
   },
   {
     id: 2,
-    title: 'Factory Process Automation',
-    category: 'Automation Projects',
-    status: 'Ongoing',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=900&q=80',
-    tech: ['PLC', 'SCADA', 'Industrial Ethernet', 'Python'],
-    overview: 'Complete overhaul of legacy manufacturing lines to a fully automated system with predictive maintenance capabilities.',
-    timeline: 'Status: Ongoing (Expected Q3 2026)',
-    impact: 'Expected to increase production efficiency by 35% and reduce downtime by 40%.',
-    gallery: []
+    title: 'Smart Holder',
+    category: 'Energy Optimization',
+    status: 'Completed',
+    image: 'https://kritconsultancy.com/img/smart-holder.jpg',
+    tech: ['Motion Sensing', 'Hardware', 'Automation'],
+    overview: 'Smart Holder is an intelligent automation device that allows you to control electrical appliances with a preset time delay. Built with precision technology, it combines a digital display with motion sensing to deliver efficiency, safety, and convenience for homes, offices, and industrial applications.',
+    timeline: 'Status: Completed',
+    impact: 'Built-in motion sensor with digital display countdown. Adjustable time delay settings to prevent unnecessary electricity consumption. Hands-free controls ideal for staircases, corridors, and security perimeters. Robust and safety-compliant design that plugs into standard fixtures.',
+    gallery: ['https://kritconsultancy.com/img/smart-holder.jpg']
   },
   {
     id: 3,
-    title: 'Embedded Controller Platform',
-    category: 'Hardware Projects',
+    title: 'Anti-Theft Alarm & Notification System',
+    category: 'Environmental Security',
     status: 'Completed',
-    image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=900&q=80',
-    tech: ['Altium', 'ARM Cortex-M', 'C++', 'FreeRTOS'],
-    overview: 'Designed a custom industrial-grade PCB and firmware stack for precision motor control in harsh environments.',
-    timeline: 'Started: Nov 2024 | Completed: Mar 2025',
-    impact: 'Delivered a robust platform operating at 99.9% uptime under extreme conditions.',
+    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=900&q=80',
+    tech: ['Sensors', 'Real-time Alerts', 'Low Power IoT'],
+    overview: 'An intelligent anti-theft solution designed to safeguard trees from illegal cutting and theft. It detects unauthorized movement or tampering in real-time and instantly alerts through notifications, ensuring quick action and effective protection of valuable green assets.',
+    timeline: 'Status: Completed',
+    impact: 'Real-time motion detection algorithms to minimize false alarms. Low power consumption technology with prolonged battery backup. Instantly fires app notifications and alarm sounds upon tampering detection. Easy installation in private plantations, public parks, or dense forests.',
     gallery: []
   },
   {
     id: 4,
-    title: 'Fleet Monitoring Dashboard',
+    title: 'Fleet & Asset Tracking Platform',
     category: 'Software Projects',
     status: 'Completed',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80',
-    tech: ['React.js', 'Node.js', 'PostgreSQL', 'Google Maps API'],
-    overview: 'Built a comprehensive software portal to track real-time fleet GPS data, monitor fuel consumption, and schedule maintenance.',
-    timeline: 'Started: Jun 2024 | Completed: Dec 2024',
-    impact: 'Reduced fleet idle time by 15% and optimized routing leading to fuel savings.',
+    image: '/fleet_tracking.png',
+    tech: ['GPS Tracking', 'Analytics', 'Web Platform'],
+    overview: 'A robust digital platform designed to provide real-time location tracking and performance analytics for fleets and high-value assets across global logistics networks.',
+    timeline: 'Status: Completed',
+    impact: 'Enhances operational visibility and reduces downtime, saving costs and streamlining supply chain operations.',
     gallery: []
   },
   {
     id: 5,
-    title: 'Smart Agriculture Sensors',
-    category: 'IoT Projects',
+    title: 'Sentinel Vision Security',
+    category: 'Hardware & Automation',
     status: 'Completed',
-    image: 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=900&q=80',
-    tech: ['LoRaWAN', 'Arduino', 'AWS IoT', 'React Native'],
-    overview: 'Deployed distributed soil moisture and temperature sensors across a 500-acre farm, connected via long-range wireless.',
-    timeline: 'Started: Feb 2024 | Completed: Aug 2024',
-    impact: 'Optimized irrigation cycles, saving 30% water and increasing crop yield.',
+    image: '/cctv_surveillance.png',
+    tech: ['CCTV', 'Computer Vision', 'Security'],
+    overview: 'An advanced CCTV surveillance ecosystem that leverages AI-driven monitoring to detect anomalies and secure premises 24/7.',
+    timeline: 'Status: Completed',
+    impact: 'Provides unparalleled security with instant threat notifications, significantly reducing security breaches.',
     gallery: []
   },
   {
     id: 6,
-    title: 'Warehouse Robotics Control',
-    category: 'Automation Projects',
+    title: 'ConnectPro Unified Communications',
+    category: 'Software Projects',
     status: 'Ongoing',
-    image: 'https://images.unsplash.com/photo-1716191299980-a6e8827ba10b?q=80&w=1225&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    tech: ['ROS', 'C++', 'Computer Vision', 'Lidar'],
-    overview: 'Developing navigation and coordination logic for a fleet of autonomous mobile robots in a high-density warehouse.',
-    timeline: 'Status: Ongoing (Expected Q1 2027)',
-    impact: 'Targeting 2x faster order fulfillment and zero collision incidents.',
+    image: '/video_calling.png',
+    tech: ['WebRTC', 'VoIP', 'Mobile App'],
+    overview: 'A seamless, enterprise-grade video and voice calling application designed to connect distributed teams with crystal-clear audio and high-definition video.',
+    timeline: 'Status: Ongoing',
+    impact: 'Boosts team productivity and collaboration by providing reliable global communication channels.',
     gallery: []
   },
   {
     id: 7,
-    title: 'Custom Medical Device PCB',
-    category: 'Hardware Projects',
+    title: 'VitalCare Telehealth Solutions',
+    category: 'Software Projects',
     status: 'Completed',
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80',
-    tech: ['KiCad', 'Microchip PIC', 'Bluetooth LE', 'ISO 13485'],
-    overview: 'Engineered a highly compact, low-power circuit board for a wearable patient monitoring device.',
-    timeline: 'Started: Oct 2023 | Completed: Apr 2024',
-    impact: 'Achieved 14-day battery life on a single charge while meeting strict medical certifications.',
+    image: '/telemedicine.png',
+    tech: ['Telemedicine', 'Healthcare API', 'Data Security'],
+    overview: 'A comprehensive virtual care platform bridging the gap between doctors and patients through secure video consultations and real-time health analytics.',
+    timeline: 'Status: Completed',
+    impact: 'Expands healthcare accessibility and improves patient outcomes through continuous remote monitoring.',
     gallery: []
   },
   {
     id: 8,
-    title: 'Inventory AI Analytics',
-    category: 'Software Projects',
+    title: 'Industrial IoT Automation Suite',
+    category: 'IoT Projects',
     status: 'Ongoing',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80',
-    tech: ['Python', 'TensorFlow', 'Vue.js', 'Snowflake'],
-    overview: 'Integrating machine learning models to predict stock shortages and automate supply chain reordering.',
-    timeline: 'Status: Ongoing (Expected Dec 2026)',
-    impact: 'Expected to reduce out-of-stock scenarios by 45%.',
+    image: '/iot_automation.png',
+    tech: ['SCADA', 'Robotics', 'Sensors'],
+    overview: 'A next-generation automation system designed to modernize manufacturing facilities by integrating robotic workflows with data-driven decision engines.',
+    timeline: 'Status: Ongoing',
+    impact: 'Optimizes factory floor efficiency by 40% and drastically reduces manual operational errors.',
     gallery: []
   },
   {
     id: 9,
-    title: 'Smart Building HVAC Integration',
-    category: 'Automation Projects',
+    title: 'Academic Capstone Kits',
+    category: 'Hardware Projects',
     status: 'Completed',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=900&q=80',
-    tech: ['BACnet', 'Siemens Desigo', 'Node-RED', 'InfluxDB'],
-    overview: 'Upgraded a commercial office tower with centralized HVAC control mapped to real-time occupancy data.',
-    timeline: 'Started: Jan 2023 | Completed: Sep 2023',
-    impact: 'Cut building electricity usage by 22% during off-peak hours.',
+    image: '/capstone_kit.png',
+    tech: ['Microcontrollers', 'Sensors', 'Educational Kits'],
+    overview: 'Ready-to-use, comprehensive electronics kits tailored for engineering students to build, test, and present complex capstone projects with ease.',
+    timeline: 'Status: Completed',
+    impact: 'Empowers students with practical, hands-on learning experiences and accelerates their entry into the engineering industry.',
+    gallery: []
+  },
+  {
+    id: 10,
+    title: 'GeoTrace Market Analytics',
+    category: 'Software Projects',
+    status: 'Completed',
+    image: '/market_tracking.png',
+    tech: ['Data Analytics', 'Geospatial Mapping', 'Big Data'],
+    overview: 'A powerful market tracking software that aggregates spatial data and consumer trends into actionable insights through an intuitive 3D dashboard.',
+    timeline: 'Status: Completed',
+    impact: 'Enables businesses to make data-driven expansion decisions and pinpoint high-value market segments.',
+    gallery: []
+  },
+  {
+    id: 11,
+    title: 'TalentConnect Staffing Portal',
+    category: 'Software Projects',
+    status: 'Ongoing',
+    image: '/staffing_portal.png',
+    tech: ['HR Tech', 'Machine Learning', 'Web App'],
+    overview: 'An AI-powered recruitment platform that streamlines candidate sourcing, screening, and placement for modern enterprises.',
+    timeline: 'Status: Ongoing',
+    impact: 'Reduces time-to-hire by 50% and improves candidate quality match through algorithmic assessment.',
+    gallery: []
+  },
+  {
+    id: 12,
+    title: 'Elevate Digital Marketing',
+    category: 'Software Projects',
+    status: 'Completed',
+    image: '/digital_marketing.png',
+    tech: ['SEO', 'Analytics', 'Marketing'],
+    overview: 'A unified analytics dashboard that provides deep insights into campaign performance, SEO rankings, and social media growth metrics.',
+    timeline: 'Status: Completed',
+    impact: 'Maximizes ROI on marketing spend by highlighting the most effective digital channels and strategies.',
+    gallery: []
+  },
+  {
+    id: 13,
+    title: 'Enterprise Resource Planner (ERP)',
+    category: 'Software Projects',
+    status: 'Completed',
+    image: '/erp_system.png',
+    tech: ['ERP', 'Finance', 'Supply Chain'],
+    overview: 'A centralized enterprise management system integrating finance, human resources, and supply chain logistics into a single source of truth.',
+    timeline: 'Status: Completed',
+    impact: 'Eliminates data silos, ensuring seamless cross-departmental coordination and significantly boosting operational agility.',
     gallery: []
   }
 ];
@@ -426,6 +474,56 @@ const ManualCarousel = ({ children, headingTitle, headingPill, headingText, spee
   );
 };
 
+const AutoCarousel = ({ children, speed = 1, alwaysScroll = false }) => {
+  const scrollRef = React.useRef(null);
+  const isPausedRef = React.useRef(false);
+  
+  // Convert children to array to get the count accurately
+  const childrenArray = React.Children.toArray(children);
+  const shouldScroll = alwaysScroll || childrenArray.length >= 4;
+
+  React.useEffect(() => {
+    if (!shouldScroll) return;
+
+    let animationFrameId;
+    let pos = 0;
+    
+    const scrollLoop = () => {
+      if (scrollRef.current && !isPausedRef.current) {
+        if (pos === 0 || Math.abs(pos - scrollRef.current.scrollLeft) > 10) {
+           pos = scrollRef.current.scrollLeft;
+        }
+        
+        pos += speed;
+        scrollRef.current.scrollLeft = pos;
+        
+        if (scrollRef.current.scrollLeft >= scrollRef.current.scrollWidth / 2) {
+           scrollRef.current.scrollLeft = 0;
+           pos = 0;
+        }
+      }
+      animationFrameId = requestAnimationFrame(scrollLoop);
+    };
+
+    animationFrameId = requestAnimationFrame(scrollLoop);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [speed, shouldScroll]);
+
+  return (
+    <div 
+      style={{ overflow: shouldScroll ? 'hidden' : 'auto', display: 'flex', width: '100%', borderRadius: '16px' }}
+      ref={scrollRef}
+      onMouseEnter={() => { isPausedRef.current = true; }}
+      onMouseLeave={() => { isPausedRef.current = false; }}
+    >
+      <div style={{ display: 'flex', gap: '20px', padding: '10px', margin: shouldScroll ? '0' : '0 auto' }}>
+        {children}
+        {shouldScroll && children}
+      </div>
+    </div>
+  );
+};
+
 const Landing = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -552,7 +650,7 @@ const Landing = () => {
               </div>
             </div>
             <a href="#projects">Portfolio</a>
-            <a href="#contact">Contact</a>
+            <a href="/contact">Contact</a>
           </nav>
 
           {user ? (
@@ -628,7 +726,7 @@ const Landing = () => {
           <a href={ecommerceUrl} onClick={(e) => { e.preventDefault(); window.location.href = ecommerceUrl; }}>BECS Store</a>
           <a href="#projects" onClick={() => setIsMobileMenuOpen(false)}>Portfolio</a>
           <a href={trainingUrl} onClick={(e) => { e.preventDefault(); window.location.href = trainingUrl; }}>BECS Eduverse</a>
-          <a href="#contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</a>
+          <a href="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</a>
           {!user && (
             <button className="pill-button pill-button--ghost" style={{ marginTop: '20px', width: '100%' }} onClick={() => { setIsMobileMenuOpen(false); navigate('/login'); }}>
               Client Portal
@@ -658,7 +756,7 @@ const Landing = () => {
                 <a className="pill-button pill-button--ghost" href={ecommerceUrl}>
                   Visit BECS Store
                 </a>
-                <a className="pill-button pill-button--ghost" href="#contact" style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}>
+                <a className="pill-button pill-button--ghost" href="/contact" style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}>
                   Contact Us
                 </a>
               </div>
@@ -712,16 +810,22 @@ const Landing = () => {
           </div>
         </section>
 
-        <section className="section-cream" id="about">
-          <div className="container">
-            <div className="section-heading">
-              <span className="section-pill section-pill--outlined">About BECS</span>
-              <h2>Trusted by Industry Leaders</h2>
-              <p>
-                Banerjee Electronics Consultancy Services has been at the forefront
-                of electronic innovation, delivering world-class solutions for over a decade.
-                Our journey started with a vision to revolutionize the electronics industry by providing end-to-end consulting, robust automation, and high-quality product supply. Today, we stand as a beacon of excellence, empowering businesses, educating the next generation of engineers, and shaping the future of technology through dedication and expertise.
-              </p>
+        <section style={{ backgroundColor: 'var(--navy)', color: '#fff', padding: '100px 20px', textAlign: 'center' }} id="about">
+          <div className="container" style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <div style={{ color: 'var(--accent)', fontSize: '4rem', lineHeight: 0.5, marginBottom: '20px', fontFamily: 'serif' }}>"</div>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '40px', lineHeight: 1.4, color: '#fff' }}>
+              Excellence in electronics starts with<br />innovation and education.
+            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+              <img 
+                src="/mr-banerjee.png" 
+                alt="Mr. Banerjee" 
+                style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--accent)' }} 
+              />
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>Mr. Banerjee</div>
+                <div style={{ fontSize: '0.9rem', color: '#94a3b8', marginTop: '2px' }}>CEO, BECS</div>
+              </div>
             </div>
           </div>
         </section>
@@ -749,7 +853,7 @@ const Landing = () => {
                       ))}
                     </ul>
                     <a
-                      href={isTraining ? trainingUrl : "#contact"}
+                      href={isTraining ? trainingUrl : "/contact"}
                       target={isTraining ? "_blank" : undefined}
                       rel={isTraining ? "noopener noreferrer" : undefined}
                     >
@@ -762,7 +866,7 @@ const Landing = () => {
           </div>
         </section>
 
-        <section className="section-cream store-showcase-section" id="products">
+        <section className="section-cream store-showcase-section" id="products" style={{ padding: '60px 0' }}>
           <div className="container">
             <div className="store-showcase-grid">
               
@@ -796,42 +900,44 @@ const Landing = () => {
                 </div>
               </div>
 
-              <div className="store-featured-products">
-                {/* Product 1 */}
-                <a href={ecommerceUrl} className="store-featured-card" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                  <div className="featured-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=600&q=80" alt="Industrial Automation Kit" />
-                  </div>
-                  <div className="featured-info">
-                    <span className="featured-badge">Best Seller</span>
-                    <h4>Industrial Automation Kit</h4>
-                    <div className="featured-price">₹12,999</div>
-                  </div>
-                </a>
+              <div style={{ width: '100%', overflow: 'hidden', display: 'flex', alignItems: 'center', height: '100%', padding: '20px 0' }}>
+                <AutoCarousel speed={1} alwaysScroll={true}>
+                  {/* Product 1 */}
+                  <a href={ecommerceUrl} className="store-featured-card" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', minWidth: '340px', maxWidth: '400px' }}>
+                    <div className="featured-img-wrapper" style={{ height: '320px', flexShrink: 0 }}>
+                      <img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=600&q=80" alt="Industrial Automation Kit" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <div className="featured-info">
+                      <span className="featured-badge">Best Seller</span>
+                      <h4>Industrial Automation Kit</h4>
+                      <div className="featured-price">₹12,999</div>
+                    </div>
+                  </a>
 
-                {/* Product 2 */}
-                <a href={ecommerceUrl} className="store-featured-card" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                  <div className="featured-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80" alt="Smart IoT Controller" />
-                  </div>
-                  <div className="featured-info">
-                    <span className="featured-badge" style={{ background: 'rgba(249, 115, 22, 0.1)', color: '#f97316' }}>Trending</span>
-                    <h4>Smart IoT Controller</h4>
-                    <div className="featured-price">₹7,999</div>
-                  </div>
-                </a>
+                  {/* Product 2 */}
+                  <a href={ecommerceUrl} className="store-featured-card" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', minWidth: '340px', maxWidth: '400px' }}>
+                    <div className="featured-img-wrapper" style={{ height: '320px', flexShrink: 0 }}>
+                      <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80" alt="Smart IoT Controller" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <div className="featured-info">
+                      <span className="featured-badge" style={{ background: 'rgba(249, 115, 22, 0.1)', color: '#f97316' }}>Trending</span>
+                      <h4>Smart IoT Controller</h4>
+                      <div className="featured-price">₹7,999</div>
+                    </div>
+                  </a>
 
-                {/* Product 3 */}
-                <a href={ecommerceUrl} className="store-featured-card" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                  <div className="featured-img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=600&q=80" alt="Embedded Development Board" />
-                  </div>
-                  <div className="featured-info">
-                    <span className="featured-badge" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>New Arrival</span>
-                    <h4>Embedded Development Board</h4>
-                    <div className="featured-price">₹4,999</div>
-                  </div>
-                </a>
+                  {/* Product 3 */}
+                  <a href={ecommerceUrl} className="store-featured-card" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', minWidth: '340px', maxWidth: '400px' }}>
+                    <div className="featured-img-wrapper" style={{ height: '320px', flexShrink: 0 }}>
+                      <img src="https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=600&q=80" alt="Embedded Development Board" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <div className="featured-info">
+                      <span className="featured-badge" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>New Arrival</span>
+                      <h4>Embedded Development Board</h4>
+                      <div className="featured-price">₹4,999</div>
+                    </div>
+                  </a>
+                </AutoCarousel>
               </div>
             </div>
           </div>
@@ -848,7 +954,7 @@ const Landing = () => {
                   <h2>Our Strategic Technology Partner</h2>
                   <p>Collaborating with trusted technology leaders to deliver innovative digital solutions.</p>
                 </div>
-                <a href="#contact" className="pill-button pill-button--solid">
+                <a href="/contact" className="pill-button pill-button--solid">
                   Become a Partner
                 </a>
               </div>
@@ -920,16 +1026,43 @@ const Landing = () => {
               <p>Explore our recent and ongoing deployments across IoT, Automation, Hardware, and Software.</p>
             </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', marginBottom: '40px' }}>
-              {['All', 'IoT Projects', 'Automation Projects', 'Hardware Projects', 'Software Projects'].map(cat => (
+            <style>
+              {`
+                .portfolio-tabs {
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 10px;
+                  justify-content: center;
+                  margin-bottom: 40px;
+                  padding: 0 15px;
+                }
+                @media (max-width: 768px) {
+                  .portfolio-tabs {
+                    flex-wrap: nowrap;
+                    justify-content: flex-start;
+                    overflow-x: auto;
+                    padding-bottom: 15px;
+                    -webkit-overflow-scrolling: touch;
+                    scrollbar-width: none; /* Firefox */
+                  }
+                  .portfolio-tabs::-webkit-scrollbar {
+                    display: none; /* Chrome/Safari */
+                  }
+                }
+              `}
+            </style>
+            <div className="portfolio-tabs">
+              {['All', ...new Set(projects.map(p => p.category))].map(cat => (
                 <button 
                   key={cat} 
                   onClick={() => setActiveProjectCategory(cat)}
                   style={{ 
-                    padding: '8px 20px', borderRadius: '30px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.3s',
+                    padding: '10px 20px', borderRadius: '30px', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', transition: 'all 0.3s',
                     background: activeProjectCategory === cat ? 'var(--accent)' : '#f8fafc',
                     color: activeProjectCategory === cat ? '#fff' : 'var(--navy)',
-                    border: `1px solid ${activeProjectCategory === cat ? 'var(--accent)' : 'var(--line)'}`
+                    border: `1px solid ${activeProjectCategory === cat ? 'var(--accent)' : 'var(--line)'}`,
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0
                   }}
                 >
                   {cat}
@@ -937,97 +1070,133 @@ const Landing = () => {
               ))}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px' }}>
-              {projects.filter(p => activeProjectCategory === 'All' || p.category === activeProjectCategory).map((project) => (
-                <article key={project.id} onClick={() => setSelectedProject(project)} style={{ 
-                  background: '#fff', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--line)', 
-                  cursor: 'pointer', transition: 'transform 0.3s, box-shadow 0.3s', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' 
-                }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.1)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)'; }}>
-                  <div style={{ position: 'relative', height: '200px' }}>
-                    <img src={project.image} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <span style={{ 
-                      position: 'absolute', top: '16px', right: '16px', padding: '6px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700,
-                      background: project.status === 'Completed' ? '#10b981' : '#3b82f6', color: '#fff'
-                    }}>{project.status}</span>
-                  </div>
-                  <div style={{ padding: '24px' }}>
-                    <span style={{ color: 'var(--accent)', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{project.category}</span>
-                    <h3 style={{ margin: '8px 0 16px', fontSize: '1.3rem', color: 'var(--navy)' }}>{project.title}</h3>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                      {project.tech.map(t => <span key={t} style={{ background: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600 }}>{t}</span>)}
+            <div style={{ width: '100%', overflow: 'hidden', padding: '20px 0' }}>
+              <AutoCarousel speed={1}>
+                {projects.filter(p => activeProjectCategory === 'All' || p.category === activeProjectCategory).map((project) => (
+                  <article key={project.id} onClick={() => navigate(`/project/${project.id}`)} style={{ 
+                    background: '#fff', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--line)', 
+                    cursor: 'pointer', transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)', boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+                    minWidth: '320px', maxWidth: '350px', height: '100%', display: 'flex', flexDirection: 'column'
+                  }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-10px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 20px 30px rgba(0,0,0,0.1)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)'; }}>
+                    <div style={{ position: 'relative', height: '200px', flexShrink: 0 }}>
+                      <img src={project.image} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <span style={{ 
+                        position: 'absolute', top: '16px', right: '16px', padding: '6px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700,
+                        background: project.status === 'Completed' ? '#10b981' : '#3b82f6', color: '#fff'
+                      }}>{project.status}</span>
                     </div>
-                  </div>
-                </article>
-              ))}
+                    <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                      <span style={{ color: 'var(--accent)', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{project.category}</span>
+                      <h3 style={{ margin: '8px 0 16px', fontSize: '1.3rem', color: 'var(--navy)' }}>{project.title}</h3>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: 'auto' }}>
+                        {project.tech.map(t => <span key={t} style={{ background: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600 }}>{t}</span>)}
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </AutoCarousel>
             </div>
           </div>
         </section>
 
-        {/* Project Modal */}
-        {selectedProject && (
-          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-            <div style={{ background: '#fff', borderRadius: '20px', width: '100%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
-              <button onClick={() => setSelectedProject(null)} style={{ position: 'absolute', top: '20px', right: '20px', background: '#f1f5f9', border: 'none', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', fontSize: '1.2rem', zIndex: 10 }}>✕</button>
-              
-              <div style={{ height: '300px', width: '100%' }}>
-                <img src={selectedProject.image} alt={selectedProject.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              
-              <div style={{ padding: '40px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                  <span style={{ color: 'var(--accent)', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase' }}>{selectedProject.category}</span>
-                  <span style={{ background: selectedProject.status === 'Completed' ? '#d1fae5' : '#dbeafe', color: selectedProject.status === 'Completed' ? '#065f46' : '#1e40af', padding: '4px 10px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700 }}>{selectedProject.status}</span>
-                </div>
-                
-                <h2 style={{ fontSize: '2.5rem', marginBottom: '24px', color: 'var(--navy)' }}>{selectedProject.title}</h2>
-                
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '30px', '@media (min-width: 768px)': { gridTemplateColumns: '2fr 1fr' } }}>
-                  <div>
-                    <h4 style={{ fontSize: '1.2rem', marginBottom: '12px' }}>Project Overview</h4>
-                    <p style={{ color: '#475569', lineHeight: 1.7, marginBottom: '24px' }}>{selectedProject.overview}</p>
-                    
-                    <h4 style={{ fontSize: '1.2rem', marginBottom: '12px' }}>Business Impact</h4>
-                    <p style={{ color: '#475569', lineHeight: 1.7, background: '#f8fafc', padding: '16px', borderRadius: '12px', borderLeft: '4px solid var(--accent)' }}>{selectedProject.impact}</p>
-                  </div>
-                  
-                  <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px' }}>
-                    <h4 style={{ fontSize: '1.1rem', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--line)' }}>Technologies Used</h4>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      {selectedProject.tech.map(t => <li key={t} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#334155' }}><span style={{ color: 'var(--accent)' }}>⚡</span> {t}</li>)}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
 
 
         <section className="section-cream" id="clients">
+          <style>
+            {`
+              .mobile-only-carousel { display: none; margin-top: 40px; }
+              @media (max-width: 768px) {
+                .desktop-only-grid { display: none !important; }
+                .mobile-only-carousel { display: block; }
+              }
+            `}
+          </style>
           <div className="container">
-            <div className="section-heading">
+            <div className="section-heading" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span className="section-pill">Our Clients</span>
-              <h2>Trusted by Industry Leaders</h2>
-              <p>
+              <h2 style={{ fontSize: '3rem', margin: '20px 0' }}>Trusted by Industry Leaders</h2>
+              <p style={{ maxWidth: '600px', margin: '0 auto', fontSize: '1.1rem', color: '#64748b' }}>
                 We are proud to collaborate with forward-thinking organizations across the globe,
                 delivering premium electronic solutions that drive innovation.
               </p>
             </div>
 
-            <div className="client-divider" />
+            <div className="client-divider" style={{ margin: '40px 0' }} />
 
-            <div className="client-grid">
+            {/* DESKTOP GRID */}
+            <div className="client-grid desktop-only-grid">
               {clientLogos.map(([name, category], index) => (
-                <article className="client-card" key={name}>
-                  <div className={`client-logo client-logo--${(index % 8) + 1}`}>{name.slice(0, 1)}</div>
-                  <h3>{name}</h3>
-                  <span>{category}</span>
+                <article className="client-card" key={`desktop-${name}`} style={{ textAlign: 'center', background: '#fff', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+                  <div className={`client-logo client-logo--${(index % 8) + 1}`} style={{ margin: '0 auto 16px' }}>{name.slice(0, 1)}</div>
+                  <h3 style={{ fontSize: '1.2rem', marginBottom: '8px' }}>{name}</h3>
+                  <span style={{ fontSize: '0.9rem', color: '#64748b' }}>{category}</span>
                 </article>
               ))}
             </div>
 
-            <div className="client-metrics">
+            {/* MOBILE CAROUSEL */}
+            <div className="mobile-only-carousel">
+              <div style={{ width: '100%', overflow: 'hidden' }}>
+                <AutoCarousel speed={1} alwaysScroll={true}>
+                  {clientLogos.map(([name, category], index) => (
+                    <article className="client-card" key={`mobile-${name}`} style={{ minWidth: '220px', textAlign: 'center', background: '#fff', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', padding: '24px 16px', margin: '0 10px' }}>
+                      <div className={`client-logo client-logo--${(index % 8) + 1}`} style={{ margin: '0 auto 16px' }}>{name.slice(0, 1)}</div>
+                      <h3 style={{ fontSize: '1.2rem', marginBottom: '8px' }}>{name}</h3>
+                      <span style={{ fontSize: '0.9rem', color: '#64748b' }}>{category}</span>
+                    </article>
+                  ))}
+                </AutoCarousel>
+              </div>
+            </div>
+
+            <style>
+              {`
+                .client-metrics-responsive {
+                  display: flex;
+                  justify-content: center;
+                  gap: 40px;
+                  margin-top: 80px; /* Add space between cards and metrics */
+                  flex-wrap: wrap;
+                  background: #fff;
+                  padding: 40px;
+                  border-radius: 24px;
+                  box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+                }
+                .client-metrics-responsive > div {
+                  text-align: center;
+                  min-width: 140px;
+                }
+                .client-metrics-responsive strong {
+                  display: block;
+                  font-size: 2.5rem;
+                  color: var(--navy);
+                  margin-bottom: 8px;
+                  font-family: 'Outfit', sans-serif;
+                }
+                .client-metrics-responsive span {
+                  color: var(--accent);
+                  font-weight: 700;
+                  font-size: 0.85rem;
+                  text-transform: uppercase;
+                  letter-spacing: 1px;
+                }
+                @media (max-width: 768px) {
+                  .client-metrics-responsive {
+                    gap: 30px 20px;
+                    padding: 30px 20px;
+                    margin-top: 60px;
+                  }
+                  .client-metrics-responsive > div {
+                    min-width: calc(50% - 20px);
+                  }
+                  .client-metrics-responsive strong {
+                    font-size: 2rem;
+                  }
+                }
+              `}
+            </style>
+            <div className="client-metrics-responsive">
               <div>
                 <strong>50+</strong>
                 <span>Global Clients</span>
@@ -1079,68 +1248,61 @@ const Landing = () => {
         </section>
       </main>
 
-      <footer className="footer" id="contact">
-        <div className="container footer-top">
-          <div className="footer-brand">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
-              <img src="/logo.png" alt="BECS Logo" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
-              <h2 style={{ margin: 0, color: 'var(--accent)' }}>BECS.</h2>
+      <footer className="footer" style={{ marginTop: 'auto', background: '#f8fafc', borderTop: '1px solid var(--line)', paddingTop: '60px' }}>
+        <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '40px', paddingBottom: '40px', borderBottom: '1px solid var(--line)' }}>
+          
+          {/* Brand Column */}
+          <div className="footer-col">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+              <img src="/logo.png" alt="BECS Logo" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+              <h2 style={{ margin: 0, color: 'var(--accent)', fontSize: '1.8rem' }}>BECS.</h2>
             </div>
-            <p>
+            <p style={{ color: '#475569', lineHeight: 1.6 }}>
               Banerjee Electronics Consultancy Services. Your trusted partner for
               innovative electronic solutions, automation, and premium tech supply.
             </p>
-            <ul>
-              <li>Tech Park, Sector 5, Kolkata, India</li>
-              <li>contact@becs.com</li>
-              <li>+91 98765 43210</li>
+          </div>
+
+          {/* Quick Links Column */}
+          <div className="footer-col">
+            <h3 style={{ fontSize: '1.2rem', color: 'var(--navy)', marginBottom: '20px' }}>Quick Links</h3>
+            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <li><a href="#" style={{ color: '#475569', textDecoration: 'none', transition: 'color 0.2s' }}>Home</a></li>
+              <li><a href="#services" style={{ color: '#475569', textDecoration: 'none', transition: 'color 0.2s' }}>Services</a></li>
+              <li><a href="#projects" style={{ color: '#475569', textDecoration: 'none', transition: 'color 0.2s' }}>Portfolio</a></li>
+              <li><a href="/contact" style={{ color: '#475569', textDecoration: 'none', transition: 'color 0.2s' }}>Contact Us</a></li>
             </ul>
           </div>
 
+          {/* Contact Info Column */}
+          <div className="footer-col">
+            <h3 style={{ fontSize: '1.2rem', color: 'var(--navy)', marginBottom: '20px' }}>Contact Us</h3>
+            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', color: '#475569', lineHeight: 1.5 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px', color: 'var(--accent)' }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                70/5, Banerjee Para Rd, Kamala Park, Sarsuna, Kolkata, West Bengal 700061
+              </li>
+              <li style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#475569' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--accent)' }}><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                <a href="mailto:admin@becsofficial.com" style={{ color: '#475569', textDecoration: 'none' }}>admin@becsofficial.com</a>
+              </li>
+            </ul>
+          </div>
 
-          <form className="contact-form" onSubmit={handleContactSubmit}>
-            <h3>Contact Us</h3>
-            <div className="form-row">
-              <input
-                type="text"
-                placeholder="Name"
-                value={contactName}
-                onChange={e => setContactName(e.target.value)}
-                required
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                value={contactEmail}
-                onChange={e => setContactEmail(e.target.value)}
-                required
-              />
-            </div>
-            <input
-              type="text"
-              placeholder="Subject"
-              value={contactSubject}
-              onChange={e => setContactSubject(e.target.value)}
-            />
-            <textarea
-              rows="5"
-              placeholder="Message"
-              value={contactMessage}
-              onChange={e => setContactMessage(e.target.value)}
-              required
-            />
-            <button type="submit" disabled={contactLoading}>
-              {contactLoading ? 'Sending...' : 'Send Message'}
-            </button>
-          </form>
         </div>
 
-        <div className="container footer-bottom">
-          <span>(c) 2026 BECS. All rights reserved.</span>
-          <div className="socials">
-            <a href="#contact">in</a>
-            <a href="#contact">tw</a>
-            <a href="#contact">fb</a>
+        <div className="container" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', padding: '24px 0', color: '#64748b', fontSize: '0.9rem' }}>
+          <span>&copy; {new Date().getFullYear()} BECS. All rights reserved.</span>
+          <div className="socials" style={{ display: 'flex', gap: '16px' }}>
+            <a href="https://www.linkedin.com/company/becselectronics" target="_blank" rel="noreferrer" style={{ color: '#64748b', transition: 'color 0.2s', display: 'flex', alignItems: 'center' }} aria-label="LinkedIn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+            </a>
+            <a href="https://www.facebook.com/BanerjeeElectronicsConsultancyServices/" target="_blank" rel="noreferrer" style={{ color: '#64748b', transition: 'color 0.2s', display: 'flex', alignItems: 'center' }} aria-label="Facebook">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+            </a>
+            <a href="https://www.instagram.com/_b.e.c.s_/" target="_blank" rel="noreferrer" style={{ color: '#64748b', transition: 'color 0.2s', display: 'flex', alignItems: 'center' }} aria-label="Instagram">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+            </a>
           </div>
         </div>
       </footer>
