@@ -134,7 +134,7 @@ function Navbar() {
 
             {/* Right Content */}
             <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-              <a href={frontendUrl} style={{ color: '#94a3b8', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s', letterSpacing: '0.5px' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = '#94a3b8'}>Main Corporate Website ↗</a>
+              <a href="https://www.becsofficial.com/" style={{ color: '#94a3b8', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s', letterSpacing: '0.5px' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = '#94a3b8'}>Main Corporate Website ↗</a>
             </div>
 
           </div>
