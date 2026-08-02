@@ -1,52 +1,86 @@
-const Stripe = require('stripe');
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
 const Order = require('../models/Order');
 
-// Initialize Stripe with the secret key from env
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+// Initialize Razorpay
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID || 'dummy_id',
+  key_secret: process.env.RAZORPAY_KEY_SECRET || 'dummy_secret',
+});
 
-// @desc    Create a PaymentIntent
-// @route   POST /api/payments/create-intent
+// @desc    Create a Razorpay Order
+// @route   POST /api/payments/create-order
 // @access  Private
-const createPaymentIntent = async (req, res) => {
+const createRazorpayOrder = async (req, res) => {
   try {
-    const { orderId } = req.body;
+    const { orderId, amount, purpose } = req.body;
+    let finalAmount = amount;
 
-    // Find the order to get the total amount
-    const order = await Order.findById(orderId);
-
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+    // If orderId is provided, fetch total price from DB (for ecommerce)
+    if (orderId) {
+      const order = await Order.findById(orderId);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+      finalAmount = order.totalPrice;
     }
 
-    // Stripe expects amount in minimum currency unit (paise for INR)
-    // We assume totalPrice is in INR rupees
-    const amountInPaise = Math.round(order.totalPrice * 100);
+    if (!finalAmount) {
+      return res.status(400).json({ message: 'Amount is required' });
+    }
 
-    // Create a PaymentIntent with the order amount and currency
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountInPaise,
-      currency: 'inr',
-      // We can add metadata to help reconcile later
-      metadata: {
-        orderId: order._id.toString(),
-        userId: order.user.toString()
-      },
-      // Payment method types. Since we're using PaymentElement, we can let it automatically configure
-      // but to be explicit about UPI we can pass it, or just use automatic_payment_methods
-      automatic_payment_methods: {
-        enabled: true,
-      },
-    });
+    const options = {
+      amount: Math.round(finalAmount * 100), // amount in the smallest currency unit (paise)
+      currency: 'INR',
+      receipt: `receipt_${Date.now()}`,
+      notes: {
+        orderId: orderId || 'course_enrollment',
+        userId: req.user ? req.user._id.toString() : 'guest',
+        purpose: purpose || 'purchase'
+      }
+    };
+
+    const order = await razorpay.orders.create(options);
 
     res.json({
-      clientSecret: paymentIntent.client_secret,
+      id: order.id,
+      amount: order.amount,
+      currency: order.currency
     });
   } catch (error) {
-    console.error('Error creating payment intent:', error);
-    res.status(500).json({ message: 'Failed to create payment intent' });
+    console.error('Error creating razorpay order:', error);
+    res.status(500).json({ message: 'Failed to create payment order' });
+  }
+};
+
+// @desc    Verify Razorpay Payment Signature
+// @route   POST /api/payments/verify
+// @access  Private
+const verifyRazorpayPayment = async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || 'dummy_secret')
+      .update(body.toString())
+      .digest("hex");
+
+    const isAuthentic = expectedSignature === razorpay_signature;
+
+    if (isAuthentic) {
+      // Payment is verified
+      res.json({ success: true, message: 'Payment verified successfully' });
+    } else {
+      res.status(400).json({ success: false, message: 'Invalid payment signature' });
+    }
+  } catch (error) {
+    console.error('Error verifying razorpay payment:', error);
+    res.status(500).json({ success: false, message: 'Failed to verify payment' });
   }
 };
 
 module.exports = {
-  createPaymentIntent
+  createRazorpayOrder,
+  verifyRazorpayPayment
 };

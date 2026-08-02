@@ -117,7 +117,8 @@ function Footer() {
         {/* Bottom Section: Copyright & Payments */}
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '20px', padding: '30px 0', color: '#94a3b8', fontSize: '0.9rem' }}>
           <div>
-            © 2026 BECS Store. All rights reserved. <span style={{ marginLeft: '12px' }}>Powered by BECS</span>
+            <div>© 2026 BECS Store. All rights reserved. <span style={{ marginLeft: '12px' }}>Powered by BECS</span></div>
+            <div style={{ marginTop: '8px', fontSize: '0.85rem', color: '#64748b' }}>GSTIN: 19BKNPB0402R1ZZ</div>
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <span style={{ marginRight: '8px' }}>Secure Payments:</span>

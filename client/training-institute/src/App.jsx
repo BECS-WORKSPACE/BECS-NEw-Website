@@ -1256,7 +1256,8 @@ function App() {
           </div>
         </div>
         <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem', borderTop: '1px solid #374151', paddingTop: '20px' }}>
-          &copy; {new Date().getFullYear()} BECS Eduverse. All Rights Reserved.
+          <div>&copy; {new Date().getFullYear()} BECS Eduverse. All Rights Reserved.</div>
+          <div style={{ marginTop: '5px' }}>GSTIN: 19BKNPB0402R1ZZ</div>
         </div>
       </footer>
 

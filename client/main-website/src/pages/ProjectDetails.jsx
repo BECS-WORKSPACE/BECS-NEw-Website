@@ -188,7 +188,10 @@ const ProjectDetails = () => {
         </div>
 
         <div className="container" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', padding: '24px 0', color: '#64748b', fontSize: '0.9rem' }}>
-          <span>&copy; {new Date().getFullYear()} BECS. All rights reserved.</span>
+          <div>
+            <span style={{ display: 'block' }}>&copy; {new Date().getFullYear()} BECS. All rights reserved.</span>
+            <span style={{ display: 'block', marginTop: '4px', fontSize: '0.85rem' }}>GSTIN: 19BKNPB0402R1ZZ</span>
+          </div>
           <div className="socials" style={{ display: 'flex', gap: '16px' }}>
             <a href="https://www.linkedin.com/company/becselectronics" target="_blank" rel="noreferrer" style={{ color: '#64748b', transition: 'color 0.2s', display: 'flex', alignItems: 'center' }} aria-label="LinkedIn">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg>

@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { createPaymentIntent } = require('../controllers/paymentController');
+const { createRazorpayOrder, verifyRazorpayPayment } = require('../controllers/paymentController');
 const { protect } = require('../middleware/auth');
 
-router.post('/create-intent', protect, createPaymentIntent);
+router.post('/create-order', protect, createRazorpayOrder);
+router.post('/verify', protect, verifyRazorpayPayment);
 
 module.exports = router;
