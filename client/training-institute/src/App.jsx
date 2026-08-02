@@ -252,6 +252,18 @@ function App() {
   const [studyFormData, setStudyFormData] = useState({ name: '', phone: '' });
   const [studyDownloading, setStudyDownloading] = useState(false);
 
+  // Lifted state for LoginView
+  const [loginRole, setLoginRole] = useState('student');
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+
+  // Lifted state for DashboardView
+  const [dashFile, setDashFile] = useState(null);
+  const [dashTitle, setDashTitle] = useState('');
+  const [uploadedNotes, setUploadedNotes] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('becs_eduverse_notes')) || []; } catch { return []; }
+  });
+
   const frontendUrl = import.meta.env.VITE_FRONTEND_URL || 'https://www.becsofficial.com';
 
   useEffect(() => {
@@ -340,7 +352,14 @@ function App() {
               {isDarkMode ? '☀️' : '🌙'}
             </button>
             <a href={frontendUrl} className="btn-outline-sm desktop-only" style={{ textDecoration: 'none', padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>Main Website</a>
-            <a href="#courses" className="btn-solid nav-cta">Enroll Now</a>
+            {user ? (
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button className="btn-solid nav-cta" onClick={() => setCurrentView('dashboard')}>Dashboard</button>
+                <button className="btn-outline-sm" onClick={() => { handleLogout(); setCurrentView('home'); }} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', color: 'var(--primary)', borderColor: 'var(--primary)' }}>Logout</button>
+              </div>
+            ) : (
+              <button className="btn-solid nav-cta" onClick={() => setCurrentView('login')}>Portal Login</button>
+            )}
             <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
           </div>
         </div>
@@ -901,6 +920,264 @@ function App() {
     );
   };
 
+  const LoginView = () => {
+    const handleLogin = (e) => {
+      e.preventDefault();
+      const mockUser = { name: loginEmail.split('@')[0], email: loginEmail, role: loginRole };
+      setUser(mockUser);
+      localStorage.setItem('becs_user', JSON.stringify(mockUser));
+      setCurrentView('dashboard');
+    };
+
+    return (
+      <div className="container" style={{ padding: '60px 24px', minHeight: '80vh', maxWidth: '500px', margin: '0 auto' }}>
+        <h1 className="responsive-heading" style={{ color: 'var(--primary)', textAlign: 'center', marginBottom: '30px' }}>Eduverse Portal Login</h1>
+        
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', justifyContent: 'center' }}>
+          <button className={`btn-outline-sm ${loginRole === 'student' ? 'active' : ''}`} onClick={() => setLoginRole('student')} style={{ flex: 1, background: loginRole === 'student' ? 'var(--primary)' : 'transparent', color: loginRole === 'student' ? 'white' : 'var(--primary)' }}>Student Portal</button>
+          <button className={`btn-outline-sm ${loginRole === 'teacher' ? 'active' : ''}`} onClick={() => setLoginRole('teacher')} style={{ flex: 1, background: loginRole === 'teacher' ? 'var(--primary)' : 'transparent', color: loginRole === 'teacher' ? 'white' : 'var(--primary)' }}>Teacher Portal</button>
+        </div>
+
+        <form onSubmit={handleLogin} style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px' }}>Email Address</label>
+            <input type="email" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} placeholder={`Enter ${loginRole} email`} />
+          </div>
+          <div style={{ marginBottom: '30px' }}>
+            <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px' }}>Password</label>
+            <input type="password" required value={loginPassword} onChange={e => setLoginPassword(e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} placeholder="Enter password" />
+          </div>
+          <button type="submit" className="btn-solid-lg" style={{ width: '100%', textAlign: 'center' }}>Login as {loginRole === 'student' ? 'Student' : 'Teacher'}</button>
+        </form>
+      </div>
+    );
+  };
+
+  const DashboardView = () => {
+    const handleUpload = (e) => {
+      e.preventDefault();
+      if (!dashTitle || !dashFile) {
+        alert('Please provide a title and select a file.');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const newNote = { 
+            id: Date.now(), 
+            title: dashTitle, 
+            filename: dashFile.name, 
+            date: new Date().toLocaleDateString(), 
+            teacher: user.name,
+            fileData: event.target.result
+          };
+          const updated = [newNote, ...uploadedNotes];
+          localStorage.setItem('becs_eduverse_notes', JSON.stringify(updated));
+          setUploadedNotes(updated);
+          setDashFile(null); 
+          setDashTitle('');
+          alert('Study material uploaded and processed securely!');
+        } catch (error) {
+          alert('Error: File is too large to save in the local browser database (Max ~3MB). Please upload a smaller file for this demo.');
+        }
+      };
+      // Read the file as a base64 Data URL so we can save its real contents
+      reader.readAsDataURL(dashFile);
+    };
+
+    const handleDownload = (note) => {
+      if (note.fileData) {
+        // Download the actual file contents that were uploaded
+        const a = document.createElement('a');
+        a.href = note.fileData;
+        a.download = note.filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        // Fallback for older notes uploaded before this update
+        const content = `Title: ${note.title}\nFilename: ${note.filename}\nTeacher: ${note.teacher}\nDate: ${note.date}\n\n[CONFIDENTIAL]\nThis is a securely downloaded study material generated by BECS Eduverse.`;
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = note.filename.endsWith('.txt') ? note.filename : `${note.filename}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    };
+
+    const handleDelete = (noteId) => {
+      if (window.confirm('Are you sure you want to securely delete this material? This action cannot be undone.')) {
+        const updated = uploadedNotes.filter(n => n.id !== noteId);
+        setUploadedNotes(updated);
+        localStorage.setItem('becs_eduverse_notes', JSON.stringify(updated));
+      }
+    };
+
+    if (!user) { setCurrentView('login'); return null; }
+
+    const avatarSeed = encodeURIComponent(user.name);
+    const avatarUrl = user.role === 'teacher' 
+      ? `https://api.dicebear.com/9.x/micah/svg?seed=${avatarSeed}&backgroundColor=f8fafc` 
+      : `https://api.dicebear.com/9.x/notionists/svg?seed=${avatarSeed}&backgroundColor=f8fafc`;
+
+    return (
+      <div style={{ background: 'var(--background)', minHeight: '100vh', paddingBottom: '80px' }}>
+        {/* Dashboard Header */}
+        <div style={{ background: 'linear-gradient(135deg, var(--navy) 0%, #1e293b 100%)', padding: '60px 24px', color: 'white', marginBottom: '40px' }}>
+          <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <img src={avatarUrl} alt="Avatar" style={{ width: '80px', height: '80px', borderRadius: '50%', border: '3px solid var(--accent)', objectFit: 'cover', background: 'white' }} />
+              <div>
+                <h1 style={{ fontSize: '2.2rem', margin: '0 0 8px 0', fontFamily: 'Outfit', fontWeight: 700 }}>Welcome back, {user.name}!</h1>
+                <span style={{ background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: '99px', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  {user.role === 'teacher' ? '👨‍🏫 Faculty Member' : '🎓 Student Scholar'}
+                </span>
+              </div>
+            </div>
+            <button className="btn-outline-sm" onClick={() => { handleLogout(); setCurrentView('home'); }} style={{ borderColor: 'rgba(255,255,255,0.3)', color: 'white' }}>Sign Out from Portal</button>
+          </div>
+        </div>
+
+        <div className="container" style={{ padding: '0 24px' }}>
+          {/* Quick Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px', marginTop: '-80px', marginBottom: '40px' }}>
+            <div style={{ background: 'var(--surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '10px' }}>{user.role === 'teacher' ? '📚' : '📖'}</div>
+              <h3 style={{ fontSize: '1.8rem', color: 'var(--primary)', margin: '0 0 4px 0' }}>{user.role === 'teacher' ? uploadedNotes.length : '0'}</h3>
+              <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>{user.role === 'teacher' ? 'Total Uploads' : 'Active Courses'}</p>
+            </div>
+            <div style={{ background: 'var(--surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '10px' }}>{user.role === 'teacher' ? '👥' : '🏆'}</div>
+              <h3 style={{ fontSize: '1.8rem', color: 'var(--primary)', margin: '0 0 4px 0' }}>{user.role === 'teacher' ? '124' : '0'}</h3>
+              <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>{user.role === 'teacher' ? 'Total Students' : 'Certificates Earned'}</p>
+            </div>
+            <div style={{ background: 'var(--surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '10px' }}>{user.role === 'teacher' ? '⭐' : '⏳'}</div>
+              <h3 style={{ fontSize: '1.8rem', color: 'var(--primary)', margin: '0 0 4px 0' }}>{user.role === 'teacher' ? '4.9' : '12'}</h3>
+              <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>{user.role === 'teacher' ? 'Average Rating' : 'Hours Learned'}</p>
+            </div>
+          </div>
+
+          {/* Profile & Actions Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '30px', marginBottom: '50px' }}>
+            
+            {/* Personal Profile Section */}
+            <div style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '30px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--accent-soft)', display: 'grid', placeItems: 'center', color: 'white', fontSize: '1.5rem' }}>👤</div>
+                <h2 style={{ margin: 0, color: 'var(--primary)', fontFamily: 'Outfit', fontSize: '1.8rem' }}>Personal Profile</h2>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '16px', borderBottom: '1px solid var(--border)' }}>
+                  <span style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '1.05rem' }}>Full Name</span>
+                  <span style={{ color: 'var(--navy)', fontWeight: 700, fontSize: '1.1rem' }}>{user.name}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '16px', borderBottom: '1px solid var(--border)' }}>
+                  <span style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '1.05rem' }}>Email Address</span>
+                  <span style={{ color: 'var(--navy)', fontWeight: 600, fontSize: '1rem' }}>{user.email}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '16px', borderBottom: '1px solid var(--border)' }}>
+                  <span style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '1.05rem' }}>Account Type</span>
+                  <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '1.05rem' }}>{user.role === 'teacher' ? 'Faculty Member' : 'Student'}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '10px' }}>
+                  <span style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '1.05rem' }}>System Status</span>
+                  <span style={{ color: '#10b981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.05rem' }}>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 10px rgba(16,185,129,0.5)' }}></div> Active
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Dynamic Action Section based on Role */}
+            {user.role === 'teacher' ? (
+              <div style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '30px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--accent-soft)', display: 'grid', placeItems: 'center', color: 'white', fontSize: '1.5rem' }}>☁️</div>
+                  <h2 style={{ margin: 0, color: 'var(--primary)', fontFamily: 'Outfit', fontSize: '1.8rem' }}>Upload Material</h2>
+                </div>
+                <form onSubmit={handleUpload} style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--navy)' }}>Material Title</label>
+                    <input type="text" required value={dashTitle} onChange={e => setDashTitle(e.target.value)} placeholder="e.g. Chapter 4: Networks" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '2px solid var(--border)', fontSize: '1rem', outline: 'none' }} />
+                  </div>
+                  <div style={{ border: '2px dashed #cbd5e1', borderRadius: '12px', padding: '30px 20px', textAlign: 'center', background: '#f8fafc', position: 'relative', cursor: 'pointer', transition: 'border 0.2s' }}>
+                    <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>📄</div>
+                    <p style={{ margin: '0 0 8px 0', fontWeight: 600, color: 'var(--navy)', fontSize: '1rem' }}>{dashFile ? dashFile.name : 'Click or drop file here'}</p>
+                    <input type="file" required onChange={e => setDashFile(e.target.files[0])} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }} />
+                  </div>
+                  <button type="submit" className="btn-solid-lg" style={{ width: '100%' }}>Publish Securely</button>
+                </form>
+              </div>
+            ) : (
+              <div style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--accent-soft)', display: 'grid', placeItems: 'center', color: 'white', fontSize: '1.5rem' }}>🎓</div>
+                    <h2 style={{ margin: 0, color: 'var(--primary)', fontFamily: 'Outfit', fontSize: '1.8rem' }}>Enrolled Courses</h2>
+                  </div>
+                </div>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '2px dashed var(--border)', borderRadius: '16px', padding: '30px 20px', textAlign: 'center', background: '#f8fafc' }}>
+                  <div style={{ fontSize: '3.5rem', marginBottom: '16px' }}>🚀</div>
+                  <h3 style={{ fontSize: '1.4rem', margin: '0 0 10px 0', color: 'var(--navy)', fontFamily: 'Outfit' }}>Your learning journey starts here!</h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '1rem', maxWidth: '300px', margin: '0 auto 24px', lineHeight: 1.5 }}>Browse our professional programs to get started.</p>
+                  <button className="btn-solid" onClick={() => setCurrentView('home')} style={{ width: '100%' }}>Explore Course Catalog</button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--primary)', display: 'grid', placeItems: 'center', color: 'white', fontSize: '1.2rem' }}>📁</div>
+            <h2 style={{ margin: 0, color: 'var(--primary)', fontFamily: 'Outfit', fontSize: '1.6rem' }}>{user.role === 'teacher' ? 'Your Uploaded Resources' : 'Latest Study Materials'}</h2>
+          </div>
+          
+          {uploadedNotes.length === 0 ? (
+            <div style={{ background: 'var(--surface)', padding: '40px', borderRadius: '16px', textAlign: 'center', border: '1px solid var(--border)' }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', margin: 0 }}>No study materials available at the moment.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+              {uploadedNotes.map(note => (
+                <div key={note.id} style={{ background: 'var(--surface)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '20px' }}>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: '#fef2f2', color: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: '1.8rem', flexShrink: 0 }}>📄</div>
+                    <div>
+                      <h3 style={{ margin: '0 0 6px 0', fontSize: '1.15rem', color: 'var(--navy)', lineHeight: 1.3, fontWeight: 700 }}>{note.title}</h3>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>{note.filename}</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--accent)', color: 'white', display: 'grid', placeItems: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>{note.teacher.charAt(0).toUpperCase()}</div>
+                      <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 500 }}>{note.teacher}</span>
+                    </div>
+                    <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>{note.date}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                    <button className="btn-solid" onClick={() => handleDownload(note)} style={{ flex: 1, padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      ⬇️ Download
+                    </button>
+                    {user.role === 'teacher' && (
+                      <button className="btn-outline-sm" onClick={() => handleDelete(note.id)} style={{ padding: '10px 16px', color: '#ef4444', borderColor: '#fca5a5', background: '#fef2f2' }}>
+                        🗑️ Delete
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const ResultsView = () => (
     <div className="container" style={{ padding: '60px 24px', minHeight: '80vh' }}>
       <h1 style={{ fontSize: '2.5rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '10px' }}>Our Star Performers</h1>
@@ -940,6 +1217,8 @@ function App() {
             {currentView === 'enroll' && EnrollmentView()}
             {currentView === 'study' && StudyMaterialView()}
             {currentView === 'results' && ResultsView()}
+            {currentView === 'login' && LoginView()}
+            {currentView === 'dashboard' && DashboardView()}
           </>
         )}
       </main>
@@ -947,7 +1226,7 @@ function App() {
       <footer className="footer" style={{ background: '#111827', color: 'white', padding: '60px 0 20px 0' }}>
         <div className="container footer-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '40px', marginBottom: '40px' }}>
           <div className="footer-brand">
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '15px' }}>BECS <span style={{ color: 'var(--accent)' }}>Eduverse</span></h2>
+            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '15px' }}>BECS <span style={{ color: 'var(--primary)' }}>Eduverse</span></h2>
             <p style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>India's next-generation student success platform integrating learning, mentoring, and psychological support.</p>
           </div>
           <div className="footer-links">

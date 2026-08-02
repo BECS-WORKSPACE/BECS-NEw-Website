@@ -1,7 +1,7 @@
 :root {
   --primary: #0f172a;
   --secondary: #334155;
-  --accent: #0ea5e9;
+  --accent: #e6223b;
   --bg: #f8fafc;
   --surface: #ffffff;
   --text: #0f172a;
@@ -34,6 +34,18 @@ body {
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
 }
+
+/* --- Global Logo Overrides --- */
+img[alt="BECS Logo"], 
+img[alt="BECS"], 
+img[src*="logo.png"], 
+img[src*="org_logo.png"], 
+img.brand-logo {
+  border-radius: 50% !important;
+  aspect-ratio: 1/1 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+/* ---------------------------- */
 
 .admin-layout {
   display: grid;

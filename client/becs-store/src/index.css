@@ -7,8 +7,8 @@
   --line: #e4eaf4;
   --text: #17233c;
   --muted: #6d7990;
-  --accent: #ff7048;
-  --accent-deep: #ff5a35;
+  --accent: #e6223b;
+  --accent-deep: #b91c1c;
   --success: #0f8f5d;
   --shadow: 0 22px 60px rgba(18, 24, 39, 0.08);
   --shadow-soft: 0 14px 34px rgba(18, 24, 39, 0.06);
@@ -43,6 +43,18 @@ img {
   display: block;
   max-width: 100%;
 }
+
+/* --- Global Logo Overrides --- */
+img[alt="BECS Logo"], 
+img[alt="BECS"], 
+img[src*="logo.png"], 
+img[src*="org_logo.png"], 
+img.brand-logo {
+  border-radius: 50% !important;
+  aspect-ratio: 1/1 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+/* ---------------------------- */
 
 a {
   color: inherit;

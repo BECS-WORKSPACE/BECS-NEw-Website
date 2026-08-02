@@ -93,13 +93,28 @@ function ShopProvider({ children }) {
   const [user, setUser] = useState(() => safeRead(STORAGE_KEYS.user, null));
   const [shippingSpeed, setShippingSpeed] = useState('Standard Delivery');
 
+  const mockProducts = [
+    { _id: '1', name: 'Smart Switch Kit', price: 5500, originalPrice: 6500, category: 'Automation', image: 'https://images.unsplash.com/photo-1558089687-f282ffcbc0d4?auto=format&fit=crop&w=600&q=80', brand: 'BECS', stock: 20 },
+    { _id: '2', name: 'Industrial Automation Kit', price: 9800, originalPrice: 12000, category: 'Automation', image: 'https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=600&q=80', brand: 'BECS', stock: 15 },
+    { _id: '3', name: 'Security Camera Set', price: 12500, originalPrice: 15000, category: 'Sensors', image: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=600&q=80', brand: 'VisionTech', stock: 8 },
+    { _id: '4', name: 'IoT Starter Kit', price: 4200, originalPrice: 5000, category: 'IoT', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80', brand: 'Arduino', stock: 30 },
+    { _id: '5', name: 'Circuit Tools Kit', price: 6800, originalPrice: 8000, category: 'Hardware', image: 'https://images.unsplash.com/photo-1563770660941-10a636076f6d?auto=format&fit=crop&w=600&q=80', brand: 'BECS', stock: 25 },
+    { _id: '6', name: 'Power Backup Module', price: 15000, originalPrice: 18000, category: 'Power', image: 'https://images.unsplash.com/photo-1620714223084-8fcacc6dfd8d?auto=format&fit=crop&w=600&q=80', brand: 'PowerTech', stock: 10 }
+  ];
+
   useEffect(() => {
     const getProducts = async () => {
       try {
         const { data } = await fetchProducts();
-        setProducts(data);
+        if (!data || data.length === 0) {
+          console.warn('Backend returned empty products array. Loading fallback mock data.');
+          setProducts(mockProducts);
+        } else {
+          setProducts(data);
+        }
       } catch (error) {
-        console.error('Failed to fetch products', error);
+        console.error('Failed to fetch products from backend. Loading fallback mock data.', error);
+        setProducts(mockProducts);
       } finally {
         setLoading(false);
       }

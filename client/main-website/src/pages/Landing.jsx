@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { sendContactMessage } from '../api';
 import toast from 'react-hot-toast';
 
-const ecommerceUrl = import.meta.env.VITE_ECOMMERCE_URL || 'https://store.becsofficial.com';
+const rawEcommerceUrl = import.meta.env.VITE_ECOMMERCE_URL || 'https://store.becsofficial.com';
+const ecommerceUrl = rawEcommerceUrl.endsWith('/') ? rawEcommerceUrl.slice(0, -1) : rawEcommerceUrl;
 const trainingUrl = import.meta.env.VITE_TRAINING_URL || 'https://vidyapeeth.becsofficial.com';
 
 const stats = [
@@ -171,6 +172,30 @@ const team = [
 ];
 
 export const projects = [
+  {
+    id: 13,
+    title: 'MonitorFlow: Complete HRMS & Payroll',
+    category: 'Software Projects',
+    status: 'Completed',
+    image: '/monitorflow.png',
+    tech: ['HRMS', 'Payroll', 'Data Analytics', 'Web Platform'],
+    overview: 'MonitorFlow is a powerful, comprehensive Employee Tracking and Human Resource Management Solution. It provides a centralized, modern dashboard to effortlessly track employee presence, monitor productivity trends, and manage an end-to-end automated payroll system.',
+    timeline: 'Status: Completed',
+    impact: 'Dramatically reduces administrative overhead by automating complex HR tasks. It seamlessly calculates taxes, manages benefits, processes real-time leave requests, and generates dynamic department-wide performance analytics for modern enterprises.',
+    gallery: []
+  },
+  {
+    id: 14,
+    title: 'VisionGuard AI: Intelligent Surveillance',
+    category: 'Hardware & Automation',
+    status: 'Completed',
+    image: '/visionguard.png',
+    tech: ['Facial Recognition', 'Object Detection', 'Thermal Imaging', 'AI Analytics'],
+    overview: 'An advanced AI-powered security surveillance command center designed for absolute situational awareness. VisionGuard utilizes cutting-edge computer vision to provide real-time facial recognition, precise human and object detection, and dynamic zone-wise tracking.',
+    timeline: 'Status: Completed',
+    impact: 'Proactively secures large-scale infrastructure by integrating thermal imaging and early-warning fire & gas detection systems. It instantly maps critical threats on a centralized dashboard, drastically reducing response times for security personnel.',
+    gallery: []
+  },
   {
     id: 1,
     title: 'Smart USB Hub',
@@ -474,11 +499,10 @@ const ManualCarousel = ({ children, headingTitle, headingPill, headingText, spee
   );
 };
 
-const AutoCarousel = ({ children, speed = 1, alwaysScroll = false }) => {
+const AutoCarousel = ({ children, speed = 1, alwaysScroll = false, showArrows = false }) => {
   const scrollRef = React.useRef(null);
   const isPausedRef = React.useRef(false);
   
-  // Convert children to array to get the count accurately
   const childrenArray = React.Children.toArray(children);
   const shouldScroll = alwaysScroll || childrenArray.length >= 4;
 
@@ -501,6 +525,8 @@ const AutoCarousel = ({ children, speed = 1, alwaysScroll = false }) => {
            scrollRef.current.scrollLeft = 0;
            pos = 0;
         }
+      } else if (scrollRef.current && isPausedRef.current) {
+        pos = scrollRef.current.scrollLeft;
       }
       animationFrameId = requestAnimationFrame(scrollLoop);
     };
@@ -509,16 +535,45 @@ const AutoCarousel = ({ children, speed = 1, alwaysScroll = false }) => {
     return () => cancelAnimationFrame(animationFrameId);
   }, [speed, shouldScroll]);
 
+  const handleManualScroll = (dir) => {
+    if (scrollRef.current) {
+      isPausedRef.current = true;
+      const scrollAmount = window.innerWidth < 768 ? 280 : 350;
+      const newPos = scrollRef.current.scrollLeft + (dir === 'left' ? -scrollAmount : scrollAmount);
+      scrollRef.current.scrollTo({ left: newPos, behavior: 'smooth' });
+      
+      setTimeout(() => {
+        isPausedRef.current = false;
+      }, 3000);
+    }
+  };
+
   return (
-    <div 
-      style={{ overflow: shouldScroll ? 'hidden' : 'auto', display: 'flex', width: '100%', borderRadius: '16px' }}
-      ref={scrollRef}
-      onMouseEnter={() => { isPausedRef.current = true; }}
-      onMouseLeave={() => { isPausedRef.current = false; }}
-    >
-      <div style={{ display: 'flex', gap: '20px', padding: '10px', margin: shouldScroll ? '0' : '0 auto' }}>
-        {children}
-        {shouldScroll && children}
+    <div style={{ position: 'relative', width: '100%', padding: showArrows ? '0 60px' : '0' }}>
+      {showArrows && shouldScroll && (
+        <>
+          <button 
+            onClick={() => handleManualScroll('left')} 
+            onMouseEnter={() => { isPausedRef.current = true; }}
+            style={{ position: 'absolute', left: '0px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: '#fff', border: '1px solid var(--border)', borderRadius: '50%', width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 15px rgba(0,0,0,0.15)', color: 'var(--navy)', fontSize: '1.2rem', transition: 'all 0.3s' }}
+          >❮</button>
+          <button 
+            onClick={() => handleManualScroll('right')} 
+            onMouseEnter={() => { isPausedRef.current = true; }}
+            style={{ position: 'absolute', right: '0px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, background: '#fff', border: '1px solid var(--border)', borderRadius: '50%', width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 15px rgba(0,0,0,0.15)', color: 'var(--navy)', fontSize: '1.2rem', transition: 'all 0.3s' }}
+          >❯</button>
+        </>
+      )}
+      <div 
+        style={{ overflow: shouldScroll ? 'hidden' : 'auto', display: 'flex', width: '100%', borderRadius: '16px' }}
+        ref={scrollRef}
+        onMouseEnter={() => { isPausedRef.current = true; }}
+        onMouseLeave={() => { isPausedRef.current = false; }}
+      >
+        <div style={{ display: 'flex', gap: '20px', padding: '10px', margin: shouldScroll ? '0' : '0 auto' }}>
+          {children}
+          {shouldScroll && children}
+        </div>
       </div>
     </div>
   );
@@ -620,7 +675,7 @@ const Landing = () => {
       <header className={`topbar ${isScrolled ? 'topbar--scrolled' : ''}`}>
         <div className="container topbar-inner">
           <a className="brand" href="#home">
-            <img src="/logo.png" alt="BECS Logo" style={{ width: '60px', height: '50px', objectFit: 'contain' }} />
+            <img src="/logo.png" alt="BECS Logo" style={{ width: '56px', height: '56px', objectFit: 'contain', borderRadius: '50%', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
             <span className="brand-name">BECS</span>
           </a>
 
@@ -714,7 +769,7 @@ const Landing = () => {
       <div className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="mobile-sidebar-header">
           <a className="brand" href="#home" onClick={() => setIsMobileMenuOpen(false)}>
-            <img src="/logo.png" alt="BECS Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+            <img src="/logo.png" alt="BECS Logo" style={{ width: '48px', height: '48px', objectFit: 'contain', borderRadius: '50%', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
             <span className="brand-name">BECS</span>
           </a>
           <button className="close-btn" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
@@ -741,12 +796,10 @@ const Landing = () => {
             <div className="hero-copy fade-in-up">
               <span className="section-pill">Enterprise Technology Partner</span>
               <h1>
-                Engineering Smart Electronics, <br />
-                Automation & Digital Solutions <br />
-                <span>for Modern Businesses.</span>
+                Architecting Advanced Software, Digital Platforms & Smart IoT <span>for the Modern Enterprise.</span>
               </h1>
               <p>
-                BECS delivers professional electronics solutions, industrial automation, IoT systems, embedded technologies, digital platforms, and educational initiatives that help businesses, institutions, and individuals innovate faster.
+                BECS provides comprehensive technology solutions ranging from scalable web and mobile applications, enterprise software, and cloud infrastructure, to cutting-edge IoT systems, hardware automation, and digital education.
               </p>
 
               <div className="hero-actions">
@@ -818,7 +871,7 @@ const Landing = () => {
             </h2>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
               <img 
-                src="/mr-banerjee.png" 
+                src="/mr-banerjee-cartoon.png" 
                 alt="Mr. Banerjee" 
                 style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--accent)' }} 
               />
@@ -873,7 +926,7 @@ const Landing = () => {
               <div className="store-showcase-content">
                 <span className="section-pill">Online Store</span>
                 <h2 style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '3rem', fontWeight: 900, textTransform: 'uppercase' }}>
-                  <img src="/logo.png" alt="BECS Logo" style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
+                  <img src="/logo.png" alt="BECS Logo" style={{ width: '60px', height: '60px', objectFit: 'contain', borderRadius: '50%', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
                   BECS Store
                 </h2>
                 <h3 className="store-highlight-text">
@@ -887,15 +940,13 @@ const Landing = () => {
                   Discover a curated collection of industry-grade electronic components and kits designed for professionals, educators, and hobbyists alike.
                 </p>
 
-                <div className="store-cta-group">
+                <div className="store-cta-group" style={{ display: 'flex', marginTop: '20px' }}>
                   <a 
-                    href={ecommerceUrl}
-                    className="pill-button"
+                    href={`${ecommerceUrl}/products`}
+                    className="pill-button pill-button--solid"
+                    style={{ padding: '16px 32px', fontSize: '1.1rem', letterSpacing: '0.5px' }}
                   >
-                    Explore Store
-                  </a>
-                  <a href={ecommerceUrl} className="pill-button pill-button--ghost">
-                    View Categories
+                    Explore All Products ➔
                   </a>
                 </div>
               </div>
@@ -1096,15 +1147,15 @@ const Landing = () => {
             </div>
 
             <div style={{ width: '100%', overflow: 'hidden', padding: '20px 0' }}>
-              <AutoCarousel speed={1}>
+              <AutoCarousel speed={1} showArrows={true}>
                 {projects.filter(p => activeProjectCategory === 'All' || p.category === activeProjectCategory).map((project) => (
                   <article key={project.id} onClick={() => navigate(`/project/${project.id}`)} style={{ 
                     background: '#fff', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--line)', 
                     cursor: 'pointer', transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)', boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
                     minWidth: '320px', maxWidth: '350px', height: '100%', display: 'flex', flexDirection: 'column'
                   }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-10px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 20px 30px rgba(0,0,0,0.1)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)'; }}>
-                    <div style={{ position: 'relative', height: '200px', flexShrink: 0 }}>
-                      <img src={project.image} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div style={{ position: 'relative', height: '200px', flexShrink: 0, background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img src={project.image} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '10px' }} />
                       <span style={{ 
                         position: 'absolute', top: '16px', right: '16px', padding: '6px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700,
                         background: project.status === 'Completed' ? '#10b981' : '#3b82f6', color: '#fff'
@@ -1227,7 +1278,7 @@ const Landing = () => {
                 <span>Global Clients</span>
               </div>
               <div>
-                <strong>2+</strong>
+                <strong>5+</strong>
                 <span>Countries Served</span>
               </div>
               <div>
@@ -1279,7 +1330,7 @@ const Landing = () => {
           {/* Brand Column */}
           <div className="footer-col">
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
-              <img src="/logo.png" alt="BECS Logo" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+              <img src="/logo.png" alt="BECS Logo" style={{ width: '56px', height: '56px', objectFit: 'contain', borderRadius: '50%', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
               <h2 style={{ margin: 0, color: 'var(--accent)', fontSize: '1.8rem' }}>BECS.</h2>
             </div>
             <p style={{ color: '#475569', lineHeight: 1.6 }}>

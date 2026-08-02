@@ -8,11 +8,11 @@
   --text: #17233c;
   --muted: #6c7a92;
   --line: #e8edf6;
-  --accent: #ff7048;
-  --accent-deep: #ff5a35;
-  --accent-soft: #fff0e8;
-  --teal: #6bc7d5;
-  --navy: #121827;
+  --accent: #e6223b;
+  --accent-deep: #b91c1c;
+  --accent-soft: #fdf2f4;
+  --teal: #1a1a1a;
+  --navy: #0f0f0f;
   --quote: #343741;
   --shadow: 0 20px 55px rgba(18, 24, 39, 0.08);
   --shadow-soft: 0 16px 38px rgba(18, 24, 39, 0.06);
@@ -47,6 +47,24 @@ img {
   max-width: 100%;
   display: block;
 }
+
+/* --- Global Logo Overrides --- */
+img[alt="BECS Logo"], 
+img[alt="BECS"], 
+img[src*="logo.png"], 
+img[src*="org_logo.png"], 
+img.brand-logo {
+  border-radius: 50% !important;
+  aspect-ratio: 1/1 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+img[alt="KRIT Consultancy Logo"],
+img[src*="krit-logo"] {
+  border-radius: 12px !important;
+  aspect-ratio: auto !important;
+  box-shadow: none !important;
+}
+/* ---------------------------- */
 
 button,
 input,

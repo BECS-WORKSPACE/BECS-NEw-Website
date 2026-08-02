@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
 :root {
-  --primary: #2563EB; /* Modern Royal Blue */
-  --primary-dark: #1D4ED8;
-  --accent: #F59E0B; /* Muted Orange Accent */
-  --accent-hover: #D97706;
+  --primary: #e6223b; /* Red */
+  --primary-dark: #b91c1c;
+  --accent: #1a1a1a; /* Dark contrast */
+  --accent-hover: #000000;
   --emerald: #10B981;
   --bg: #F8FAFC; /* Softer Slate 50 */
   --surface: #FFFFFF;
@@ -28,6 +28,19 @@ body {
 }
 a { text-decoration: none; color: inherit; }
 .container { width: min(100%, 1280px); margin: 0 auto; padding: 0 24px; }
+
+/* --- Global Logo Overrides --- */
+img[alt="BECS Udaan Logo"], 
+img[alt="BECS Logo"], 
+img[alt="BECS"], 
+img[src*="logo.png"], 
+img[src*="org_logo.png"], 
+img.brand-logo {
+  border-radius: 50% !important;
+  aspect-ratio: 1/1 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+/* ---------------------------- */
 
 /* Top Strip Marquee */
 .top-strip {
@@ -314,7 +327,7 @@ body.theme-dark {
   --text: #F1F5F9; /* Slate 100 - softer than pure white */
   --text-muted: #94A3B8; /* Slate 400 */
   --border: #334155; /* Slate 700 */
-  --primary: #60A5FA; /* Blue 400 for better contrast on dark */
+  --primary: #fb7185; /* Light Red for better contrast on dark */
   --surface-transparent: rgba(30, 41, 59, 0.85);
 }
 body.theme-dark .course-card, body.theme-dark .feature-card, body.theme-dark .testimonial-card, body.theme-dark .info-box, body.theme-dark .syllabus-list, body.theme-dark .pricing-card, body.theme-dark .stat-box, body.theme-dark form, body.theme-dark .enroll-card {

@@ -10,7 +10,7 @@ function Products() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedSubFilters, setSelectedSubFilters] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
-  const [priceRange, setPriceRange] = useState(10000);
+  const [priceRange, setPriceRange] = useState(100000);
   const [inStockOnly, setInStockOnly] = useState(false);
 
   // Dynamic filter extraction
@@ -127,8 +127,8 @@ function Products() {
       <aside className="products-sidebar-filter" style={{ background: '#fff', borderRadius: '20px', padding: '24px', border: '1px solid #f1f5f9' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#0f172a' }}>Filters</h3>
-          {(selectedCategories.length > 0 || selectedBrands.length > 0 || selectedSubFilters.length > 0 || priceRange < 10000) && (
-            <button onClick={() => { setSelectedCategories([]); setSelectedBrands([]); setSelectedSubFilters([]); setPriceRange(10000); setInStockOnly(false); }} style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer' }}>Clear All</button>
+          {(selectedCategories.length > 0 || selectedBrands.length > 0 || selectedSubFilters.length > 0 || priceRange < 100000) && (
+            <button onClick={() => { setSelectedCategories([]); setSelectedBrands([]); setSelectedSubFilters([]); setPriceRange(100000); setInStockOnly(false); }} style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer' }}>Clear All</button>
           )}
         </div>
 
@@ -178,7 +178,7 @@ function Products() {
             <h4 style={{ fontSize: '0.95rem', color: '#475569', fontWeight: 700, margin: 0 }}>Max Price</h4>
             <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#6366f1' }}>{formatPrice(priceRange)}</span>
           </div>
-          <input type="range" min="100" max="10000" step="100" value={priceRange} onChange={(e) => setPriceRange(Number(e.target.value))} style={{ width: '100%', accentColor: '#6366f1' }} />
+          <input type="range" min="100" max="100000" step="500" value={priceRange} onChange={(e) => setPriceRange(Number(e.target.value))} style={{ width: '100%', accentColor: '#6366f1' }} />
         </div>
 
         {/* Availability */}

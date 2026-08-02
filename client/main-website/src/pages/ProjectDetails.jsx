@@ -60,43 +60,77 @@ const ProjectDetails = () => {
           <div className="pd-card" style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
             
             {/* Header Section */}
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: 'center', animation: 'fadeInUp 0.8s ease-out' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
                 <span style={{ color: 'var(--accent)', fontSize: '1rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px' }}>{project.category}</span>
                 <span style={{ background: project.status === 'Completed' ? '#d1fae5' : '#dbeafe', color: project.status === 'Completed' ? '#065f46' : '#1e40af', padding: '6px 16px', borderRadius: '30px', fontSize: '0.9rem', fontWeight: 700 }}>{project.status}</span>
               </div>
-              <h1 className="pd-title">{project.title}</h1>
+              <h1 className="pd-title" style={{ background: 'linear-gradient(135deg, var(--navy), var(--accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{project.title}</h1>
             </div>
 
             {/* SINGLE IMAGE */}
-            <div style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', aspectRatio: '21/9', width: '100%', background: '#f1f5f9' }}>
-              <img src={project.image} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            <div style={{ borderRadius: '24px', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.08)', width: '100%', height: '60vh', minHeight: '450px', maxHeight: '650px', background: 'radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'scaleIn 1s cubic-bezier(0.16, 1, 0.3, 1)', position: 'relative' }}>
+              <img src={project.image} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '20px', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.2))', zIndex: 2 }} />
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: `url(${project.image}) center/cover`, filter: 'blur(40px)', opacity: 0.3, zIndex: 1 }}></div>
             </div>
 
+            <style>
+              {`
+                @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes scaleIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+                @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+                .anim-delay-1 { animation: slideInUp 0.8s ease-out 0.2s both; }
+                .anim-delay-2 { animation: slideInUp 0.8s ease-out 0.4s both; }
+                
+                .glass-card {
+                  background: rgba(255, 255, 255, 0.8);
+                  backdrop-filter: blur(20px);
+                  border: 1px solid rgba(255,255,255,0.8);
+                  border-radius: 24px;
+                  padding: 40px;
+                  box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+                  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+                  display: flex;
+                  flex-direction: column;
+                }
+                .glass-card:hover {
+                  transform: translateY(-8px);
+                  box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+                }
+              `}
+            </style>
+
             {/* CONTENT SECTION */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '40px' }}>
-              <div>
-                <h3 style={{ fontSize: '1.8rem', marginBottom: '20px', color: 'var(--navy)' }}>Overview</h3>
-                <p style={{ color: '#475569', lineHeight: 1.8, fontSize: '1.1rem', marginBottom: '30px' }}>{project.overview}</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                  {project.tech.map(t => <span key={t} style={{ background: '#f1f5f9', color: 'var(--navy)', padding: '8px 16px', borderRadius: '8px', fontSize: '0.9rem', fontWeight: 600 }}>{t}</span>)}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px', marginTop: '10px' }}>
+              <div className="anim-delay-1 glass-card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '30px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'var(--accent)', color: '#fff', display: 'grid', placeItems: 'center', fontSize: '1.4rem', boxShadow: '0 8px 20px rgba(14, 165, 233, 0.3)' }}>🎯</div>
+                  <h3 style={{ fontSize: '2rem', color: 'var(--navy)', margin: 0, fontFamily: 'Outfit, sans-serif' }}>Overview</h3>
+                </div>
+                <p style={{ color: '#475569', lineHeight: 1.8, fontSize: '1.15rem', marginBottom: '30px', fontWeight: 500, flexGrow: 1 }}>{project.overview}</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: 'auto' }}>
+                  {project.tech.map(t => <span key={t} style={{ background: 'var(--navy)', color: '#fff', padding: '8px 16px', borderRadius: '24px', fontSize: '0.9rem', fontWeight: 600, letterSpacing: '0.5px' }}>{t}</span>)}
                 </div>
               </div>
               
-              <div>
-                <h3 style={{ fontSize: '1.8rem', marginBottom: '20px', color: 'var(--navy)' }}>Impact & Features</h3>
-                <p style={{ color: '#475569', lineHeight: 1.8, fontSize: '1.1rem', background: '#f8fafc', padding: '24px', borderRadius: '12px', borderLeft: '4px solid var(--accent)' }}>{project.impact}</p>
+              <div className="anim-delay-2 glass-card" style={{ background: 'linear-gradient(145deg, #ffffff, #f8fafc)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '30px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#10b981', color: '#fff', display: 'grid', placeItems: 'center', fontSize: '1.4rem', boxShadow: '0 8px 20px rgba(16, 185, 129, 0.3)' }}>⚡</div>
+                  <h3 style={{ fontSize: '2rem', color: 'var(--navy)', margin: 0, fontFamily: 'Outfit, sans-serif' }}>Impact & Features</h3>
+                </div>
+                <p style={{ color: '#334155', lineHeight: 1.9, fontSize: '1.15rem', fontWeight: 500 }}>{project.impact}</p>
               </div>
             </div>
 
             {/* CALL TO ACTION */}
-            <div style={{ textAlign: 'center', marginTop: '20px', borderTop: '1px solid var(--line)', paddingTop: '40px' }}>
-              <h3 style={{ color: 'var(--navy)', fontSize: '1.5rem', marginBottom: '24px' }}>Interested in building something similar?</h3>
+            <div style={{ textAlign: 'center', marginTop: '40px', padding: '50px 20px', background: 'var(--navy)', borderRadius: '24px', animation: 'fadeInUp 1s ease-out 0.6s both' }}>
+              <h3 style={{ color: '#fff', fontSize: '2rem', marginBottom: '16px', fontFamily: 'Outfit' }}>Ready to build something similar?</h3>
+              <p style={{ color: '#94a3b8', fontSize: '1.1rem', marginBottom: '32px', maxWidth: '500px', margin: '0 auto 32px' }}>Let our engineering team help you bring your vision to life.</p>
               <a href="/contact" className="pill-button" style={{ 
                 display: 'inline-flex', alignItems: 'center', gap: '10px', textDecoration: 'none', 
                 padding: '16px 48px', fontSize: '1.15rem', background: 'linear-gradient(135deg, var(--accent), var(--teal))', 
                 color: '#fff', border: 'none', boxShadow: '0 10px 25px rgba(34, 211, 238, 0.3)', 
-                transition: 'transform 0.3s, box-shadow 0.3s' 
+                transition: 'transform 0.3s, box-shadow 0.3s', fontWeight: 700 
               }} 
               onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 15px 30px rgba(34, 211, 238, 0.4)'; }} 
               onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(34, 211, 238, 0.3)'; }}
