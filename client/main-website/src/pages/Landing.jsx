@@ -942,11 +942,11 @@ const Landing = () => {
 
                 <div className="store-cta-group" style={{ display: 'flex', marginTop: '20px' }}>
                   <a 
-                    href={`${ecommerceUrl}/products`}
+                    href={ecommerceUrl}
                     className="pill-button pill-button--solid"
                     style={{ padding: '16px 32px', fontSize: '1.1rem', letterSpacing: '0.5px' }}
                   >
-                    Explore All Products ➔
+                    Visit BECS Store ➔
                   </a>
                 </div>
               </div>
