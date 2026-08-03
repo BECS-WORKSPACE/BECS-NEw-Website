@@ -58,7 +58,7 @@ const createRazorpayOrder = async (req, res) => {
 // @access  Private
 const verifyRazorpayPayment = async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, courseId } = req.body;
 
     const body = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSignature = crypto
@@ -70,6 +70,15 @@ const verifyRazorpayPayment = async (req, res) => {
 
     if (isAuthentic) {
       // Payment is verified
+      
+      // If courseId is provided and user is authenticated, enroll them
+      if (courseId && req.user) {
+        const User = require('../models/User');
+        await User.findByIdAndUpdate(req.user._id, {
+          $addToSet: { enrolledCourses: courseId }
+        });
+      }
+      
       res.json({ success: true, message: 'Payment verified successfully' });
     } else {
       res.status(400).json({ success: false, message: 'Invalid payment signature' });

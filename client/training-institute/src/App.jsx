@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
-import { fetchCourses, createEnquiry } from './api';
+import { fetchCourses, createEnquiry, createRazorpayOrder, verifyRazorpayPayment, login, register } from './api';
 
 const AutoCarousel = ({ children, speed = 1, reverse = false }) => {
   return (
@@ -41,61 +41,78 @@ const DEFAULT_COURSES = [
     id: 1,
     title: 'Government Exam Preparation',
     target: 'SSC, Railway, Banking, WBCS, WBPSC, Police, Defence, TET, CTET',
-    duration: '10-12 Months',
-    mode: 'Online / Offline',
-    center: 'All Centers',
-    price: '₹5,000 / Mo',
-    originalPrice: '',
-    discount: 'Enrollment: ₹1999',
-    image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80',
-    description: 'Indian government aspirants studying for SSC, Railway, Banking, WBCS, Police exams. Total 93 classes (186 Hrs total at 2 Hrs/class, 2 classes weekly / 8 monthly).',
-    schedule: '2 Classes Weekly (8 Monthly)',
-    faculty: 'Expert Government Officers',
-    syllabus: [
-      'Comprehensive Coverage of Quant & Reasoning',
-      'General Awareness & Current Affairs',
-      'Daily practice sets included',
-      'Weekly Mock Tests & Doubt Clearing'
-    ],
-    enrollmentFee: '₹1999',
-    badge: 'BESTSELLER',
-    rating: 4.9,
-    studentCount: '3,200',
-    mentorName: 'Rajiv Sharma',
-    mentorPhoto: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80',
-    language: 'English, Hindi, Bengali',
-    certificate: true,
-    emi: true,
-    seatsLeft: 12,
-    startsIn: '2 Days'
-  },
-  {
-    id: 2,
-    title: 'Interview Preparation',
-    target: 'Freshers, Corporate Jobs',
-    duration: '30 Days',
+    duration: '12 Months',
     mode: 'Online / Offline',
     center: 'All Centers',
     price: '₹999',
     originalPrice: '₹1,999',
     discount: '50% OFF',
-    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80',
-    description: 'Corporate interview, HR, Resume building and Mock Interview preparation.',
-    schedule: 'Flexible Timings',
-    faculty: 'Corporate HR Experts',
+    image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80',
+    description: 'Complete syllabus coverage with live mentorship, job assistance, and performance analytics.',
+    schedule: 'Daily Classes',
+    faculty: 'Expert Government Officers',
     syllabus: [
-      'Resume Building',
-      'LinkedIn Optimization',
-      'Mock Interview',
-      'Communication Skills & GD Practice'
+      'Complete syllabus coverage',
+      'Weekly & Monthly mock tests',
+      'Previous Year Questions (PYQ)',
+      'Daily practice questions',
+      'Current affairs',
+      'Live mentorship',
+      'Career roadmap',
+      'Interview preparation',
+      'Job assistance',
+      'Doubt clearing',
+      'Performance analytics',
+      'Recorded lectures',
+      'Downloadable notes'
     ],
-    enrollmentFee: '₹199',
-    badge: 'NEW',
+    enrollmentFee: '₹999',
+    badge: 'BESTSELLER',
+    rating: 4.9,
+    studentCount: '15,200',
+    mentorName: 'Rajiv Sharma',
+    mentorPhoto: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80',
+    language: 'English, Hindi, Bengali',
+    certificate: true,
+    emi: false,
+    seatsLeft: 12,
+    startsIn: '2 Days'
+  },
+  {
+    id: 2,
+    title: 'Joint Entrance Preparation',
+    target: 'JEE Main, Advanced, NEET, WBJEE',
+    duration: '24 Months',
+    mode: 'Online / Offline',
+    center: 'All Centers',
+    price: '₹999',
+    originalPrice: '₹1,999',
+    discount: '50% OFF',
+    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80',
+    description: 'Comprehensive entrance coaching including admission assistance, college counselling, and mock tests.',
+    schedule: 'Weekend Batches',
+    faculty: 'IIT/NIT Alumni & Doctors',
+    syllabus: [
+      'Admission Assistance',
+      'Entrance Coaching',
+      'College Counselling',
+      'Weekly Mock Tests',
+      'Monthly Mock Tests',
+      'PYQ Solutions',
+      'Study Materials',
+      'Live Mentorship',
+      'Doubts Solving',
+      'Practice Questions',
+      'Progress Analytics',
+      'Recorded Classes'
+    ],
+    enrollmentFee: '₹999',
+    badge: 'POPULAR',
     rating: 4.8,
-    studentCount: '1,500',
-    mentorName: 'Anita Desai',
-    mentorPhoto: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100&q=80',
-    language: 'English, Hindi',
+    studentCount: '10,500',
+    mentorName: 'Dr. Amit Bose',
+    mentorPhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&q=80',
+    language: 'English, Bengali',
     certificate: true,
     emi: false,
     seatsLeft: 25,
@@ -103,131 +120,79 @@ const DEFAULT_COURSES = [
   },
   {
     id: 3,
-    title: 'MAKAUT Semester Preparation',
-    target: 'Engineering Students',
-    duration: 'Per Semester',
+    title: 'Board Exam Preparation (Secondary)',
+    target: 'Class 10 (CBSE, ICSE, State Boards)',
+    duration: 'Entire Session',
     mode: 'Online / Offline',
     center: 'All Centers',
-    price: '₹1,499',
-    originalPrice: '₹2,499',
-    discount: '40% OFF',
-    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80',
-    description: 'Engineering students coding with laptops on campus with books.',
-    schedule: 'Weekend & Evening Batches',
-    faculty: 'University Faculty & Tech Experts',
+    price: '₹999',
+    originalPrice: '₹1,999',
+    discount: '50% OFF',
+    image: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80',
+    description: 'Complete class 10 preparation covering all subjects with notes, PYQ, and exam suggestions.',
+    schedule: 'Evening Batches',
+    faculty: 'Top Subject Experts',
     syllabus: [
-      'Semester Preparation',
-      'Previous Year Questions',
-      'Lab Viva Preparation',
-      'Notes & Assignments'
+      'Complete syllabus',
+      'All subjects',
+      'Chapter wise notes',
+      'PYQ',
+      'Numericals',
+      'Question solving',
+      'Exam suggestions',
+      'Mock tests',
+      'Revision tests',
+      'Mentor support'
     ],
-    enrollmentFee: '₹199',
-    badge: 'LIVE',
+    enrollmentFee: '₹999',
+    badge: 'ESSENTIAL',
     rating: 4.7,
-    studentCount: '4,100',
-    mentorName: 'Dr. Amit Bose',
-    mentorPhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&q=80',
-    language: 'English, Bengali',
+    studentCount: '8,100',
+    mentorName: 'Anita Desai',
+    mentorPhoto: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100&q=80',
+    language: 'English, Bengali, Hindi',
     certificate: true,
-    emi: true,
+    emi: false,
     seatsLeft: 8,
     startsIn: 'Tomorrow'
   },
   {
     id: 4,
-    title: 'Board Exam Preparation',
-    target: 'Class 10 & 12 Students',
+    title: 'Board Exam Preparation (Higher Secondary)',
+    target: 'Class 11-12 (Science / Commerce / Arts)',
     duration: 'Entire Session',
     mode: 'Online / Offline',
     center: 'All Centers',
-    price: '₹1,499',
-    originalPrice: '₹2,999',
+    price: '₹999',
+    originalPrice: '₹1,999',
     discount: '50% OFF',
     image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80',
-    description: 'Class 10 and Class 12 students in library studying with teachers.',
+    description: 'Specialized preparation for class 11-12 across all streams with live doubt sessions and mentor guidance.',
     schedule: 'Regular Evening Batches',
-    faculty: 'Experienced School Teachers',
+    faculty: 'Experienced Examiners',
     syllabus: [
-      'Board Exam Suggestions',
-      'Mock Tests Series',
-      'Chapter Notes & Revision',
-      'Expected Questions Practice'
+      'Complete syllabus',
+      'Science / Commerce / Arts',
+      'PYQ',
+      'Numericals',
+      'Mock tests',
+      'Revision papers',
+      'Exam suggestions',
+      'Live doubt sessions',
+      'Recorded lectures',
+      'Mentor guidance'
     ],
-    enrollmentFee: '₹199',
-    badge: 'POPULAR',
+    enrollmentFee: '₹999',
+    badge: 'NEW',
     rating: 4.9,
-    studentCount: '5,000',
+    studentCount: '12,000',
     mentorName: 'Meera Sen',
     mentorPhoto: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=100&q=80',
     language: 'English, Hindi, Bengali',
     certificate: true,
-    emi: true,
+    emi: false,
     seatsLeft: 15,
     startsIn: '3 Days'
-  },
-  {
-    id: 5,
-    title: 'Career Counselling',
-    target: 'Students & Professionals',
-    duration: 'Per Session',
-    mode: 'Online / Offline',
-    center: 'All Centers',
-    price: '₹199',
-    originalPrice: '₹499',
-    discount: '60% OFF',
-    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
-    description: 'Career mentor guiding students.',
-    schedule: 'By Appointment',
-    faculty: 'Certified Career Counsellors',
-    syllabus: [
-      'Career Roadmap Planning',
-      'University Options Guidance',
-      'Placement & Corporate Growth',
-      'Personalized Assessment'
-    ],
-    enrollmentFee: '₹99',
-    badge: '',
-    rating: 4.9,
-    studentCount: '1,200',
-    mentorName: 'Vikram Singh',
-    mentorPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
-    language: 'English, Hindi',
-    certificate: false,
-    emi: false,
-    seatsLeft: 5,
-    startsIn: 'Available Now'
-  },
-  {
-    id: 6,
-    title: 'Psychological Counselling',
-    target: 'Students & Professionals',
-    duration: 'Per Session',
-    mode: 'Online / Offline',
-    center: 'All Centers',
-    price: '₹299',
-    originalPrice: '₹699',
-    discount: '57% OFF',
-    image: 'https://images.unsplash.com/photo-1544027993-37dbfe43562a?auto=format&fit=crop&w=800&q=80',
-    description: 'Professional counsellor helping students with stress management.',
-    schedule: 'By Appointment',
-    faculty: 'Expert Psychologists',
-    syllabus: [
-      'Stress & Anxiety Management',
-      'Mental Wellness',
-      'Motivation & Confidence Building',
-      'Exam Preparation Mentality'
-    ],
-    enrollmentFee: '₹99',
-    badge: 'SUPPORT',
-    rating: 5.0,
-    studentCount: '850',
-    mentorName: 'Dr. Priya Roy',
-    mentorPhoto: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=100&q=80',
-    language: 'English, Bengali, Hindi',
-    certificate: false,
-    emi: false,
-    seatsLeft: 2,
-    startsIn: 'Available Now'
   }
 ];
 
@@ -242,11 +207,11 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [languageFilter, setLanguageFilter] = useState('');
-  
+
   // Lifted state for EnrollmentView
-  const [enrollFormData, setEnrollFormData] = useState({ name: '', email: '', phone: '', college: '', year: '' });
+  const [enrollFormData, setEnrollFormData] = useState({ name: '', email: '', phone: '', highestQualification: '', preparingFor: '', address: '', pinCode: '', city: '', state: '', acceptTerms: false });
   const [enrollSubmitted, setEnrollSubmitted] = useState(false);
-  
+
   // Lifted state for StudyMaterialView
   const [studySelectedMat, setStudySelectedMat] = useState(null);
   const [studyFormData, setStudyFormData] = useState({ name: '', phone: '' });
@@ -258,6 +223,7 @@ function App() {
   const [loginPassword, setLoginPassword] = useState('');
 
   // Lifted state for DashboardView
+  const [dashTab, setDashTab] = useState('home'); // Control sidebar navigation in dashboard
   const [dashFile, setDashFile] = useState(null);
   const [dashTitle, setDashTitle] = useState('');
   const [uploadedNotes, setUploadedNotes] = useState(() => {
@@ -398,252 +364,252 @@ function App() {
       filteredCourses = filteredCourses.filter(c => c.language.includes(languageFilter));
     }
     return (
-    <>
-      <section className="hero" style={{ background: 'var(--bg)', paddingTop: '60px', paddingBottom: '60px' }}>
-        <div className="container hero-inner">
-          <div className="hero-content" style={{ flex: '1' }}>
-            <h1 className="responsive-heading" style={{ fontSize: '3.5rem', lineHeight: 1.1, marginBottom: '20px', color: 'var(--primary)', fontFamily: 'Outfit, sans-serif', fontWeight: 800 }}>
-              Advance Your Career with <br />
-              <span className="highlight">Industry-Ready Courses</span>
-            </h1>
-            <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)', marginBottom: '30px', maxWidth: '600px', lineHeight: 1.6 }}>
-              Government Exams • MAKAUT Preparation • Board Exams • Interview Preparation • Career Guidance • Psychological Counselling
-            </p>
-            <div className="hero-buttons" style={{ display: 'flex', gap: '15px' }}>
-              <a href="#courses" className="btn-solid-lg" style={{ background: 'var(--accent)', boxShadow: '0 10px 25px rgba(245, 158, 11, 0.3)' }}>Explore Courses</a>
-              <a href="#courses" className="btn-outline-lg">Enroll Now</a>
-            </div>
-            <div className="hero-features" style={{ marginTop: '30px', color: 'var(--text-muted)', fontWeight: 600 }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Expert Mentors</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Lifetime Access</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Certificates</span>
-            </div>
-          </div>
-          <div className="hero-image-wrapper" style={{ flex: '1', position: 'relative' }}>
-            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80" alt="Students in modern classroom" className="hero-image" style={{ width: '100%', borderRadius: '24px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }} />
-          </div>
-        </div>
-      </section>
-
-
-      <section className="stats-section" style={{ background: 'var(--surface)', padding: '60px 0' }}>
-        <div className="container stats-grid" style={{ display: 'grid', gap: '30px', textAlign: 'center' }}>
-          <div className="stat-box" style={{ background: 'var(--bg)', padding: '30px', borderRadius: '20px' }}>
-            <h3 className="responsive-stat" style={{ color: 'var(--primary)', fontSize: '2.5rem', fontWeight: 900 }}>10+</h3>
-            <p style={{ color: 'var(--text)', fontWeight: 600, margin: 0 }}>Students</p>
-          </div>
-          <div className="stat-box" style={{ background: 'var(--bg)', padding: '30px', borderRadius: '20px' }}>
-            <h3 className="responsive-stat" style={{ color: 'var(--accent)', fontSize: '2.5rem', fontWeight: 900 }}>50+</h3>
-            <p style={{ color: 'var(--text)', fontWeight: 600, margin: 0 }}>Mock Tests</p>
-          </div>
-          <div className="stat-box" style={{ background: 'var(--bg)', padding: '30px', borderRadius: '20px' }}>
-            <h3 className="responsive-stat" style={{ color: 'var(--primary)', fontSize: '2.5rem', fontWeight: 900 }}>10+</h3>
-            <p style={{ color: 'var(--text)', fontWeight: 600, margin: 0 }}>Mentors</p>
-          </div>
-          <div className="stat-box" style={{ background: 'var(--bg)', padding: '30px', borderRadius: '20px' }}>
-            <h3 className="responsive-stat" style={{ color: 'var(--accent)', fontSize: '2.5rem', fontWeight: 900 }}>95%</h3>
-            <p style={{ color: 'var(--text)', fontWeight: 600, margin: 0 }}>Student Satisfaction</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="courses-section" id="courses">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="responsive-heading">Our Premium <span className="highlight">Offline/Online Batches</span></h2>
-            <p>Enroll in our structured classroom programs designed for competitive success.</p>
-          </div>
-
-          <div className="course-filters" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '40px', background: 'var(--surface)', padding: '20px', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-            <input type="text" placeholder="Search courses..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', flex: '1 1 250px', background: 'var(--bg)', color: 'var(--text)' }} />
-            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', flex: '1 1 150px' }}>
-              <option value="">Category filter</option>
-              <option value="Government">Government Exams</option>
-              <option value="MAKAUT">MAKAUT</option>
-              <option value="Board">Board Exams</option>
-            </select>
-            <select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)} style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', flex: '1 1 150px' }}>
-              <option value="">Language filter</option>
-              <option value="English">English</option>
-              <option value="Hindi">Hindi</option>
-              <option value="Bengali">Bengali</option>
-            </select>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', flex: '1 1 250px', justifyContent: 'flex-start' }}>
-              <button className="pill-button" onClick={() => { setSearchQuery(''); setCategoryFilter(''); setLanguageFilter(''); }} style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', cursor: 'pointer', flex: '1 1 auto' }}>Clear Filters</button>
-            </div>
-          </div>
-          <div className="courses-grid">
-            {filteredCourses.length === 0 ? <p style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>No courses found matching your criteria.</p> : null}
-            {filteredCourses.map(course => (
-              <div className="course-card" key={course.id} onClick={() => navigateTo('details', course)} style={{ cursor: 'pointer', position: 'relative' }}>
-                <div className="course-image-container">
-                  <img src={course.image} alt={course.title} />
-                  <span className="discount-badge">{course.discount}</span>
-                  {course.badge && <span className="category-badge" style={{ position: 'absolute', top: '16px', left: '16px', background: 'var(--primary)', color: 'white', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800 }}>{course.badge}</span>}
-                  <button style={{ position: 'absolute', bottom: '16px', right: '16px', background: 'var(--surface)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>🤍</button>
-                </div>
-                <div className="course-body" style={{ padding: '24px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                    <h3 className="course-title" style={{ margin: 0, fontSize: '1.4rem', lineHeight: 1.3 }}>{course.title}</h3>
-                  </div>
-                  <p className="course-target" style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '12px' }}>{course.target}</p>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', fontSize: '0.9rem' }}>
-                    <span style={{ color: '#F59E0B' }}>{'★'.repeat(Math.floor(course.rating))}</span>
-                    <span style={{ fontWeight: 700, color: 'var(--primary)' }}>{course.rating}</span>
-                    <span style={{ color: 'var(--text-muted)' }}>({course.studentCount} Students)</span>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid var(--border)' }}>
-                    <img src={course.mentorPhoto} alt={course.mentorName} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
-                    <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)' }}>{course.mentorName}</span>
-                  </div>
-
-                  <div className="course-tags" style={{ marginBottom: '16px', rowGap: '8px' }}>
-                    <span className="tag" style={{ background: 'rgba(0,0,0,0.05)', color: 'var(--text)' }}>⏱️ {course.duration}</span>
-                    <span className="tag" style={{ background: 'rgba(0,0,0,0.05)', color: 'var(--text)' }}>🗣️ {course.language}</span>
-                    {course.certificate && <span className="tag" style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--emerald)' }}>🎓 Certificate Included</span>}
-                  </div>
-
-                  <div className="course-footer" style={{ marginTop: 'auto', paddingTop: '16px', borderTop: 'none', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <div className="price-container" style={{ marginBottom: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-                        <span className="price">{course.price}</span>
-                        <span className="original-price">{course.originalPrice}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginTop: '4px' }}>
-                        <span className="enroll-fee" style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>+ {course.enrollmentFee} Enrollment</span>
-                        {course.emi && <span style={{ fontSize: '0.75rem', background: '#FEF3C7', color: '#D97706', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>EMI Available</span>}
-                      </div>
-                      <div style={{ fontSize: '0.8rem', color: '#EF4444', fontWeight: 600, marginTop: '8px' }}>🔥 Only {course.seatsLeft} Seats Left — Starts {course.startsIn}</div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', width: '100%', marginTop: '12px' }}>
-                      <button className="btn-outline" style={{ flex: '1', padding: '10px', fontSize: '0.9rem', textAlign: 'center' }} onClick={(e) => { e.stopPropagation(); navigateTo('details', course); }}>View Details</button>
-                      <button className="btn-solid" style={{ flex: '1', padding: '10px', fontSize: '0.9rem', textAlign: 'center' }} onClick={(e) => { e.stopPropagation(); navigateTo('details', course); }}>Enroll Now</button>
-                    </div>
-                  </div>
-                </div>
+      <>
+        <section className="hero" style={{ background: 'var(--bg)', paddingTop: '60px', paddingBottom: '60px' }}>
+          <div className="container hero-inner">
+            <div className="hero-content" style={{ flex: '1' }}>
+              <h1 className="responsive-heading" style={{ fontSize: '3.5rem', lineHeight: 1.1, marginBottom: '20px', color: 'var(--primary)', fontFamily: 'Outfit, sans-serif', fontWeight: 800 }}>
+                Advance Your Career with <br />
+                <span className="highlight">Industry-Ready Courses</span>
+              </h1>
+              <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)', marginBottom: '30px', maxWidth: '600px', lineHeight: 1.6 }}>
+                Government Exams • MAKAUT Preparation • Board Exams • Interview Preparation • Career Guidance • Psychological Counselling
+              </p>
+              <div className="hero-buttons" style={{ display: 'flex', gap: '15px' }}>
+                <a href="#courses" className="btn-solid-lg" style={{ background: 'var(--accent)', boxShadow: '0 10px 25px rgba(245, 158, 11, 0.3)' }}>Explore Courses</a>
+                <a href="#courses" className="btn-outline-lg">Enroll Now</a>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="features-section" id="features" style={{ background: 'var(--bg)', padding: '80px 0' }}>
-        <div className="container">
-          <div className="section-header text-center" style={{ marginBottom: '50px' }}>
-            <h2 className="responsive-heading">Premium <span className="highlight">Features</span></h2>
-            <p style={{ color: 'var(--text-muted)' }}>Everything you need for a successful career journey.</p>
-          </div>
-          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
-            {[
-              { icon: '🤖', title: 'AI Learning Support' },
-              { icon: '🎥', title: 'Live & Recorded Classes' },
-              { icon: '📝', title: 'Mock Tests & Analytics' },
-              { icon: '👨‍🏫', title: 'Experienced Mentors' },
-              { icon: '🗺️', title: 'Career Roadmap' },
-              { icon: '📚', title: 'Study Materials' },
-              { icon: '🎓', title: 'Certificates' },
-              { icon: '💼', title: 'Placement Assistance' }
-            ].map((f, i) => (
-              <div key={i} className="feature-card" style={{ background: 'var(--surface)', padding: '25px', borderRadius: '16px', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
-                <div style={{ fontSize: '2.5rem', marginBottom: '15px' }}>{f.icon}</div>
-                <h3 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>{f.title}</h3>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="memberships-section" id="memberships" style={{ padding: '80px 0' }}>
-        <div className="container">
-          <div className="section-header text-center">
-            <h2 className="responsive-heading">Choose Your <span className="highlight">Success Plan</span></h2>
-          </div>
-          <div className="memberships-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px', marginTop: '40px' }}>
-            {[
-              { name: 'Starter', price: '₹199', desc: 'One-Time Enrollment', features: ['Student Dashboard', 'ID Card', 'Community Access', 'Notifications', 'Basic Mock Tests'] },
-              { name: 'Silver', price: '₹999/year', desc: 'Essential Learning', features: ['Unlimited Mock Tests', 'Study Materials', 'Career Guidance', 'Progress Analytics'] },
-              { name: 'Gold', price: '₹2,499/year', desc: 'Advanced Preparation', features: ['Everything in Silver', 'Interview Preparation', 'Resume Review', 'Doubt Solving', 'Counselling Discount'] },
-              { name: 'Platinum', price: '₹4,999/year', desc: 'Complete Success Ecosystem', features: ['Everything in Gold', 'Personal Mentor', 'Career Planning', 'Psychological Counselling', 'Placement Preparation', 'Scholarship Guidance'] }
-            ].map((plan, i) => (
-              <div key={i} className="pricing-card" style={{ background: i === 3 ? 'var(--primary)' : 'white', color: i === 3 ? 'white' : 'inherit', padding: '40px 30px', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', position: 'relative' }}>
-                {i === 3 && <div style={{ position: 'absolute', top: '-15px', right: '30px', background: 'var(--accent)', color: 'white', padding: '5px 15px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 800 }}>RECOMMENDED</div>}
-                <h3 style={{ fontSize: '1.5rem', marginBottom: '10px' }}>{plan.name}</h3>
-                <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '5px' }}>{plan.price}</div>
-                <p style={{ color: i === 3 ? '#93C5FD' : '#6B7280', marginBottom: '30px' }}>{plan.desc}</p>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0' }}>
-                  {plan.features.map((f, j) => (
-                    <li key={j} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
-                      <span style={{ color: i === 3 ? '#34D399' : 'var(--accent)' }}>✔️</span> {f}
-                    </li>
-                  ))}
-                </ul>
-                <button className={i === 3 ? 'btn-solid-lg' : 'btn-outline-lg'} style={{ width: '100%', background: i === 3 ? 'white' : 'transparent', color: i === 3 ? 'var(--primary)' : 'inherit', border: i === 3 ? 'none' : '2px solid var(--line)' }}>Get Started</button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="about-section" id="about" style={{ background: 'var(--bg)', padding: '80px 0' }}>
-        <div className="container" style={{ textAlign: 'center', maxWidth: '800px' }}>
-          <h2 className="responsive-heading" style={{ marginBottom: '20px' }}>About <span className="highlight">BECS Eduverse</span></h2>
-          <p style={{ fontSize: '1.1rem', color: 'var(--text)', lineHeight: 1.8 }}>
-            BECS Eduverse is a next-generation student success platform dedicated to helping learners excel in academics, competitive examinations, university education, career development, and personal growth through technology-driven learning and expert mentorship.
-          </p>
-        </div>
-      </section>
-      <section className="counselling-section" id="counselling" style={{ padding: '80px 0', background: 'var(--surface)' }}>
-        <div className="container" style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <div className="section-header text-center" style={{ marginBottom: '40px' }}>
-            <h2 className="responsive-heading">Book a <span className="highlight">Counselling Session</span></h2>
-            <p style={{ color: 'var(--text-muted)' }}>Get expert guidance for your career and mental wellness. Schedule a 1-on-1 session today.</p>
-          </div>
-          <form
-            style={{ background: 'var(--bg)', padding: '40px', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}
-            onSubmit={async (e) => {
-              e.preventDefault();
-              alert('Your counselling request has been received! Our team will contact you shortly.');
-              e.target.reset();
-            }}
-          >
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '20px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text)' }}>Full Name</label>
-                <input type="text" required placeholder="John Doe" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border)' }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text)' }}>Phone Number</label>
-                <input type="tel" required placeholder="+91" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border)' }} />
+              <div className="hero-features" style={{ marginTop: '30px', color: 'var(--text-muted)', fontWeight: 600 }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Expert Mentors</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Lifetime Access</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✅ Certificates</span>
               </div>
             </div>
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text)' }}>Type of Counselling</label>
-              <select required style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)' }}>
-                <option value="">Select an option...</option>
-                <option value="career">Career & Placement Guidance</option>
-                <option value="psychological">Psychological & Exam Stress</option>
-                <option value="academic">Academic / Course Selection</option>
+            <div className="hero-image-wrapper" style={{ flex: '1', position: 'relative' }}>
+              <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80" alt="Students in modern classroom" className="hero-image" style={{ width: '100%', borderRadius: '24px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }} />
+            </div>
+          </div>
+        </section>
+
+
+        <section className="stats-section" style={{ background: 'var(--surface)', padding: '60px 0' }}>
+          <div className="container stats-grid" style={{ display: 'grid', gap: '30px', textAlign: 'center' }}>
+            <div className="stat-box" style={{ background: 'var(--bg)', padding: '30px', borderRadius: '20px' }}>
+              <h3 className="responsive-stat" style={{ color: 'var(--primary)', fontSize: '2.5rem', fontWeight: 900 }}>10+</h3>
+              <p style={{ color: 'var(--text)', fontWeight: 600, margin: 0 }}>Students</p>
+            </div>
+            <div className="stat-box" style={{ background: 'var(--bg)', padding: '30px', borderRadius: '20px' }}>
+              <h3 className="responsive-stat" style={{ color: 'var(--accent)', fontSize: '2.5rem', fontWeight: 900 }}>50+</h3>
+              <p style={{ color: 'var(--text)', fontWeight: 600, margin: 0 }}>Mock Tests</p>
+            </div>
+            <div className="stat-box" style={{ background: 'var(--bg)', padding: '30px', borderRadius: '20px' }}>
+              <h3 className="responsive-stat" style={{ color: 'var(--primary)', fontSize: '2.5rem', fontWeight: 900 }}>10+</h3>
+              <p style={{ color: 'var(--text)', fontWeight: 600, margin: 0 }}>Mentors</p>
+            </div>
+            <div className="stat-box" style={{ background: 'var(--bg)', padding: '30px', borderRadius: '20px' }}>
+              <h3 className="responsive-stat" style={{ color: 'var(--accent)', fontSize: '2.5rem', fontWeight: 900 }}>95%</h3>
+              <p style={{ color: 'var(--text)', fontWeight: 600, margin: 0 }}>Student Satisfaction</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="courses-section" id="courses">
+          <div className="container">
+            <div className="section-header">
+              <h2 className="responsive-heading">Our Premium <span className="highlight">Offline/Online Batches</span></h2>
+              <p>Enroll in our structured classroom programs designed for competitive success.</p>
+            </div>
+
+            <div className="course-filters" style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '40px', background: 'var(--surface)', padding: '20px', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+              <input type="text" placeholder="Search courses..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', flex: '1 1 250px', background: 'var(--bg)', color: 'var(--text)' }} />
+              <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', flex: '1 1 150px' }}>
+                <option value="">Category filter</option>
+                <option value="Government">Government Exams</option>
+                <option value="MAKAUT">MAKAUT</option>
+                <option value="Board">Board Exams</option>
               </select>
+              <select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)} style={{ padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', flex: '1 1 150px' }}>
+                <option value="">Language filter</option>
+                <option value="English">English</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Bengali">Bengali</option>
+              </select>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', flex: '1 1 250px', justifyContent: 'flex-start' }}>
+                <button className="pill-button" onClick={() => { setSearchQuery(''); setCategoryFilter(''); setLanguageFilter(''); }} style={{ padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', cursor: 'pointer', flex: '1 1 auto' }}>Clear Filters</button>
+              </div>
             </div>
-            <div style={{ marginBottom: '30px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text)' }}>Tell us a bit about your situation</label>
-              <textarea rows="4" placeholder="How can we help you?" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border)', resize: 'vertical' }}></textarea>
-            </div>
-            <button type="submit" className="btn-solid-lg" style={{ width: '100%', border: 'none', cursor: 'pointer' }}>Book Session (₹99 Enrollment)</button>
-          </form>
-        </div>
-      </section>
+            <div className="courses-grid">
+              {filteredCourses.length === 0 ? <p style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>No courses found matching your criteria.</p> : null}
+              {filteredCourses.map(course => (
+                <div className="course-card" key={course.id} onClick={() => navigateTo('details', course)} style={{ cursor: 'pointer', position: 'relative' }}>
+                  <div className="course-image-container">
+                    <img src={course.image} alt={course.title} />
+                    <span className="discount-badge">{course.discount}</span>
+                    {course.badge && <span className="category-badge" style={{ position: 'absolute', top: '16px', left: '16px', background: 'var(--primary)', color: 'white', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800 }}>{course.badge}</span>}
+                    <button style={{ position: 'absolute', bottom: '16px', right: '16px', background: 'var(--surface)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>🤍</button>
+                  </div>
+                  <div className="course-body" style={{ padding: '24px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                      <h3 className="course-title" style={{ margin: 0, fontSize: '1.4rem', lineHeight: 1.3 }}>{course.title}</h3>
+                    </div>
+                    <p className="course-target" style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '12px' }}>{course.target}</p>
 
-      <section className="testimonials-section" id="testimonials" style={{ padding: '80px 0' }}>
-        <div className="container">
-          <div className="section-header text-center" style={{ marginBottom: '50px' }}>
-            <h2 className="responsive-heading">Success <span className="highlight">Stories</span></h2>
-            <p style={{ color: 'var(--text-muted)' }}>Hear from students who have achieved their dreams with us.</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', fontSize: '0.9rem' }}>
+                      <span style={{ color: '#F59E0B' }}>{'★'.repeat(Math.floor(course.rating))}</span>
+                      <span style={{ fontWeight: 700, color: 'var(--primary)' }}>{course.rating}</span>
+                      <span style={{ color: 'var(--text-muted)' }}>({course.studentCount} Students)</span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid var(--border)' }}>
+                      <img src={course.mentorPhoto} alt={course.mentorName} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
+                      <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)' }}>{course.mentorName}</span>
+                    </div>
+
+                    <div className="course-tags" style={{ marginBottom: '16px', rowGap: '8px' }}>
+                      <span className="tag" style={{ background: 'rgba(0,0,0,0.05)', color: 'var(--text)' }}>⏱️ {course.duration}</span>
+                      <span className="tag" style={{ background: 'rgba(0,0,0,0.05)', color: 'var(--text)' }}>🗣️ {course.language}</span>
+                      {course.certificate && <span className="tag" style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--emerald)' }}>🎓 Certificate Included</span>}
+                    </div>
+
+                    <div className="course-footer" style={{ marginTop: 'auto', paddingTop: '16px', borderTop: 'none', flexDirection: 'column', alignItems: 'flex-start' }}>
+                      <div className="price-container" style={{ marginBottom: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+                          <span className="price">{course.price}</span>
+                          <span className="original-price">{course.originalPrice}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginTop: '4px' }}>
+                          <span className="enroll-fee" style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>+ {course.enrollmentFee} Enrollment</span>
+                          {course.emi && <span style={{ fontSize: '0.75rem', background: '#FEF3C7', color: '#D97706', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>EMI Available</span>}
+                        </div>
+                        <div style={{ fontSize: '0.8rem', color: '#EF4444', fontWeight: 600, marginTop: '8px' }}>🔥 Only {course.seatsLeft} Seats Left — Starts {course.startsIn}</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px', width: '100%', marginTop: '12px' }}>
+                        <button className="btn-outline" style={{ flex: '1', padding: '10px', fontSize: '0.9rem', textAlign: 'center' }} onClick={(e) => { e.stopPropagation(); navigateTo('details', course); }}>View Details</button>
+                        <button className="btn-solid" style={{ flex: '1', padding: '10px', fontSize: '0.9rem', textAlign: 'center' }} onClick={(e) => { e.stopPropagation(); navigateTo('details', course); }}>Enroll Now</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <style>
-            {`
+        </section>
+
+        <section className="features-section" id="features" style={{ background: 'var(--bg)', padding: '80px 0' }}>
+          <div className="container">
+            <div className="section-header text-center" style={{ marginBottom: '50px' }}>
+              <h2 className="responsive-heading">Premium <span className="highlight">Features</span></h2>
+              <p style={{ color: 'var(--text-muted)' }}>Everything you need for a successful career journey.</p>
+            </div>
+            <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
+              {[
+                { icon: '🤖', title: 'AI Learning Support' },
+                { icon: '🎥', title: 'Live & Recorded Classes' },
+                { icon: '📝', title: 'Mock Tests & Analytics' },
+                { icon: '👨‍🏫', title: 'Experienced Mentors' },
+                { icon: '🗺️', title: 'Career Roadmap' },
+                { icon: '📚', title: 'Study Materials' },
+                { icon: '🎓', title: 'Certificates' },
+                { icon: '💼', title: 'Placement Assistance' }
+              ].map((f, i) => (
+                <div key={i} className="feature-card" style={{ background: 'var(--surface)', padding: '25px', borderRadius: '16px', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '15px' }}>{f.icon}</div>
+                  <h3 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>{f.title}</h3>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="memberships-section" id="memberships" style={{ padding: '80px 0' }}>
+          <div className="container">
+            <div className="section-header text-center">
+              <h2 className="responsive-heading">Choose Your <span className="highlight">Success Plan</span></h2>
+            </div>
+            <div className="memberships-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px', marginTop: '40px' }}>
+              {[
+                { name: 'Starter', price: '₹199', desc: 'One-Time Enrollment', features: ['Student Dashboard', 'ID Card', 'Community Access', 'Notifications', 'Basic Mock Tests'] },
+                { name: 'Silver', price: '₹999/year', desc: 'Essential Learning', features: ['Unlimited Mock Tests', 'Study Materials', 'Career Guidance', 'Progress Analytics'] },
+                { name: 'Gold', price: '₹2,499/year', desc: 'Advanced Preparation', features: ['Everything in Silver', 'Interview Preparation', 'Resume Review', 'Doubt Solving', 'Counselling Discount'] },
+                { name: 'Platinum', price: '₹4,999/year', desc: 'Complete Success Ecosystem', features: ['Everything in Gold', 'Personal Mentor', 'Career Planning', 'Psychological Counselling', 'Placement Preparation', 'Scholarship Guidance'] }
+              ].map((plan, i) => (
+                <div key={i} className="pricing-card" style={{ background: i === 3 ? 'var(--primary)' : 'white', color: i === 3 ? 'white' : 'inherit', padding: '40px 30px', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', position: 'relative' }}>
+                  {i === 3 && <div style={{ position: 'absolute', top: '-15px', right: '30px', background: 'var(--accent)', color: 'white', padding: '5px 15px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 800 }}>RECOMMENDED</div>}
+                  <h3 style={{ fontSize: '1.5rem', marginBottom: '10px' }}>{plan.name}</h3>
+                  <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '5px' }}>{plan.price}</div>
+                  <p style={{ color: i === 3 ? '#93C5FD' : '#6B7280', marginBottom: '30px' }}>{plan.desc}</p>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0' }}>
+                    {plan.features.map((f, j) => (
+                      <li key={j} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
+                        <span style={{ color: i === 3 ? '#34D399' : 'var(--accent)' }}>✔️</span> {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <button className={i === 3 ? 'btn-solid-lg' : 'btn-outline-lg'} style={{ width: '100%', background: i === 3 ? 'white' : 'transparent', color: i === 3 ? 'var(--primary)' : 'inherit', border: i === 3 ? 'none' : '2px solid var(--line)' }}>Get Started</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="about-section" id="about" style={{ background: 'var(--bg)', padding: '80px 0' }}>
+          <div className="container" style={{ textAlign: 'center', maxWidth: '800px' }}>
+            <h2 className="responsive-heading" style={{ marginBottom: '20px' }}>About <span className="highlight">BECS Eduverse</span></h2>
+            <p style={{ fontSize: '1.1rem', color: 'var(--text)', lineHeight: 1.8 }}>
+              BECS Eduverse is a next-generation student success platform dedicated to helping learners excel in academics, competitive examinations, university education, career development, and personal growth through technology-driven learning and expert mentorship.
+            </p>
+          </div>
+        </section>
+        <section className="counselling-section" id="counselling" style={{ padding: '80px 0', background: 'var(--surface)' }}>
+          <div className="container" style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <div className="section-header text-center" style={{ marginBottom: '40px' }}>
+              <h2 className="responsive-heading">Book a <span className="highlight">Counselling Session</span></h2>
+              <p style={{ color: 'var(--text-muted)' }}>Get expert guidance for your career and mental wellness. Schedule a 1-on-1 session today.</p>
+            </div>
+            <form
+              style={{ background: 'var(--bg)', padding: '40px', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}
+              onSubmit={async (e) => {
+                e.preventDefault();
+                alert('Your counselling request has been received! Our team will contact you shortly.');
+                e.target.reset();
+              }}
+            >
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text)' }}>Full Name</label>
+                  <input type="text" required placeholder="John Doe" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border)' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text)' }}>Phone Number</label>
+                  <input type="tel" required placeholder="+91" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border)' }} />
+                </div>
+              </div>
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text)' }}>Type of Counselling</label>
+                <select required style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--surface)' }}>
+                  <option value="">Select an option...</option>
+                  <option value="career">Career & Placement Guidance</option>
+                  <option value="psychological">Psychological & Exam Stress</option>
+                  <option value="academic">Academic / Course Selection</option>
+                </select>
+              </div>
+              <div style={{ marginBottom: '30px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text)' }}>Tell us a bit about your situation</label>
+                <textarea rows="4" placeholder="How can we help you?" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border)', resize: 'vertical' }}></textarea>
+              </div>
+              <button type="submit" className="btn-solid-lg" style={{ width: '100%', border: 'none', cursor: 'pointer' }}>Book Session (₹99 Enrollment)</button>
+            </form>
+          </div>
+        </section>
+
+        <section className="testimonials-section" id="testimonials" style={{ padding: '80px 0' }}>
+          <div className="container">
+            <div className="section-header text-center" style={{ marginBottom: '50px' }}>
+              <h2 className="responsive-heading">Success <span className="highlight">Stories</span></h2>
+              <p style={{ color: 'var(--text-muted)' }}>Hear from students who have achieved their dreams with us.</p>
+            </div>
+            <style>
+              {`
               .mobile-success-carousel { display: none; margin-top: 30px; }
               @media (max-width: 768px) {
                 .desktop-success-grid { display: none !important; }
@@ -651,44 +617,44 @@ function App() {
                 .testimonial-card-mobile { width: 300px; flex-shrink: 0; white-space: normal; }
               }
             `}
-          </style>
+            </style>
 
-          <div className="testimonials-grid desktop-success-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
-            {[
-              { name: 'Rohan Sharma', role: 'Government Aspirant', text: 'The mentoring I received was exceptional. I cleared SSC CGL on my first attempt thanks to the structured roadmap and mock tests.' },
-              { name: 'Priya Das', role: 'Engineering Student', text: 'MAKAUT semester prep became so much easier. The notes and PYQ analysis helped me secure an 9.2 CGPA this year!' },
-              { name: 'Amit Gupta', role: 'Parent', text: 'We enrolled our son for the career counselling and board preparation. The psychological support and focus on holistic learning changed his approach completely.' },
-              { name: 'Sneha Verma', role: 'Board Student', text: 'The mock test series and expert suggestions gave me immense confidence before my 12th board exams. Highly recommended!' }
-            ].map((t, i) => (
-              <div key={i} className="testimonial-card" style={{ background: 'var(--surface)', padding: '30px', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
-                <div style={{ color: 'var(--accent)', fontSize: '1.5rem', marginBottom: '15px' }}>⭐⭐⭐⭐⭐</div>
-                <p style={{ color: 'var(--text)', fontStyle: 'italic', marginBottom: '20px', lineHeight: 1.6 }}>"{t.text}"</p>
-                <h4 style={{ margin: '0 0 5px 0', color: 'var(--primary)' }}>{t.name}</h4>
-                <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{t.role}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mobile-success-carousel">
-            <AutoCarousel speed={1}>
+            <div className="testimonials-grid desktop-success-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
               {[
                 { name: 'Rohan Sharma', role: 'Government Aspirant', text: 'The mentoring I received was exceptional. I cleared SSC CGL on my first attempt thanks to the structured roadmap and mock tests.' },
                 { name: 'Priya Das', role: 'Engineering Student', text: 'MAKAUT semester prep became so much easier. The notes and PYQ analysis helped me secure an 9.2 CGPA this year!' },
                 { name: 'Amit Gupta', role: 'Parent', text: 'We enrolled our son for the career counselling and board preparation. The psychological support and focus on holistic learning changed his approach completely.' },
                 { name: 'Sneha Verma', role: 'Board Student', text: 'The mock test series and expert suggestions gave me immense confidence before my 12th board exams. Highly recommended!' }
               ].map((t, i) => (
-                <div key={i} className="testimonial-card-mobile" style={{ background: 'var(--surface)', padding: '30px', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+                <div key={i} className="testimonial-card" style={{ background: 'var(--surface)', padding: '30px', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
                   <div style={{ color: 'var(--accent)', fontSize: '1.5rem', marginBottom: '15px' }}>⭐⭐⭐⭐⭐</div>
                   <p style={{ color: 'var(--text)', fontStyle: 'italic', marginBottom: '20px', lineHeight: 1.6 }}>"{t.text}"</p>
                   <h4 style={{ margin: '0 0 5px 0', color: 'var(--primary)' }}>{t.name}</h4>
                   <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{t.role}</div>
                 </div>
               ))}
-            </AutoCarousel>
+            </div>
+
+            <div className="mobile-success-carousel">
+              <AutoCarousel speed={1}>
+                {[
+                  { name: 'Rohan Sharma', role: 'Government Aspirant', text: 'The mentoring I received was exceptional. I cleared SSC CGL on my first attempt thanks to the structured roadmap and mock tests.' },
+                  { name: 'Priya Das', role: 'Engineering Student', text: 'MAKAUT semester prep became so much easier. The notes and PYQ analysis helped me secure an 9.2 CGPA this year!' },
+                  { name: 'Amit Gupta', role: 'Parent', text: 'We enrolled our son for the career counselling and board preparation. The psychological support and focus on holistic learning changed his approach completely.' },
+                  { name: 'Sneha Verma', role: 'Board Student', text: 'The mock test series and expert suggestions gave me immense confidence before my 12th board exams. Highly recommended!' }
+                ].map((t, i) => (
+                  <div key={i} className="testimonial-card-mobile" style={{ background: 'var(--surface)', padding: '30px', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+                    <div style={{ color: 'var(--accent)', fontSize: '1.5rem', marginBottom: '15px' }}>⭐⭐⭐⭐⭐</div>
+                    <p style={{ color: 'var(--text)', fontStyle: 'italic', marginBottom: '20px', lineHeight: 1.6 }}>"{t.text}"</p>
+                    <h4 style={{ margin: '0 0 5px 0', color: 'var(--primary)' }}>{t.name}</h4>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{t.role}</div>
+                  </div>
+                ))}
+              </AutoCarousel>
+            </div>
           </div>
-        </div>
-      </section>
-    </>
+        </section>
+      </>
     );
   };
 
@@ -759,21 +725,109 @@ function App() {
 
   const EnrollmentView = () => {
     if (!selectedCourse) return null;
+    if (!user) {
+      return (
+        <div className="container" style={{ textAlign: 'center', padding: '100px 20px', minHeight: '60vh' }}>
+          <h2 className="responsive-heading" style={{ fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '16px' }}>Authentication Required</h2>
+          <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '30px' }}>Please login or sign up to enroll in a course.</p>
+          <button className="btn-solid-lg" onClick={() => setCurrentView('login')}>Login / Sign Up</button>
+        </div>
+      );
+    }
+
+    const loadRazorpayScript = () => {
+      return new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+      });
+    };
 
     const handleSubmit = async (e) => {
       e.preventDefault();
+      if (!enrollFormData.acceptTerms) {
+        alert('Please accept the Terms & Conditions.');
+        return;
+      }
       try {
-        await createEnquiry({
-          name: enrollFormData.name,
-          phone: enrollFormData.phone,
-          courseId: String(selectedCourse.id || selectedCourse._id),
-          courseName: selectedCourse.title,
-          type: 'Enrollment'
-        });
-        setEnrollSubmitted(true);
-        window.scrollTo(0, 0);
+        const isLoaded = await loadRazorpayScript();
+        if (!isLoaded) {
+          alert('Failed to load Razorpay SDK. Please check your internet connection.');
+          return;
+        }
+
+        const orderRes = await createRazorpayOrder({ amount: 999 });
+        const razorpayOrder = orderRes.data || orderRes;
+
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'your_public_key_here',
+          amount: razorpayOrder.amount,
+          currency: razorpayOrder.currency,
+          name: 'EduVerse Premium',
+          description: `Enrollment: ${selectedCourse.title}`,
+          image: 'https://images.unsplash.com/photo-1546410531-bea5aad142bb?auto=format&fit=crop&w=100&q=80',
+          order_id: razorpayOrder.id,
+          handler: async function (response) {
+            try {
+              const verifyRes = await verifyRazorpayPayment({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                courseId: String(selectedCourse.id || selectedCourse._id),
+              });
+
+              if (verifyRes.data?.success || verifyRes.success) {
+                await createEnquiry({
+                  name: enrollFormData.name,
+                  email: enrollFormData.email,
+                  phone: enrollFormData.phone,
+                  courseId: String(selectedCourse.id || selectedCourse._id),
+                  courseName: selectedCourse.title,
+                  type: 'Enrollment',
+                  highestQualification: enrollFormData.highestQualification,
+                  preparingFor: enrollFormData.preparingFor,
+                  address: enrollFormData.address,
+                  pinCode: enrollFormData.pinCode,
+                  city: enrollFormData.city,
+                  state: enrollFormData.state,
+                  paymentId: response.razorpay_payment_id
+                });
+                
+                // Update local user state so dashboard unlocks immediately
+                if (user) {
+                  const updatedUser = {
+                    ...user,
+                    enrolledCourses: [...(user.enrolledCourses || []), String(selectedCourse.id || selectedCourse._id)]
+                  };
+                  setUser(updatedUser);
+                  localStorage.setItem('becs_user', JSON.stringify(updatedUser));
+                }
+
+                setEnrollSubmitted(true);
+                window.scrollTo(0, 0);
+              } else {
+                alert('Payment Verification Failed!');
+              }
+            } catch (err) {
+              console.error(err);
+              alert('Error verifying payment.');
+            }
+          },
+          prefill: {
+            name: enrollFormData.name,
+            email: enrollFormData.email,
+            contact: enrollFormData.phone
+          },
+          theme: { color: '#4F46E5' }
+        };
+
+        const paymentObject = new window.Razorpay(options);
+        paymentObject.open();
+
       } catch (err) {
-        alert(err.message || 'Failed to submit application. Please try again.');
+        alert(err.message || 'Failed to initialize payment. Please try again.');
       }
     };
 
@@ -782,11 +836,11 @@ function App() {
         <div className="container" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ textAlign: 'center', background: 'var(--surface)', padding: '50px', borderRadius: '20px', border: '1px solid var(--border)', maxWidth: '600px' }}>
             <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎉</div>
-            <h2 className="responsive-heading" style={{ fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '16px' }}>Application Received!</h2>
+            <h2 className="responsive-heading" style={{ fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '16px' }}>Enrollment Successful!</h2>
             <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '30px', lineHeight: '1.6' }}>
-              Thank you, <strong>{enrollFormData.name}</strong>. Your enrollment request for <strong>{selectedCourse.title}</strong> has been successfully submitted. Our admission counselor will call you at {enrollFormData.phone} within 24 hours to complete the process.
+              Thank you, <strong>{enrollFormData.name}</strong>. Your enrollment for <strong>{selectedCourse.title}</strong> is complete. A receipt has been generated. You now have access to Career & Psychological Counselling and can proceed to take the Scholarship Test.
             </p>
-            <button className="btn-solid" onClick={() => navigateTo('home')}>Return to Home</button>
+            <button className="btn-solid" onClick={() => navigateTo('home')}>Go to Dashboard</button>
           </div>
         </div>
       );
@@ -798,12 +852,12 @@ function App() {
           ← Back to Course
         </button>
         <h1 className="responsive-heading" style={{ fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '10px' }}>Enrollment Form</h1>
-        <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '40px' }}>You are enrolling in <strong>{selectedCourse.title}</strong> at <strong>{selectedCourse.center}</strong>.</p>
+        <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '40px' }}>You are enrolling in <strong>{selectedCourse.title}</strong> at <strong>{selectedCourse.center}</strong>. Fee: ₹999.</p>
 
         <form onSubmit={handleSubmit} className="enroll-form" style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
           <div className="form-grid">
             <div>
-              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Full Name</label>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Student Name</label>
               <input type="text" required placeholder="John Doe" value={enrollFormData.name} onChange={e => setEnrollFormData({ ...enrollFormData, name: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
             </div>
             <div>
@@ -812,33 +866,56 @@ function App() {
             </div>
           </div>
 
+          <div className="form-grid" style={{ marginBottom: '24px' }}>
+            <div>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Phone Number</label>
+              <input type="tel" required placeholder="+91 98765 43210" value={enrollFormData.phone} onChange={e => setEnrollFormData({ ...enrollFormData, phone: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Highest Qualification</label>
+              <input type="text" required placeholder="12th, B.Tech, etc." value={enrollFormData.highestQualification} onChange={e => setEnrollFormData({ ...enrollFormData, highestQualification: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+            </div>
+          </div>
+
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Phone Number (WhatsApp preferred)</label>
-            <input type="tel" required placeholder="+91 98765 43210" value={enrollFormData.phone} onChange={e => setEnrollFormData({ ...enrollFormData, phone: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+            <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Preparing For</label>
+            <select required value={enrollFormData.preparingFor} onChange={e => setEnrollFormData({ ...enrollFormData, preparingFor: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem', background: 'var(--surface)' }}>
+              <option value="">Select Course</option>
+              <option value="Government Exam Preparation">Government Exam Preparation</option>
+              <option value="Joint Entrance Preparation">Joint Entrance Preparation</option>
+              <option value="Board Exam (Class 10)">Board Exam (Class 10)</option>
+              <option value="Board Exam (Class 11-12)">Board Exam (Class 11-12)</option>
+            </select>
+          </div>
+
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Address</label>
+            <input type="text" required placeholder="Street Address" value={enrollFormData.address} onChange={e => setEnrollFormData({ ...enrollFormData, address: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
           </div>
 
           <div className="form-grid" style={{ marginBottom: '40px' }}>
             <div>
-              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>College/University</label>
-              <input type="text" required placeholder="Institute of Engineering" value={enrollFormData.college} onChange={e => setEnrollFormData({ ...enrollFormData, college: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>PIN Code</label>
+              <input type="text" required placeholder="700001" value={enrollFormData.pinCode} onChange={e => setEnrollFormData({ ...enrollFormData, pinCode: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
             </div>
             <div>
-              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Expected Graduation Year</label>
-              <select required value={enrollFormData.year} onChange={e => setEnrollFormData({ ...enrollFormData, year: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem', background: 'var(--surface)' }}>
-                <option value="">Select Year</option>
-                <option value="2024">2024</option>
-                <option value="2025">2025</option>
-                <option value="2026">2026</option>
-                <option value="2027">2027</option>
-                <option value="2028">2028</option>
-              </select>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>City</label>
+              <input type="text" required placeholder="Kolkata" value={enrollFormData.city} onChange={e => setEnrollFormData({ ...enrollFormData, city: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
             </div>
+            <div>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>State</label>
+              <input type="text" required placeholder="West Bengal" value={enrollFormData.state} onChange={e => setEnrollFormData({ ...enrollFormData, state: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+            </div>
+          </div>
+          
+          <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <input type="checkbox" id="acceptTerms" required checked={enrollFormData.acceptTerms} onChange={e => setEnrollFormData({ ...enrollFormData, acceptTerms: e.target.checked })} style={{ width: '20px', height: '20px' }} />
+            <label htmlFor="acceptTerms" style={{ fontSize: '1rem', color: 'var(--text)' }}>I accept the Terms & Conditions</label>
           </div>
 
           <button type="submit" className="btn-solid-lg" style={{ width: '100%', textAlign: 'center' }}>
-            Submit Application
+            Proceed to Razorpay (Pay ₹999)
           </button>
-          <p style={{ textAlign: 'center', marginTop: '16px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>By submitting, you agree to our Terms and Conditions.</p>
         </form>
       </div>
     );
@@ -920,260 +997,501 @@ function App() {
     );
   };
 
-  const LoginView = () => {
-    const handleLogin = (e) => {
+  const AuthView = () => {
+    const [authRole, setAuthRole] = useState('student'); // 'student' | 'teacher'
+    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const handleLoginSubmit = async (e) => {
       e.preventDefault();
-      const mockUser = { name: loginEmail.split('@')[0], email: loginEmail, role: loginRole };
-      setUser(mockUser);
-      localStorage.setItem('becs_user', JSON.stringify(mockUser));
-      setCurrentView('dashboard');
+      setIsLoading(true);
+      try {
+        const authenticatedUser = await login({
+          email: formData.email,
+          password: formData.password
+        });
+        
+        if (authRole === 'teacher' && authenticatedUser.role !== 'teacher') {
+          throw new Error("You are not authorized as a Teacher.");
+        }
+        
+        setUser(authenticatedUser);
+        localStorage.setItem('becs_user', JSON.stringify(authenticatedUser));
+        setCurrentView('dashboard');
+      } catch (err) {
+        alert(err.message || 'Authentication failed');
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     return (
-      <div className="container" style={{ padding: '60px 24px', minHeight: '80vh', maxWidth: '500px', margin: '0 auto' }}>
-        <h1 className="responsive-heading" style={{ color: 'var(--primary)', textAlign: 'center', marginBottom: '30px' }}>Eduverse Portal Login</h1>
+      <div style={{ minHeight: 'calc(100vh - 80px)', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', position: 'relative', overflow: 'hidden', background: '#f8fafc' }}>
+        {/* Abstract Background Elements */}
+        <div style={{ position: 'absolute', top: '-10%', left: '-5%', width: '40vw', height: '40vw', background: 'radial-gradient(circle, rgba(230,34,59,0.08) 0%, rgba(255,255,255,0) 70%)', borderRadius: '50%', zIndex: 0 }}></div>
+        <div style={{ position: 'absolute', bottom: '-10%', right: '-5%', width: '30vw', height: '30vw', background: 'radial-gradient(circle, rgba(30,41,59,0.08) 0%, rgba(255,255,255,0) 70%)', borderRadius: '50%', zIndex: 0 }}></div>
         
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', justifyContent: 'center' }}>
-          <button className={`btn-outline-sm ${loginRole === 'student' ? 'active' : ''}`} onClick={() => setLoginRole('student')} style={{ flex: 1, background: loginRole === 'student' ? 'var(--primary)' : 'transparent', color: loginRole === 'student' ? 'white' : 'var(--primary)' }}>Student Portal</button>
-          <button className={`btn-outline-sm ${loginRole === 'teacher' ? 'active' : ''}`} onClick={() => setLoginRole('teacher')} style={{ flex: 1, background: loginRole === 'teacher' ? 'var(--primary)' : 'transparent', color: loginRole === 'teacher' ? 'white' : 'var(--primary)' }}>Teacher Portal</button>
-        </div>
+        {/* Main Floating Card */}
+        <div className="auth-card" style={{ display: 'flex', width: '100%', maxWidth: '1000px', minHeight: '600px', background: 'white', borderRadius: '24px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)', overflow: 'hidden', zIndex: 1, animation: 'fadeInUp 0.6s ease-out' }}>
+          
+          {/* Left Side - Visual/Branding */}
+          <div className="auth-left-panel" style={{ flex: 1, position: 'relative', background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px', color: 'white' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'url(https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.15, mixBlendMode: 'overlay' }}></div>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '60px', height: '60px', borderRadius: '16px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', fontSize: '2rem', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.2)' }}>🎓</div>
+              <h1 style={{ fontSize: '2.5rem', fontFamily: 'Outfit', fontWeight: 800, marginBottom: '16px', lineHeight: 1.2 }}>Welcome to EduVerse</h1>
+              <p style={{ fontSize: '1rem', opacity: 0.9, lineHeight: 1.6, marginBottom: '32px' }}>Experience India's most advanced learning platform. Access your courses, mock tests, and live classes all in one place.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }}></div><span style={{ fontSize: '0.95rem' }}>Premium Content</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }}></div><span style={{ fontSize: '0.95rem' }}>Live Mentorship</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }}></div><span style={{ fontSize: '0.95rem' }}>Advanced Analytics</span></div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Right Side - Form */}
+          <div className="auth-right-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 60px', background: 'white' }}>
+            <div style={{ marginBottom: '32px' }}>
+              <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: '#1e293b', margin: '0 0 8px 0' }}>Log in to your account</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>Enter your credentials provided by the administration.</p>
+            </div>
 
-        <form onSubmit={handleLogin} style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px' }}>Email Address</label>
-            <input type="email" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} placeholder={`Enter ${loginRole} email`} />
+            {/* Premium Segmented Control for Role Selection */}
+            <div style={{ display: 'flex', position: 'relative', background: '#f1f5f9', padding: '4px', borderRadius: '12px', marginBottom: '32px', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)' }}>
+              <div style={{ position: 'absolute', top: '4px', bottom: '4px', left: authRole === 'student' ? '4px' : '50%', width: 'calc(50% - 4px)', background: 'white', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 1 }}></div>
+              <button onClick={() => setAuthRole('student')} style={{ flex: 1, padding: '12px', background: 'transparent', border: 'none', color: authRole === 'student' ? '#1e293b' : 'var(--text-muted)', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', position: 'relative', zIndex: 2, transition: 'color 0.3s' }}>Student Portal</button>
+              <button onClick={() => setAuthRole('teacher')} style={{ flex: 1, padding: '12px', background: 'transparent', border: 'none', color: authRole === 'teacher' ? '#1e293b' : 'var(--text-muted)', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', position: 'relative', zIndex: 2, transition: 'color 0.3s' }}>Teacher Portal</button>
+            </div>
+
+            <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>Email Address</label>
+                <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder={`Enter your ${authRole} email`} style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', transition: 'border 0.3s', color: '#1e293b' }} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>Password</label>
+                <input type="password" required value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} placeholder="••••••••" style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', transition: 'border 0.3s', color: '#1e293b' }} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--primary)', cursor: 'pointer', fontWeight: 500 }}>Forgot password?</span>
+                </div>
+              </div>
+
+              <button type="submit" disabled={isLoading} className="btn-solid-lg" style={{ marginTop: '12px', padding: '14px', fontSize: '1.05rem', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxShadow: '0 10px 25px rgba(230, 34, 59, 0.3)', background: 'var(--primary)', color: 'white', border: 'none', cursor: 'pointer', transition: 'all 0.3s' }}>
+                {isLoading ? <span style={{ width: '20px', height: '20px', border: '3px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 1s infinite linear' }} /> : 'Secure Log In'}
+              </button>
+            </form>
+
+            <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '32px' }}>
+              Don't have an account? <span style={{ color: '#1e293b', fontWeight: 600, cursor: 'pointer' }}>Contact Administrator</span>
+            </p>
           </div>
-          <div style={{ marginBottom: '30px' }}>
-            <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px' }}>Password</label>
-            <input type="password" required value={loginPassword} onChange={e => setLoginPassword(e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} placeholder="Enter password" />
-          </div>
-          <button type="submit" className="btn-solid-lg" style={{ width: '100%', textAlign: 'center' }}>Login as {loginRole === 'student' ? 'Student' : 'Teacher'}</button>
-        </form>
+        </div>
+        <style>
+          {`
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            
+            /* Responsive Design Rules */
+            @media (max-width: 900px) {
+              .auth-card {
+                flex-direction: column !important;
+                max-width: 500px !important;
+                min-height: auto !important;
+              }
+              .auth-left-panel {
+                padding: 30px 24px !important;
+                text-align: center;
+              }
+              .auth-left-panel h1 {
+                font-size: 2rem !important;
+              }
+              .auth-left-panel p, .auth-left-panel .gap-16px {
+                display: none !important;
+              }
+              .auth-right-panel {
+                padding: 40px 24px !important;
+              }
+            }
+          `}
+        </style>
       </div>
     );
   };
 
   const DashboardView = () => {
-    const handleUpload = (e) => {
-      e.preventDefault();
-      if (!dashTitle || !dashFile) {
-        alert('Please provide a title and select a file.');
-        return;
-      }
-      
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const newNote = { 
-            id: Date.now(), 
-            title: dashTitle, 
-            filename: dashFile.name, 
-            date: new Date().toLocaleDateString(), 
-            teacher: user.name,
-            fileData: event.target.result
-          };
-          const updated = [newNote, ...uploadedNotes];
-          localStorage.setItem('becs_eduverse_notes', JSON.stringify(updated));
-          setUploadedNotes(updated);
-          setDashFile(null); 
-          setDashTitle('');
-          alert('Study material uploaded and processed securely!');
-        } catch (error) {
-          alert('Error: File is too large to save in the local browser database (Max ~3MB). Please upload a smaller file for this demo.');
-        }
-      };
-      // Read the file as a base64 Data URL so we can save its real contents
-      reader.readAsDataURL(dashFile);
-    };
-
-    const handleDownload = (note) => {
-      if (note.fileData) {
-        // Download the actual file contents that were uploaded
-        const a = document.createElement('a');
-        a.href = note.fileData;
-        a.download = note.filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      } else {
-        // Fallback for older notes uploaded before this update
-        const content = `Title: ${note.title}\nFilename: ${note.filename}\nTeacher: ${note.teacher}\nDate: ${note.date}\n\n[CONFIDENTIAL]\nThis is a securely downloaded study material generated by BECS Eduverse.`;
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = note.filename.endsWith('.txt') ? note.filename : `${note.filename}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
-    };
-
-    const handleDelete = (noteId) => {
-      if (window.confirm('Are you sure you want to securely delete this material? This action cannot be undone.')) {
-        const updated = uploadedNotes.filter(n => n.id !== noteId);
-        setUploadedNotes(updated);
-        localStorage.setItem('becs_eduverse_notes', JSON.stringify(updated));
-      }
-    };
-
     if (!user) { setCurrentView('login'); return null; }
 
     const avatarSeed = encodeURIComponent(user.name);
-    const avatarUrl = user.role === 'teacher' 
-      ? `https://api.dicebear.com/9.x/micah/svg?seed=${avatarSeed}&backgroundColor=f8fafc` 
+    const avatarUrl = user.role === 'teacher'
+      ? `https://api.dicebear.com/9.x/micah/svg?seed=${avatarSeed}&backgroundColor=f8fafc`
       : `https://api.dicebear.com/9.x/notionists/svg?seed=${avatarSeed}&backgroundColor=f8fafc`;
 
-    return (
-      <div style={{ background: 'var(--background)', minHeight: '100vh', paddingBottom: '80px' }}>
-        {/* Dashboard Header */}
-        <div style={{ background: 'linear-gradient(135deg, var(--navy) 0%, #1e293b 100%)', padding: '60px 24px', color: 'white', marginBottom: '40px' }}>
-          <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <img src={avatarUrl} alt="Avatar" style={{ width: '80px', height: '80px', borderRadius: '50%', border: '3px solid var(--accent)', objectFit: 'cover', background: 'white' }} />
-              <div>
-                <h1 style={{ fontSize: '2.2rem', margin: '0 0 8px 0', fontFamily: 'Outfit', fontWeight: 700 }}>Welcome back, {user.name}!</h1>
-                <span style={{ background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: '99px', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                  {user.role === 'teacher' ? '👨‍🏫 Faculty Member' : '🎓 Student Scholar'}
-                </span>
-              </div>
-            </div>
-            <button className="btn-outline-sm" onClick={() => { handleLogout(); setCurrentView('home'); }} style={{ borderColor: 'rgba(255,255,255,0.3)', color: 'white' }}>Sign Out from Portal</button>
-          </div>
-        </div>
+    const sidebarItems = user.role === 'teacher' ? [
+      { id: 'home', label: 'Overview', icon: '📊' },
+      { id: 'students', label: 'Students & Attendance', icon: '👥' },
+      { id: 'courses', label: 'My Courses', icon: '📚' },
+      { id: 'live', label: 'Live Classes', icon: '🔴' },
+      { id: 'upload', label: 'Study Materials & Upload', icon: '☁️' },
+      { id: 'assignments', label: 'Assignments', icon: '📝' },
+      { id: 'tests', label: 'Mock Tests & PYQ', icon: '🎯' },
+      { id: 'results', label: 'Results & Reports', icon: '📈' },
+      { id: 'messages', label: 'Messages & Doubts', icon: '💬' },
+      { id: 'announcements', label: 'Announcements', icon: '📢' }
+    ] : [
+      { id: 'home', label: 'Home', icon: '🏠' },
+      { id: 'my_courses', label: 'My Courses', icon: '📚' },
+      { id: 'scholarship', label: 'Scholarship Test', icon: '🏆' },
+      { id: 'career_counselling', label: 'Career Counselling', icon: '🎯' },
+      { id: 'psychological_counselling', label: 'Psychological Support', icon: '🧠' },
+      { id: 'mock_tests', label: 'Mock Tests', icon: '📝' },
+      { id: 'materials', label: 'Study Materials', icon: '📁' },
+      { id: 'analytics', label: 'Performance Analytics', icon: '📈' },
+      { id: 'certificates', label: 'Certificates', icon: '🎓' }
+    ];
 
-        <div className="container" style={{ padding: '0 24px' }}>
-          {/* Quick Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px', marginTop: '-80px', marginBottom: '40px' }}>
-            <div style={{ background: 'var(--surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '10px' }}>{user.role === 'teacher' ? '📚' : '📖'}</div>
-              <h3 style={{ fontSize: '1.8rem', color: 'var(--primary)', margin: '0 0 4px 0' }}>{user.role === 'teacher' ? uploadedNotes.length : '0'}</h3>
-              <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>{user.role === 'teacher' ? 'Total Uploads' : 'Active Courses'}</p>
-            </div>
-            <div style={{ background: 'var(--surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '10px' }}>{user.role === 'teacher' ? '👥' : '🏆'}</div>
-              <h3 style={{ fontSize: '1.8rem', color: 'var(--primary)', margin: '0 0 4px 0' }}>{user.role === 'teacher' ? '124' : '0'}</h3>
-              <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>{user.role === 'teacher' ? 'Total Students' : 'Certificates Earned'}</p>
-            </div>
-            <div style={{ background: 'var(--surface)', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '10px' }}>{user.role === 'teacher' ? '⭐' : '⏳'}</div>
-              <h3 style={{ fontSize: '1.8rem', color: 'var(--primary)', margin: '0 0 4px 0' }}>{user.role === 'teacher' ? '4.9' : '12'}</h3>
-              <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>{user.role === 'teacher' ? 'Average Rating' : 'Hours Learned'}</p>
-            </div>
-          </div>
-
-          {/* Profile & Actions Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '30px', marginBottom: '50px' }}>
-            
-            {/* Personal Profile Section */}
-            <div style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '30px' }}>
-                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--accent-soft)', display: 'grid', placeItems: 'center', color: 'white', fontSize: '1.5rem' }}>👤</div>
-                <h2 style={{ margin: 0, color: 'var(--primary)', fontFamily: 'Outfit', fontSize: '1.8rem' }}>Personal Profile</h2>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', flex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '16px', borderBottom: '1px solid var(--border)' }}>
-                  <span style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '1.05rem' }}>Full Name</span>
-                  <span style={{ color: 'var(--navy)', fontWeight: 700, fontSize: '1.1rem' }}>{user.name}</span>
+    const renderContent = () => {
+      switch(dashTab) {
+        case 'home':
+          return (
+            <div>
+              <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '20px' }}>Welcome back, {user.name}!</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+                <div style={{ background: 'var(--surface)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '10px' }}>📚</div>
+                  <h3 style={{ fontSize: '1.8rem', color: 'var(--primary)', margin: '0 0 4px 0' }}>{user.role === 'teacher' ? uploadedNotes.length : '1'}</h3>
+                  <p style={{ color: 'var(--text-muted)', margin: 0, fontWeight: 500 }}>{user.role === 'teacher' ? 'Total Uploads' : 'Active Courses'}</p>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '16px', borderBottom: '1px solid var(--border)' }}>
-                  <span style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '1.05rem' }}>Email Address</span>
-                  <span style={{ color: 'var(--navy)', fontWeight: 600, fontSize: '1rem' }}>{user.email}</span>
+                <div style={{ background: 'var(--surface)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '10px' }}>⏳</div>
+                  <h3 style={{ fontSize: '1.8rem', color: 'var(--primary)', margin: '0 0 4px 0' }}>{user.role === 'teacher' ? '124' : '12 hrs'}</h3>
+                  <p style={{ color: 'var(--text-muted)', margin: 0, fontWeight: 500 }}>{user.role === 'teacher' ? 'Total Students' : 'Learning Time'}</p>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '16px', borderBottom: '1px solid var(--border)' }}>
-                  <span style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '1.05rem' }}>Account Type</span>
-                  <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '1.05rem' }}>{user.role === 'teacher' ? 'Faculty Member' : 'Student'}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '10px' }}>
-                  <span style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '1.05rem' }}>System Status</span>
-                  <span style={{ color: '#10b981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.05rem' }}>
-                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 10px rgba(16,185,129,0.5)' }}></div> Active
-                  </span>
+                <div style={{ background: 'var(--surface)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🏆</div>
+                  <h3 style={{ fontSize: '1.8rem', color: 'var(--primary)', margin: '0 0 4px 0' }}>{user.role === 'teacher' ? '4.9' : '0'}</h3>
+                  <p style={{ color: 'var(--text-muted)', margin: 0, fontWeight: 500 }}>{user.role === 'teacher' ? 'Average Rating' : 'Certificates'}</p>
                 </div>
               </div>
+              
+              <div style={{ background: 'var(--surface)', padding: '30px', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                <h3 style={{ fontSize: '1.4rem', color: 'var(--primary)', marginBottom: '16px' }}>Upcoming Live Classes</h3>
+                <p style={{ color: 'var(--text-muted)' }}>You have no upcoming classes today.</p>
+              </div>
             </div>
+          );
 
-            {/* Dynamic Action Section based on Role */}
-            {user.role === 'teacher' ? (
-              <div style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '30px' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--accent-soft)', display: 'grid', placeItems: 'center', color: 'white', fontSize: '1.5rem' }}>☁️</div>
-                  <h2 style={{ margin: 0, color: 'var(--primary)', fontFamily: 'Outfit', fontSize: '1.8rem' }}>Upload Material</h2>
+        case 'scholarship':
+          return (
+            <div>
+              <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '20px' }}>Scholarship Test</h2>
+              <div style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', textAlign: 'center' }}>
+                <div style={{ fontSize: '4rem', marginBottom: '16px' }}>📝</div>
+                <h3 style={{ fontSize: '1.5rem', color: 'var(--navy)', marginBottom: '10px' }}>National Level Scholarship Exam</h3>
+                <p style={{ color: 'var(--text-muted)', maxWidth: '500px', margin: '0 auto 30px' }}>Take the 60-minute online MCQ test to evaluate your skills and earn up to 90% scholarship on your course fees!</p>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginBottom: '30px' }}>
+                  <span style={{ padding: '8px 16px', background: 'var(--accent-soft)', color: 'white', borderRadius: '8px', fontWeight: 600 }}>⏱️ 60 Mins</span>
+                  <span style={{ padding: '8px 16px', background: 'var(--accent-soft)', color: 'white', borderRadius: '8px', fontWeight: 600 }}>💯 100 Marks</span>
+                  <span style={{ padding: '8px 16px', background: 'var(--accent-soft)', color: 'white', borderRadius: '8px', fontWeight: 600 }}>➖ Negative Marking</span>
                 </div>
-                <form onSubmit={handleUpload} style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
+                <button className="btn-solid-lg" onClick={() => alert('Starting scholarship test...')}>Start Test Now</button>
+              </div>
+            </div>
+          );
+
+        case 'career_counselling':
+          return (
+            <div>
+              <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '20px' }}>Career Counselling</h2>
+              <div style={{ background: 'var(--surface)', padding: '30px', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                <h3 style={{ fontSize: '1.4rem', color: 'var(--navy)', marginBottom: '16px' }}>Book a 1-on-1 Session</h3>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Get personalized career roadmaps and resume reviews from industry experts.</p>
+                <form onSubmit={e => { e.preventDefault(); alert('Session Booked! Check your email for Zoom link.'); }}>
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Select Slot</label>
+                    <input type="datetime-local" required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }} />
+                  </div>
+                  <button type="submit" className="btn-solid">Book Session</button>
+                </form>
+              </div>
+            </div>
+          );
+
+        case 'psychological_counselling':
+          return (
+            <div>
+              <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '20px' }}>Psychological Support</h2>
+              <div style={{ background: 'var(--surface)', padding: '30px', borderRadius: '16px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ padding: '16px', background: 'rgba(59, 130, 246, 0.1)', borderLeft: '4px solid #3b82f6', borderRadius: '8px' }}>
+                  <h4 style={{ margin: '0 0 8px 0', color: '#1d4ed8' }}>100% Confidential</h4>
+                  <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)' }}>All sessions are strictly private and not shared with teachers or parents without your consent.</p>
+                </div>
+                <h3 style={{ fontSize: '1.4rem', color: 'var(--navy)', margin: 0 }}>Book a Private Session</h3>
+                <form onSubmit={e => { e.preventDefault(); alert('Confidential session booked. You will receive a secure meeting link shortly.'); }}>
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Preferred Counsellor</label>
+                    <select required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                      <option value="">Any Available Counsellor</option>
+                      <option value="dr_priya">Dr. Priya Roy (Clinical Psychologist)</option>
+                      <option value="dr_sen">Dr. Anindya Sen (Student Counsellor)</option>
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Select Slot</label>
+                    <input type="datetime-local" required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }} />
+                  </div>
+                  <button type="submit" className="btn-solid-lg" style={{ background: '#3b82f6' }}>Book Confidential Session</button>
+                </form>
+              </div>
+            </div>
+          );
+
+        case 'upload':
+          return (
+            <div>
+              <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '20px' }}>Upload Study Materials</h2>
+              <div style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)' }}>
+                <form onSubmit={handleUpload} style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--navy)' }}>Material Type</label>
+                    <select required style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '1rem', outline: 'none' }}>
+                      <option value="pdf">PDF Document</option>
+                      <option value="video">Video Lecture (MP4)</option>
+                      <option value="notes">Class Notes</option>
+                      <option value="pyq">Previous Year Question</option>
+                    </select>
+                  </div>
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--navy)' }}>Material Title</label>
-                    <input type="text" required value={dashTitle} onChange={e => setDashTitle(e.target.value)} placeholder="e.g. Chapter 4: Networks" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '2px solid var(--border)', fontSize: '1rem', outline: 'none' }} />
+                    <input type="text" required value={dashTitle} onChange={e => setDashTitle(e.target.value)} placeholder="e.g. Chapter 4: Calculus Complete Notes" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid var(--border)', fontSize: '1rem', outline: 'none' }} />
                   </div>
                   <div style={{ border: '2px dashed #cbd5e1', borderRadius: '12px', padding: '30px 20px', textAlign: 'center', background: '#f8fafc', position: 'relative', cursor: 'pointer', transition: 'border 0.2s' }}>
                     <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>📄</div>
                     <p style={{ margin: '0 0 8px 0', fontWeight: 600, color: 'var(--navy)', fontSize: '1rem' }}>{dashFile ? dashFile.name : 'Click or drop file here'}</p>
                     <input type="file" required onChange={e => setDashFile(e.target.files[0])} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }} />
                   </div>
-                  <button type="submit" className="btn-solid-lg" style={{ width: '100%' }}>Publish Securely</button>
+                  <button type="submit" className="btn-solid-lg" style={{ width: '100%' }}>Publish Material to Students</button>
                 </form>
               </div>
-            ) : (
-              <div style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--accent-soft)', display: 'grid', placeItems: 'center', color: 'white', fontSize: '1.5rem' }}>🎓</div>
-                    <h2 style={{ margin: 0, color: 'var(--primary)', fontFamily: 'Outfit', fontSize: '1.8rem' }}>Enrolled Courses</h2>
+
+              {uploadedNotes.length > 0 && (
+                <div style={{ marginTop: '40px' }}>
+                  <h3 style={{ fontSize: '1.4rem', color: 'var(--primary)', marginBottom: '16px' }}>Previously Uploaded</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                    {uploadedNotes.map(note => (
+                      <div key={note.id} style={{ background: 'var(--surface)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ fontWeight: 700, color: 'var(--navy)' }}>{note.title}</div>
+                        <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '12px' }}>{note.filename}</div>
+                        <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
+                          <button className="btn-outline-sm" onClick={() => handleDownload(note)} style={{ flex: 1 }}>View</button>
+                          <button className="btn-outline-sm" onClick={() => handleDelete(note.id)} style={{ color: '#ef4444', borderColor: '#fca5a5' }}>Delete</button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '2px dashed var(--border)', borderRadius: '16px', padding: '30px 20px', textAlign: 'center', background: '#f8fafc' }}>
-                  <div style={{ fontSize: '3.5rem', marginBottom: '16px' }}>🚀</div>
-                  <h3 style={{ fontSize: '1.4rem', margin: '0 0 10px 0', color: 'var(--navy)', fontFamily: 'Outfit' }}>Your learning journey starts here!</h3>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '1rem', maxWidth: '300px', margin: '0 auto 24px', lineHeight: 1.5 }}>Browse our professional programs to get started.</p>
-                  <button className="btn-solid" onClick={() => setCurrentView('home')} style={{ width: '100%' }}>Explore Course Catalog</button>
+              )}
+            </div>
+          );
+
+        case 'live':
+          return (
+            <div>
+              <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '20px' }}>Live Classes Manager</h2>
+              <div style={{ background: 'var(--surface)', padding: '30px', borderRadius: '16px', border: '1px solid var(--border)', marginBottom: '30px' }}>
+                <h3 style={{ fontSize: '1.4rem', color: 'var(--navy)', marginBottom: '16px' }}>Schedule a New Class</h3>
+                <form onSubmit={e => { e.preventDefault(); alert('Live class scheduled! Notifications sent to students.'); }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Class Topic</label>
+                      <input type="text" required placeholder="Integration Techniques" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Target Course</label>
+                      <select required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                        <option value="jee">Joint Entrance Preparation</option>
+                        <option value="gov">Government Exam Preparation</option>
+                        <option value="board12">Board Exam (Class 11-12)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Date & Time</label>
+                      <input type="datetime-local" required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Meeting Platform</label>
+                      <select required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                        <option value="zoom">Zoom</option>
+                        <option value="meet">Google Meet</option>
+                        <option value="teams">Microsoft Teams</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Meeting Link</label>
+                    <input type="url" required placeholder="https://zoom.us/j/..." style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }} />
+                  </div>
+                  <button type="submit" className="btn-solid">Schedule Class</button>
+                </form>
+              </div>
+            </div>
+          );
+
+        case 'students':
+          return (
+            <div>
+              <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '20px' }}>Student Management & Attendance</h2>
+              <div style={{ background: 'var(--surface)', padding: '30px', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <h3 style={{ fontSize: '1.4rem', color: 'var(--navy)', margin: 0 }}>Active Students List</h3>
+                  <button className="btn-outline-sm" onClick={() => alert('Downloading progress reports CSV...')}>📥 Download Reports</button>
+                </div>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ background: 'var(--background)', color: 'var(--text-muted)' }}>
+                        <th style={{ padding: '12px', borderBottom: '2px solid var(--border)' }}>Student Name</th>
+                        <th style={{ padding: '12px', borderBottom: '2px solid var(--border)' }}>Course Enrolled</th>
+                        <th style={{ padding: '12px', borderBottom: '2px solid var(--border)' }}>Attendance</th>
+                        <th style={{ padding: '12px', borderBottom: '2px solid var(--border)' }}>Performance</th>
+                        <th style={{ padding: '12px', borderBottom: '2px solid var(--border)' }}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td style={{ padding: '16px 12px', borderBottom: '1px solid var(--border)' }}>Ankit Sharma</td>
+                        <td style={{ padding: '16px 12px', borderBottom: '1px solid var(--border)' }}>Joint Entrance Prep</td>
+                        <td style={{ padding: '16px 12px', borderBottom: '1px solid var(--border)', color: '#10b981', fontWeight: 600 }}>92%</td>
+                        <td style={{ padding: '16px 12px', borderBottom: '1px solid var(--border)' }}>Excellent</td>
+                        <td style={{ padding: '16px 12px', borderBottom: '1px solid var(--border)' }}>
+                          <button className="btn-outline-sm" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => alert('Sending notification...')}>Notify</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '16px 12px', borderBottom: '1px solid var(--border)' }}>Priya Das</td>
+                        <td style={{ padding: '16px 12px', borderBottom: '1px solid var(--border)' }}>Govt. Exam Prep</td>
+                        <td style={{ padding: '16px 12px', borderBottom: '1px solid var(--border)', color: '#f59e0b', fontWeight: 600 }}>75%</td>
+                        <td style={{ padding: '16px 12px', borderBottom: '1px solid var(--border)' }}>Average</td>
+                        <td style={{ padding: '16px 12px', borderBottom: '1px solid var(--border)' }}>
+                          <button className="btn-outline-sm" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => alert('Sending notification...')}>Notify</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          );
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--primary)', display: 'grid', placeItems: 'center', color: 'white', fontSize: '1.2rem' }}>📁</div>
-            <h2 style={{ margin: 0, color: 'var(--primary)', fontFamily: 'Outfit', fontSize: '1.6rem' }}>{user.role === 'teacher' ? 'Your Uploaded Resources' : 'Latest Study Materials'}</h2>
-          </div>
-          
-          {uploadedNotes.length === 0 ? (
-            <div style={{ background: 'var(--surface)', padding: '40px', borderRadius: '16px', textAlign: 'center', border: '1px solid var(--border)' }}>
-              <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', margin: 0 }}>No study materials available at the moment.</p>
+        case 'assignments':
+        case 'tests':
+          return (
+            <div>
+              <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '20px' }}>{dashTab === 'assignments' ? 'Assignments Manager' : 'Mock Tests Creator'}</h2>
+              <div style={{ background: 'var(--surface)', padding: '30px', borderRadius: '16px', border: '1px solid var(--border)', textAlign: 'center' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '16px' }}>{dashTab === 'assignments' ? '📝' : '🎯'}</div>
+                <h3 style={{ fontSize: '1.4rem', color: 'var(--navy)', marginBottom: '16px' }}>Create New {dashTab === 'assignments' ? 'Assignment' : 'Mock Test'}</h3>
+                <button className="btn-solid-lg" onClick={() => alert('Opening advanced creator module...')}>+ Create New</button>
+              </div>
             </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
-              {uploadedNotes.map(note => (
-                <div key={note.id} style={{ background: 'var(--surface)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '20px' }}>
-                    <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: '#fef2f2', color: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: '1.8rem', flexShrink: 0 }}>📄</div>
-                    <div>
-                      <h3 style={{ margin: '0 0 6px 0', fontSize: '1.15rem', color: 'var(--navy)', lineHeight: 1.3, fontWeight: 700 }}>{note.title}</h3>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>{note.filename}</p>
+          );
+
+        case 'my_courses':
+          if (user.role === 'student' && user.enrolledCourses && user.enrolledCourses.length > 0) {
+            const userCourses = DEFAULT_COURSES.filter(c => user.enrolledCourses.includes(String(c.id)));
+            return (
+              <div>
+                <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '20px' }}>My Active Courses</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                  {userCourses.map(course => (
+                    <div key={course.id} style={{ background: 'var(--surface)', borderRadius: '16px', border: '1px solid var(--border)', overflow: 'hidden' }}>
+                      <div style={{ height: '140px', background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '3rem' }}>
+                        {course.icon}
+                      </div>
+                      <div style={{ padding: '20px' }}>
+                        <h3 style={{ fontSize: '1.2rem', color: 'var(--navy)', marginBottom: '8px' }}>{course.title}</h3>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '16px' }}>{course.target}</p>
+                        <div style={{ width: '100%', background: '#e2e8f0', height: '8px', borderRadius: '4px', marginBottom: '8px' }}>
+                          <div style={{ width: '0%', background: '#3b82f6', height: '100%', borderRadius: '4px' }}></div>
+                        </div>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '16px' }}>0% Completed</p>
+                        <button className="btn-solid" style={{ width: '100%' }}>Continue Learning</button>
+                      </div>
                     </div>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--accent)', color: 'white', display: 'grid', placeItems: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>{note.teacher.charAt(0).toUpperCase()}</div>
-                      <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 500 }}>{note.teacher}</span>
-                    </div>
-                    <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: 600 }}>{note.date}</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                    <button className="btn-solid" onClick={() => handleDownload(note)} style={{ flex: 1, padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                      ⬇️ Download
-                    </button>
-                    {user.role === 'teacher' && (
-                      <button className="btn-outline-sm" onClick={() => handleDelete(note.id)} style={{ padding: '10px 16px', color: '#ef4444', borderColor: '#fca5a5', background: '#fef2f2' }}>
-                        🗑️ Delete
-                      </button>
-                    )}
-                  </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+            );
+          }
+          // Fallback if no courses
+          return (
+            <div style={{ display: 'grid', placeItems: 'center', minHeight: '400px', background: 'var(--surface)', borderRadius: '20px', border: '1px solid var(--border)' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '4rem', marginBottom: '16px' }}>📚</div>
+                <h3 style={{ fontSize: '1.5rem', color: 'var(--navy)' }}>No Active Courses</h3>
+                <p style={{ color: 'var(--text-muted)' }}>Explore our flagship programs and enroll today!</p>
+                <button className="btn-solid" onClick={() => window.location.reload()} style={{ marginTop: '16px' }}>Browse Courses</button>
+              </div>
             </div>
-          )}
-        </div>
+          );
+
+        case 'materials':
+        default:
+          return (
+            <div style={{ display: 'grid', placeItems: 'center', minHeight: '400px', background: 'var(--surface)', borderRadius: '20px', border: '1px solid var(--border)' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '4rem', marginBottom: '16px' }}>🚀</div>
+                <h3 style={{ fontSize: '1.5rem', color: 'var(--navy)' }}>Module Locked or Coming Soon</h3>
+                <p style={{ color: 'var(--text-muted)' }}>This section is currently being updated for the premium platform.</p>
+              </div>
+            </div>
+          );
+      }
+    };
+
+    return (
+      <div style={{ background: 'var(--background)', minHeight: '100vh', display: 'flex' }}>
+        {/* Sidebar */}
+        <aside style={{ width: '280px', background: 'var(--surface)', borderRight: '1px solid var(--border)', padding: '24px 0', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '0 24px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <img src={avatarUrl} alt="Avatar" style={{ width: '50px', height: '50px', borderRadius: '50%', background: '#f1f5f9' }} />
+            <div>
+              <div style={{ fontWeight: 700, color: 'var(--primary)' }}>{user.name}</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{user.role === 'teacher' ? 'Faculty' : 'Student'}</div>
+            </div>
+          </div>
+          <nav style={{ flex: 1, padding: '0 12px' }}>
+            {sidebarItems.map(item => (
+              <button 
+                key={item.id}
+                onClick={() => setDashTab(item.id)}
+                style={{ 
+                  display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '12px 16px', 
+                  marginBottom: '4px', borderRadius: '8px', border: 'none', 
+                  background: dashTab === item.id ? 'var(--primary)' : 'transparent',
+                  color: dashTab === item.id ? 'white' : 'var(--text)',
+                  fontWeight: dashTab === item.id ? 600 : 500,
+                  cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s'
+                }}
+              >
+                <span>{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+          </nav>
+          <div style={{ padding: '24px 24px 0' }}>
+            <button onClick={() => { handleLogout(); setCurrentView('home'); }} className="btn-outline-sm" style={{ width: '100%', borderColor: 'var(--error, #ef4444)', color: 'var(--error, #ef4444)' }}>
+              Sign Out
+            </button>
+          </div>
+        </aside>
+
+        {/* Main Content Area */}
+        <main style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
+          <div className="dashboard-content-container" style={{ maxWidth: '1000px', margin: '0 auto' }}>
+            {renderContent()}
+          </div>
+        </main>
       </div>
     );
   };
@@ -1217,7 +1535,7 @@ function App() {
             {currentView === 'enroll' && EnrollmentView()}
             {currentView === 'study' && StudyMaterialView()}
             {currentView === 'results' && ResultsView()}
-            {currentView === 'login' && LoginView()}
+            {currentView === 'login' && <AuthView />}
             {currentView === 'dashboard' && DashboardView()}
           </>
         )}
@@ -1249,8 +1567,14 @@ function App() {
             <p style={{ color: 'var(--text-muted)', marginBottom: '10px', display: 'flex', gap: '8px' }}><span>✉️</span> <a href="mailto:admin@becsofficial.com" style={{ textDecoration: 'none' }}>admin@becsofficial.com</a></p>
             <p style={{ color: 'var(--text-muted)', marginBottom: '10px', display: 'flex', gap: '8px' }}><span>📞</span> <a href="tel:+919830640683" style={{ textDecoration: 'none' }}>+91 9830640683</a></p>
             <div style={{ marginTop: '20px', display: 'flex', gap: '15px' }}>
-              <a href="https://www.linkedin.com/company/becselectronics" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', background: 'white', borderRadius: '4px', padding: '2px', transition: 'transform 0.2s', ':hover': { transform: 'scale(1.1)' } }}>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" style={{ width: '24px', height: '24px', display: 'block' }} />
+              <a href="https://www.linkedin.com/company/becselectronics" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', background: 'white', borderRadius: '50%', transition: 'transform 0.2s', ':hover': { transform: 'scale(1.1)' } }} aria-label="LinkedIn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" style={{ width: '20px', height: '20px', display: 'block', borderRadius: '2px' }} />
+              </a>
+              <a href="https://www.facebook.com/BanerjeeElectronicsConsultancyServices/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', background: 'white', borderRadius: '50%', transition: 'transform 0.2s', ':hover': { transform: 'scale(1.1)' } }} aria-label="Facebook">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" style={{ width: '20px', height: '20px', display: 'block' }} />
+              </a>
+              <a href="https://www.instagram.com/_b.e.c.s_/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', background: 'white', borderRadius: '50%', transition: 'transform 0.2s', ':hover': { transform: 'scale(1.1)' } }} aria-label="Instagram">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" style={{ width: '20px', height: '20px', display: 'block' }} />
               </a>
             </div>
           </div>

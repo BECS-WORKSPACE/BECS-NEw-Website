@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
-import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister, createPaymentIntent } from '../api';
+import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister } from '../api';
 
 function Wishlist() {
   const { wishlistItems, handleAddToCart, handleToggleWishlist } = React.useContext(ShopContext);
@@ -37,8 +37,8 @@ function Wishlist() {
       <div className="product-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '30px' }}>
         {wishlistItems.map((product) => (
           <article className="product-card" key={product._id} style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
-            <button 
-              onClick={() => handleToggleWishlist(product)} 
+            <button
+              onClick={() => handleToggleWishlist(product)}
               style={{ position: 'absolute', top: '16px', right: '16px', background: 'white', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', cursor: 'pointer', zIndex: 10, fontSize: '1.2rem', color: '#ef4444' }}
               title="Remove from Wishlist"
             >
@@ -53,10 +53,10 @@ function Wishlist() {
               <strong style={{ fontSize: '1.4rem' }}>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(product.price)}</strong>
             </div>
             <div className="card-actions" style={{ marginTop: '20px' }}>
-              <button 
-                className="action-button action-button--solid" 
-                style={{ flex: 1 }} 
-                type="button" 
+              <button
+                className="action-button action-button--solid"
+                style={{ flex: 1 }}
+                type="button"
                 onClick={() => { handleAddToCart(product); handleToggleWishlist(product); }}
               >
                 Move to Cart

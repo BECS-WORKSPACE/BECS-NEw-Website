@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
-import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister, createPaymentIntent } from '../api';
+import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister } from '../api';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
 
@@ -33,17 +33,17 @@ const calculateEDD = (speed, pincode) => {
   const now = new Date();
   const cutoffHour = 14; // 2:00 PM
   let processingDays = now.getHours() >= cutoffHour ? 1 : 0;
-  
+
   // Skip Sundays for processing start
   const startDate = new Date(now);
   startDate.setDate(startDate.getDate() + processingDays);
   if (startDate.getDay() === 0) startDate.setDate(startDate.getDate() + 1);
-  
+
   // Transit Time Mock based on pincode first digit and speed
   // Speed factor: Standard (3-5), Express (2-3), Priority (1-2)
   let baseTransitMin = 3;
   let baseTransitMax = 5;
-  
+
   if (speed === 'Priority Delivery') {
     baseTransitMin = 1;
     baseTransitMax = 2;
@@ -51,14 +51,14 @@ const calculateEDD = (speed, pincode) => {
     baseTransitMin = 2;
     baseTransitMax = 3;
   }
-  
+
   // Operational buffer: 1 day
   const buffer = 1;
-  
+
   const minDate = new Date(startDate);
   minDate.setDate(minDate.getDate() + baseTransitMin);
   if (minDate.getDay() === 0) minDate.setDate(minDate.getDate() + 1); // Skip Sunday delivery
-  
+
   const maxDate = new Date(startDate);
   maxDate.setDate(maxDate.getDate() + baseTransitMax + buffer);
   if (maxDate.getDay() === 0) maxDate.setDate(maxDate.getDate() + 1);
@@ -70,7 +70,7 @@ const calculateEDD = (speed, pincode) => {
     hoursLeft += 24;
     // if ordered tomorrow before cutoff
   }
-  
+
   return {
     minStr: minDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
     maxStr: maxDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
@@ -139,7 +139,7 @@ function ShopProvider({ children }) {
   useEffect(() => { window.localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(cartItems)); }, [cartItems]);
   useEffect(() => { window.localStorage.setItem(STORAGE_KEYS.wishlist, JSON.stringify(wishlistItems)); }, [wishlistItems]);
   useEffect(() => { window.localStorage.setItem('becs_ecommerce_addresses', JSON.stringify(addresses)); }, [addresses]);
-  useEffect(() => { 
+  useEffect(() => {
     if (user) {
       window.localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
     } else {
@@ -157,16 +157,16 @@ function ShopProvider({ children }) {
     let subtotal = 0;
     let mrpTotal = 0;
     let discount = 0;
-    
+
     cartItems.forEach(item => {
       const itemSellingPrice = getInclusivePrice(item.price);
       const itemMRP = item.mrp ? getInclusivePrice(item.mrp) : Math.round(itemSellingPrice * 1.25); // 20% mock discount
-      
+
       subtotal += itemSellingPrice * item.quantity;
       mrpTotal += itemMRP * item.quantity;
       discount += (itemMRP - itemSellingPrice) * item.quantity;
     });
-    
+
     let shipping = 0;
     if (cartItems.length > 0) {
       let totalChargeableWeight = 0;
@@ -175,14 +175,18 @@ function ShopProvider({ children }) {
         const volumetricWeight = item.quantity * 1.5;
         totalChargeableWeight += Math.max(actualWeight, volumetricWeight);
       });
-      
+
       const baseRate = 20;
       const distanceFactor = 50;
       const speedFactor = shippingSpeed === 'Priority Delivery' ? 200 : (shippingSpeed === 'Express Delivery' ? 100 : 0);
-      
-      shipping = Math.round((totalChargeableWeight * baseRate) + distanceFactor + speedFactor);
+
+      if (shippingSpeed === 'Free Delivery (Test)') {
+        shipping = 0;
+      } else {
+        shipping = Math.round((totalChargeableWeight * baseRate) + distanceFactor + speedFactor);
+      }
     }
-    
+
     const tax = 0; // Tax is inclusive in prices now
     const total = subtotal + shipping + tax;
     const quantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);

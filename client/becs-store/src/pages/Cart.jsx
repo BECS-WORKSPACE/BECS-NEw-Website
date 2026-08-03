@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ShopContext, formatPrice } from '../context/ShopContext';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
-import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister, createPaymentIntent } from '../api';
+import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister } from '../api';
 
 function Cart() {
   const { cartItems, cartSummary, handleQuantityChange, handleRemoveItem, getInclusivePrice, shippingSpeed, setShippingSpeed, calculateEDD } = React.useContext(ShopContext);
@@ -48,20 +48,21 @@ function Cart() {
             </div>
           </section>
         </div>
-        
+
         {cartItems.length > 0 && (
           <aside className="summary-sidebar summary-sidebar--cart">
             <section className="panel" style={{ padding: '30px' }}>
               <div className="panel-header"><div><span className="eyebrow">Order Summary</span><h2 style={{ fontSize: '1.8rem' }}>{cartSummary.quantity} items</h2></div></div>
               <div className="summary-row" style={{ fontSize: '1.1rem' }}><span>Subtotal</span><strong>{formatPrice(cartSummary.subtotal)}</strong></div>
               <div className="summary-row" style={{ fontSize: '1.1rem' }}><span>Shipping</span><strong>{formatPrice(cartSummary.shipping)}</strong></div>
-              
+
               <div className="shipping-selector" style={{ margin: '16px 0', borderTop: '1px solid var(--line)', paddingTop: '16px' }}>
                 <h4 style={{ fontSize: '0.9rem', marginBottom: '8px', color: 'var(--text)' }}>Shipping Speed</h4>
                 <select value={shippingSpeed} onChange={(e) => setShippingSpeed(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '0.9rem' }}>
                   <option value="Standard Delivery">Standard Delivery</option>
                   <option value="Express Delivery">Express Delivery</option>
                   <option value="Priority Delivery">Priority Delivery</option>
+                  <option value="Free Delivery (Test)">Free Delivery (Test)</option>
                 </select>
                 <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(15, 143, 93, 0.08)', borderRadius: '8px', borderLeft: '4px solid var(--success)' }}>
                   <strong style={{ display: 'block', color: 'var(--success)', marginBottom: '4px', fontSize: '0.9rem' }}>Estimated Delivery:</strong>

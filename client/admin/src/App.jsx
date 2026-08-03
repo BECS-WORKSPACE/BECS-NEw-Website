@@ -3,6 +3,7 @@ import { login as apiLogin, fetchStats, fetchAllOrders, updateOrderStatus, fetch
 import io from 'socket.io-client';
 import DashboardOverview from './components/DashboardOverview';
 import StoreOrders from './components/StoreOrders';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const formatPrice = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
 
@@ -661,6 +662,91 @@ const AdminApp = () => {
     </div>
   );
 
+  const EduverseAnalyticsView = () => {
+    const revenueData = [
+      { name: 'Jan', revenue: 45000 },
+      { name: 'Feb', revenue: 52000 },
+      { name: 'Mar', revenue: 48000 },
+      { name: 'Apr', revenue: 61000 },
+      { name: 'May', revenue: 59000 },
+      { name: 'Jun', revenue: 75000 },
+    ];
+    
+    const coursePopularity = [
+      { name: 'JEE Prep', value: 400 },
+      { name: 'NEET Prep', value: 300 },
+      { name: 'Govt Exams', value: 300 },
+      { name: 'Class 10', value: 200 },
+    ];
+    
+    const COLORS = ['#0ea5e9', '#3b82f6', '#8b5cf6', '#ec4899'];
+
+    return (
+      <div className="view-container">
+        <header className="view-header">
+          <div><h2 className="view-title">EduVerse Analytics</h2><p className="view-subtitle">High-level telemetry for the Vidyapeeth EdTech platform.</p></div>
+        </header>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+          <div style={{ background: 'white', padding: '24px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+            <p style={{ color: 'var(--text-light)', margin: '0 0 8px 0' }}>Total Students</p>
+            <h3 style={{ margin: 0, fontSize: '2rem', color: 'var(--primary)' }}>1,248</h3>
+          </div>
+          <div style={{ background: 'white', padding: '24px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+            <p style={{ color: 'var(--text-light)', margin: '0 0 8px 0' }}>EduVerse Revenue</p>
+            <h3 style={{ margin: 0, fontSize: '2rem', color: 'var(--accent)' }}>₹8.4L</h3>
+          </div>
+          <div style={{ background: 'white', padding: '24px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+            <p style={{ color: 'var(--text-light)', margin: '0 0 8px 0' }}>Scholarships Granted</p>
+            <h3 style={{ margin: 0, fontSize: '2rem', color: '#10b981' }}>156</h3>
+          </div>
+          <div style={{ background: 'white', padding: '24px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+            <p style={{ color: 'var(--text-light)', margin: '0 0 8px 0' }}>Active Teachers</p>
+            <h3 style={{ margin: 0, fontSize: '2rem', color: '#f59e0b' }}>24</h3>
+          </div>
+          <div style={{ background: 'white', padding: '24px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+            <p style={{ color: 'var(--text-light)', margin: '0 0 8px 0' }}>Counselling Sessions</p>
+            <h3 style={{ margin: 0, fontSize: '2rem', color: '#6366f1' }}>342</h3>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '30px' }}>
+          <div style={{ background: 'white', padding: '24px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+            <h3 style={{ marginBottom: '20px', color: 'var(--navy)' }}>Revenue Trend (INR)</h3>
+            <div style={{ width: '100%', height: 300 }}>
+              <ResponsiveContainer>
+                <BarChart data={revenueData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                  <YAxis axisLine={false} tickLine={false} tickFormatter={(val) => `₹${val / 1000}k`} />
+                  <RechartsTooltip formatter={(val) => `₹${val}`} />
+                  <Bar dataKey="revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div style={{ background: 'white', padding: '24px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+            <h3 style={{ marginBottom: '20px', color: 'var(--navy)' }}>Course Popularity</h3>
+            <div style={{ width: '100%', height: 300 }}>
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie data={coursePopularity} innerRadius={80} outerRadius={120} paddingAngle={5} dataKey="value">
+                    {coursePopularity.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // --- MAIN RENDER ---
   if (!isAuthenticated) {
     return (
@@ -716,6 +802,7 @@ const AdminApp = () => {
       case 'contacts': return <ContactsView />;
       case 'enquiries': return <EnquiriesView />;
       case 'courses': return <CoursesView />;
+      case 'eduverse-analytics': return <EduverseAnalyticsView />;
       default: return <DashboardOverview stats={stats} orders={orders} setActiveTab={setActiveTab} formatPrice={formatPrice} />;
     }
   };
@@ -750,6 +837,7 @@ const AdminApp = () => {
           <div style={{ padding: '10px 15px', fontSize: '0.8rem', color: 'var(--text-light)', textTransform: 'uppercase', fontWeight: 800, marginTop: '20px' }}>Vidyapeeth</div>
           <button className={`nav-link ${activeTab === 'enquiries' ? 'active' : ''}`} onClick={() => { setActiveTab('enquiries'); setIsMobileSidebarOpen(false); }}>Student Enquiries</button>
           <button className={`nav-link ${activeTab === 'courses' ? 'active' : ''}`} onClick={() => { setActiveTab('courses'); setIsMobileSidebarOpen(false); }}>Course Catalog</button>
+          <button className={`nav-link ${activeTab === 'eduverse-analytics' ? 'active' : ''}`} onClick={() => { setActiveTab('eduverse-analytics'); setIsMobileSidebarOpen(false); }}>EduVerse Analytics</button>
           
           <div style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
             <a href={frontendUrl} className="nav-link logout-link">← Exit to Frontend</a>

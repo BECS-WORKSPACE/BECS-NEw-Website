@@ -19,6 +19,7 @@ export const createOrder = (orderData) => API.post('/orders', orderData);
 export const fetchMyOrders = () => API.get('/orders/myorders');
 export const login = (credentials) => API.post('/auth/login', credentials);
 export const register = (userData) => API.post('/auth/register', userData);
-export const createPaymentIntent = (orderId) => API.post('/payments/create-intent', { orderId });
+export const createRazorpayOrder = (orderData) => API.post('/payments/create-order', orderData);
+export const verifyRazorpayPayment = (paymentData) => API.post('/payments/verify', paymentData);
 
 export default API;

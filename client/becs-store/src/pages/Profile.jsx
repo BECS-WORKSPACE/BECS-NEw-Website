@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
-import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister, createPaymentIntent } from '../api';
+import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister } from '../api';
 
 function Profile() {
   const { user, setUser, handleLogout, addresses, setAddresses } = React.useContext(ShopContext);

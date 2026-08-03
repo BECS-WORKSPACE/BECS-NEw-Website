@@ -121,7 +121,7 @@ const storeCategories = [
 ];
 
 const storeStats = [
-  { value: '7', label: 'Products' },
+  { value: '10+', label: 'Products' },
   { value: '10+', label: 'Categories' },
   { value: 'Fast', label: 'Delivery' },
   { value: 'Secure', label: 'Payments' }

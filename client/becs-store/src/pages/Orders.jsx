@@ -3,12 +3,12 @@ import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ShopContext, formatPrice } from '../context/ShopContext';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
-import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister, createPaymentIntent } from '../api';
+import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister } from '../api';
 
 function Orders() {
   const { orders, user } = React.useContext(ShopContext);
   const navigate = useNavigate();
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState('All Time');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -17,7 +17,7 @@ function Orders() {
   const [paymentMethodFilter, setPaymentMethodFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  
+
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   useEffect(() => {
@@ -56,15 +56,15 @@ function Orders() {
       else if (amountFilter === '₹25,000+') amountMatch = amount > 25000;
 
       const statusMatch = statusFilter === 'All' || order.status === statusFilter;
-      
+
       let payStatus = order.isPaid ? 'Paid' : 'Pending';
-      if (order.status === 'Cancelled' && order.isPaid) payStatus = 'Refunded'; 
+      if (order.status === 'Cancelled' && order.isPaid) payStatus = 'Refunded';
       const paymentStatusMatch = paymentStatusFilter === 'All' || payStatus === paymentStatusFilter;
 
       const paymentMethodMatch = paymentMethodFilter === 'All' || order.paymentMethod === paymentMethodFilter;
 
-      const searchMatch = !searchTerm || 
-        order._id.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      const searchMatch = !searchTerm ||
+        order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.items.some(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
       return dateMatch && amountMatch && statusMatch && paymentStatusMatch && paymentMethodMatch && searchMatch;
@@ -84,7 +84,7 @@ function Orders() {
       if (o.status === 'Delivered') delivered++;
       else if (o.status === 'Pending' || o.status === 'Processing') pending++;
       else if (o.status === 'Cancelled') cancelled++;
-      
+
       if (o.status !== 'Cancelled') spent += o.totalPrice;
     });
     return { total, pending, delivered, cancelled, spent };
@@ -96,7 +96,7 @@ function Orders() {
     doc.text('BECS Ecommerce', 14, 22);
     doc.setFontSize(10);
     doc.text('Premium Electronics Store', 14, 28);
-    
+
     doc.setFontSize(14);
     doc.text('INVOICE', 160, 22);
     doc.setFontSize(10);
@@ -104,7 +104,7 @@ function Orders() {
     doc.text(`Order No: ${order._id}`, 160, 34);
     doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString('en-IN')}`, 160, 40);
     doc.text(`Status: ${order.status}`, 160, 46);
-    
+
     doc.text('Bill To:', 14, 45);
     doc.text(`${order.shippingDetails?.name || 'Customer'}`, 14, 51);
     doc.text(`${order.shippingDetails?.address || ''}`, 14, 57);
@@ -133,13 +133,13 @@ function Orders() {
     });
 
     const finalY = doc.lastAutoTable.finalY || 85;
-    
+
     let calcSubtotal = 0;
     let calcMrpTotal = 0;
     let calcDiscount = 0;
     order.items.forEach(item => {
       const sp = item.price;
-      const mrp = Math.round((sp / 1.18) * 1.25 * 1.18); 
+      const mrp = Math.round((sp / 1.18) * 1.25 * 1.18);
       calcSubtotal += sp * item.quantity;
       calcMrpTotal += mrp * item.quantity;
       calcDiscount += (mrp - sp) * item.quantity;
@@ -150,27 +150,27 @@ function Orders() {
     doc.text(`Shipping: Rs ${order.shippingPrice || 0}`, 140, finalY + 22);
     doc.setFontSize(12);
     doc.text(`Grand Total: Rs ${order.totalPrice}`, 140, finalY + 30);
-    
+
     doc.save(`Invoice-${order._id}.pdf`);
   };
 
   const getOrderStatusIndex = (status) => {
-    if(status === 'Pending') return 0;
-    if(status === 'Processing') return 1;
-    if(status === 'Packed') return 2;
-    if(status === 'Shipped') return 3;
-    if(status === 'Out for Delivery') return 4;
-    if(status === 'Delivered') return 5;
+    if (status === 'Pending') return 0;
+    if (status === 'Processing') return 1;
+    if (status === 'Packed') return 2;
+    if (status === 'Shipped') return 3;
+    if (status === 'Out for Delivery') return 4;
+    if (status === 'Delivered') return 5;
     return -1;
   };
 
   return (
     <div className="container app-shell" style={{ paddingTop: '40px', paddingBottom: '60px' }}>
       <section style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        
+
         {/* Statistics Dashboard */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-          {[{label: 'Total Orders', val: stats.total, color: '#3b82f6'}, {label: 'Delivered', val: stats.delivered, color: '#10b981'}, {label: 'Pending', val: stats.pending, color: '#f59e0b'}, {label: 'Cancelled', val: stats.cancelled, color: '#ef4444'}, {label: 'Total Spent', val: formatPrice(stats.spent), color: '#8b5cf6'}].map(s => (
+          {[{ label: 'Total Orders', val: stats.total, color: '#3b82f6' }, { label: 'Delivered', val: stats.delivered, color: '#10b981' }, { label: 'Pending', val: stats.pending, color: '#f59e0b' }, { label: 'Cancelled', val: stats.cancelled, color: '#ef4444' }, { label: 'Total Spent', val: formatPrice(stats.spent), color: '#8b5cf6' }].map(s => (
             <div key={s.label} className="panel" style={{ padding: '20px', textAlign: 'center', borderTop: `4px solid ${s.color}` }}>
               <div style={{ fontSize: '0.9rem', color: 'var(--muted)', fontWeight: 600 }}>{s.label}</div>
               <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text)', marginTop: '8px' }}>{s.val}</div>
@@ -182,21 +182,21 @@ function Orders() {
         <div className="panel" style={{ padding: '24px', marginBottom: '30px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
             <div className="shop-search-wrap" style={{ flex: '1 1 300px' }}>
-              <input type="text" placeholder="Search by Order ID or Product Name..." value={searchTerm} onChange={e => {setSearchTerm(e.target.value); setCurrentPage(1);}} />
+              <input type="text" placeholder="Search by Order ID or Product Name..." value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} />
             </div>
-            <select style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--line)', background: '#fff' }} value={dateFilter} onChange={e => {setDateFilter(e.target.value); setCurrentPage(1);}}>
+            <select style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--line)', background: '#fff' }} value={dateFilter} onChange={e => { setDateFilter(e.target.value); setCurrentPage(1); }}>
               <option>All Time</option><option>Today</option><option>Last 7 Days</option><option>Last 30 Days</option><option>Last 3 Months</option><option>Last 6 Months</option><option>This Year</option>
             </select>
-            <select style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--line)', background: '#fff' }} value={amountFilter} onChange={e => {setAmountFilter(e.target.value); setCurrentPage(1);}}>
+            <select style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--line)', background: '#fff' }} value={amountFilter} onChange={e => { setAmountFilter(e.target.value); setCurrentPage(1); }}>
               <option>All Amounts</option><option>₹0 - ₹1,000</option><option>₹1,000 - ₹5,000</option><option>₹5,000 - ₹10,000</option><option>₹10,000 - ₹25,000</option><option>₹25,000+</option>
             </select>
-            <select style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--line)', background: '#fff' }} value={statusFilter} onChange={e => {setStatusFilter(e.target.value); setCurrentPage(1);}}>
+            <select style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--line)', background: '#fff' }} value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setCurrentPage(1); }}>
               <option value="All">All Statuses</option><option>Pending</option><option>Processing</option><option>Packed</option><option>Shipped</option><option>Out for Delivery</option><option>Delivered</option><option>Cancelled</option><option>Returned</option>
             </select>
-            <select style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--line)', background: '#fff' }} value={paymentStatusFilter} onChange={e => {setPaymentStatusFilter(e.target.value); setCurrentPage(1);}}>
+            <select style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--line)', background: '#fff' }} value={paymentStatusFilter} onChange={e => { setPaymentStatusFilter(e.target.value); setCurrentPage(1); }}>
               <option value="All">All Payment Status</option><option>Paid</option><option>Pending</option><option>Failed</option><option>Refunded</option>
             </select>
-            <select style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--line)', background: '#fff' }} value={paymentMethodFilter} onChange={e => {setPaymentMethodFilter(e.target.value); setCurrentPage(1);}}>
+            <select style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--line)', background: '#fff' }} value={paymentMethodFilter} onChange={e => { setPaymentMethodFilter(e.target.value); setCurrentPage(1); }}>
               <option value="All">All Payment Methods</option><option>UPI</option><option>Credit Card</option><option>Debit Card</option><option>Net Banking</option><option>Wallet</option><option>Cash on Delivery</option>
             </select>
           </div>
@@ -208,7 +208,7 @@ function Orders() {
             <h2 style={{ fontSize: '1.5rem', margin: 0 }}>Showing {filteredOrders.length} Orders</h2>
             <span style={{ color: 'var(--muted)', fontSize: '0.9rem', display: 'flex', alignItems: 'center' }}>Newest Orders First</span>
           </div>
-          
+
           {paginatedOrders.length ? paginatedOrders.map((order) => {
             const firstItem = order.items?.[0];
             const otherItemsCount = order.items?.length - 1;
@@ -272,7 +272,7 @@ function Orders() {
                 <h2 style={{ margin: 0, fontSize: '1.4rem' }}>Order Details</h2>
                 <button onClick={() => setSelectedOrder(null)} style={{ background: 'transparent', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--muted)' }}>✕</button>
               </div>
-              
+
               <div style={{ padding: '24px' }}>
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
                   <button className="action-button action-button--solid" onClick={() => generateInvoice(selectedOrder)}>Download Invoice PDF</button>
@@ -286,7 +286,7 @@ function Orders() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}><span style={{ color: 'var(--muted)' }}>Payment Method</span><strong>{selectedOrder.paymentMethod}</strong></div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}><span style={{ color: 'var(--muted)' }}>Payment Status</span><strong style={{ color: selectedOrder.isPaid ? 'var(--success)' : '#d97706' }}>{selectedOrder.isPaid ? 'Paid' : 'Pending'}</strong></div>
                   </div>
-                  
+
                   <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid var(--line)' }}>
                     <h3 style={{ marginTop: 0, fontSize: '1.1rem', marginBottom: '16px', color: '#111' }}>Customer Information</h3>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}><span style={{ color: 'var(--muted)' }}>Name</span><strong>{selectedOrder.shippingDetails?.name}</strong></div>
@@ -305,7 +305,7 @@ function Orders() {
                       const isCompleted = currentIdx >= idx;
                       const isCancelled = selectedOrder.status === 'Cancelled';
                       const isReturned = selectedOrder.status === 'Returned';
-                      
+
                       if (isCancelled || isReturned) return null;
 
                       return (
@@ -320,7 +320,7 @@ function Orders() {
                     {(selectedOrder.status === 'Cancelled' || selectedOrder.status === 'Returned') && (
                       <div style={{ width: '100%', textAlign: 'center', zIndex: 2 }}>
                         <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#dc2626', display: 'grid', placeItems: 'center', margin: '0 auto 10px' }}>
-                           <span style={{ color: '#fff', fontSize: '14px' }}>✕</span>
+                          <span style={{ color: '#fff', fontSize: '14px' }}>✕</span>
                         </div>
                         <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#dc2626' }}>{selectedOrder.status === 'Cancelled' ? 'Order Cancelled' : 'Order Returned'}</span>
                       </div>
@@ -362,14 +362,14 @@ function Orders() {
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <div style={{ width: '350px', background: '#f8f9fa', padding: '24px', borderRadius: '8px', border: '1px solid var(--line)' }}>
                     <h3 style={{ marginTop: 0, fontSize: '1.2rem', marginBottom: '16px', color: '#111' }}>Pricing Breakdown</h3>
-                    
+
                     {(() => {
                       let calcSubtotal = 0;
                       let calcMrpTotal = 0;
                       let calcDiscount = 0;
                       selectedOrder.items.forEach(item => {
                         const sp = item.price;
-                        const mrp = Math.round((sp / 1.18) * 1.25 * 1.18); 
+                        const mrp = Math.round((sp / 1.18) * 1.25 * 1.18);
                         calcSubtotal += sp * item.quantity;
                         calcMrpTotal += mrp * item.quantity;
                         calcDiscount += (mrp - sp) * item.quantity;

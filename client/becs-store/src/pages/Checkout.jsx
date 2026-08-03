@@ -3,8 +3,7 @@ import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ShopContext, formatPrice } from '../context/ShopContext';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
-import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister, createPaymentIntent } from '../api';
-import MockPaymentUI from '../components/MockPaymentUI';
+import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister, createRazorpayOrder, verifyRazorpayPayment } from '../api';
 
 function Checkout() {
   const { cartItems, cartSummary, checkout, setCheckout, setOrders, defaultCheckout, setCartItems, setMessage, user, getInclusivePrice, shippingSpeed, setShippingSpeed, calculateEDD, addresses, setAddresses } = React.useContext(ShopContext);
@@ -14,7 +13,7 @@ function Checkout() {
   const [latestOrder, setLatestOrder] = useState(null);
   const [showTaxes, setShowTaxes] = useState(false);
   const paymentRef = useRef();
-  
+
   const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
 
@@ -89,23 +88,29 @@ function Checkout() {
     }
   };
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handleProceedToPayment = async () => {
-    if (latestOrder) {
-      setCheckoutStep(3);
-      return;
-    }
     const orderData = {
       items: cartItems.map(item => ({ product: item._id, name: item.name, quantity: item.quantity, price: getInclusivePrice(item.price), image: item.image })),
       shippingDetails: {
-        name: checkout.name || user?.name || 'Customer', 
-        email: checkout.email || user?.email || 'customer@example.com', 
-        phone: checkout.phone || '0000000000', 
-        address: checkout.address || 'N/A', 
-        city: checkout.city || 'N/A', 
-        state: checkout.state || 'N/A', 
+        name: checkout.name || user?.name || 'Customer',
+        email: checkout.email || user?.email || 'customer@example.com',
+        phone: checkout.phone || '0000000000',
+        address: checkout.address || 'N/A',
+        city: checkout.city || 'N/A',
+        state: checkout.state || 'N/A',
         pincode: checkout.pincode || '000000',
       },
-      paymentMethod: 'UPI / Card',
+      paymentMethod: 'Razorpay',
       totalPrice: cartSummary.total,
       taxPrice: 0,
       shippingPrice: cartSummary.shipping,
@@ -113,9 +118,66 @@ function Checkout() {
     };
 
     try {
-      const { data } = await createOrder(orderData);
-      setLatestOrder(data);
-      setCheckoutStep(3);
+      let orderIdToPay = latestOrder?._id;
+      let amountToPay = cartSummary.total;
+      
+      if (!latestOrder) {
+        const { data: orderResponse } = await createOrder(orderData);
+        setLatestOrder(orderResponse);
+        orderIdToPay = orderResponse._id;
+      }
+
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        alert('Failed to load Razorpay SDK. Please check your internet connection.');
+        return;
+      }
+
+      const { data: razorpayOrder } = await createRazorpayOrder({
+        orderId: orderIdToPay,
+        amount: amountToPay
+      });
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'your_public_key_here',
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        name: 'BECS Store',
+        description: 'Order Payment',
+        image: '/logo.png',
+        order_id: razorpayOrder.id,
+        handler: async function (response) {
+          try {
+            const verifyRes = await verifyRazorpayPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              orderId: orderIdToPay
+            });
+
+            if (verifyRes.data.success) {
+              handlePaymentSuccess(orderIdToPay, 'Razorpay');
+            } else {
+              alert('Payment Verification Failed!');
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Error verifying payment.');
+          }
+        },
+        prefill: {
+          name: orderData.shippingDetails.name,
+          email: orderData.shippingDetails.email,
+          contact: orderData.shippingDetails.phone
+        },
+        theme: {
+          color: '#e63946'
+        }
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+
     } catch (error) {
       console.error('Failed to initialize order', error);
       const errMsg = error.response?.data?.message || error.message;
@@ -123,30 +185,30 @@ function Checkout() {
     }
   };
 
-  const handlePaymentSuccess = () => {
-    // In demo mode, we just update local state to pretend it was paid.
-    // In a real flow, Stripe webhook would update the DB and we'd fetch the latest status.
-    const completedOrder = { ...latestOrder, isPaid: true, paymentMethod: 'UPI' };
-    setLatestOrder(completedOrder);
-    setOrders((current) => [completedOrder, ...current]);
+  const handlePaymentSuccess = (orderId, method) => {
+    setLatestOrder(prev => {
+       const completedOrder = { ...prev, isPaid: true, paymentMethod: method };
+       setOrders((current) => [completedOrder, ...current]);
+       return completedOrder;
+    });
     setCartItems([]);
     setCheckout(defaultCheckout);
-    setCheckoutStep(4);
+    setCheckoutStep(3);
     setErrors({});
   };
 
   return (
     <div className="container app-shell" style={{ paddingTop: '40px' }}>
-      <div className={`checkout-shell ${checkoutStep === 4 ? 'checkout-shell-done' : ''}`}>
+      <div className={`checkout-shell ${checkoutStep === 3 ? 'checkout-shell-done' : ''}`}>
         <div className="checkout-main">
-          {checkoutStep < 4 && (
+          {checkoutStep < 3 && (
             <>
               <div className="checkout-header">
                 <span className="eyebrow">Secure Checkout</span>
                 <h1>Complete your order.</h1>
               </div>
               <div className="stepper" style={{ marginBottom: '40px' }}>
-                {['Shipping', 'Payment', 'Review', 'Done'].map((step, index) => (
+                {['Shipping', 'Review', 'Done'].map((step, index) => (
                   <div className={`stepper-item ${index + 1 === checkoutStep ? 'stepper-item--active' : index + 1 < checkoutStep ? 'stepper-item--done' : ''}`} key={step}>
                     <span>{index + 1}</span><strong>{step}</strong>
                   </div>
@@ -154,7 +216,7 @@ function Checkout() {
               </div>
             </>
           )}
-          
+
           {checkoutStep === 1 && (
             <section className="panel" style={{ padding: '30px' }}>
               <div className="panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -167,8 +229,8 @@ function Checkout() {
               {!isAddingNewAddress ? (
                 <div className="addresses-grid">
                   {addresses.map((addr) => (
-                    <div 
-                      key={addr.id} 
+                    <div
+                      key={addr.id}
                       onClick={() => { setSelectedAddressId(addr.id); setCheckout((prev) => ({ ...prev, ...addr })); }}
                       style={{ padding: '20px', border: selectedAddressId === addr.id ? '2px solid var(--accent)' : '1px solid var(--line)', borderRadius: '12px', cursor: 'pointer', position: 'relative', background: selectedAddressId === addr.id ? 'rgba(0, 86, 210, 0.02)' : '#fff' }}
                     >
@@ -217,13 +279,6 @@ function Checkout() {
           )}
 
           {checkoutStep === 3 && (
-            <section className="panel payment-panel">
-              <div className="panel-header"><div><span className="eyebrow">Payment Step</span><h2>Complete your payment</h2></div></div>
-              <MockPaymentUI ref={paymentRef} onSuccess={handlePaymentSuccess} onBack={handleBackStep} amount={cartSummary.total} />
-            </section>
-          )}
-
-          {checkoutStep === 4 && (
             <section className="panel panel--success success-panel">
               <div className="success-badge" style={{ transform: 'scale(1.5)', marginBottom: '30px' }}>🎉 Order Confirmed</div>
               <h2 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>Thank you for your purchase!</h2>
@@ -236,7 +291,22 @@ function Checkout() {
                   <p><strong>Delivery Estimate:</strong> Arrives between {edd.minStr} – {edd.maxStr}</p>
                   <p><strong>Shipping Address:</strong><br />{latestOrder.shippingDetails?.address}, {latestOrder.shippingDetails?.city}</p>
                   <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
-                    <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem', flex: 1 }} onClick={() => alert('Invoice PDF downloaded.')}>Download Invoice</button>
+                    <button className="action-button action-button--ghost" style={{ padding: '8px 16px', fontSize: '0.9rem', flex: 1 }} onClick={() => {
+                      const doc = new jsPDF();
+                      doc.setFontSize(20);
+                      doc.text("Tax Invoice", 14, 22);
+                      doc.setFontSize(10);
+                      doc.text(`Order ID: ${latestOrder._id}`, 14, 32);
+                      doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 38);
+                      doc.text("Billed To:", 14, 48);
+                      doc.text(`${latestOrder.shippingDetails?.name}`, 14, 54);
+                      doc.text(`${latestOrder.shippingDetails?.address}`, 14, 60);
+                      doc.text("Company GSTIN: 19BKNPB0402R1ZZ", 14, 70);
+                      const tableRows = latestOrder.items.map(item => [item.name, item.quantity, item.price, item.price * item.quantity]);
+                      autoTable(doc, { startY: 75, head: [["Item", "Quantity", "Price", "Total"]], body: tableRows, theme: 'grid' });
+                      doc.text(`Total Amount: ${latestOrder.totalPrice}`, 14, (doc.lastAutoTable?.finalY || 75) + 10);
+                      doc.save(`invoice_${latestOrder._id}.pdf`);
+                    }}>Download Invoice</button>
                     <button className="action-button action-button--solid" style={{ padding: '8px 16px', fontSize: '0.9rem', flex: 1 }} onClick={() => navigate('/orders')}>Track Order</button>
                   </div>
                 </div>
@@ -256,7 +326,7 @@ function Checkout() {
           )}
         </div>
 
-        {checkoutStep < 4 && (
+        {checkoutStep < 3 && (
           <aside className="summary-sidebar summary-sidebar--checkout">
             <div className="premium-summary-card">
               <h3>Order Summary</h3>
@@ -273,7 +343,7 @@ function Checkout() {
                   <span>Shipping Fee:</span>
                   <span>{cartSummary.shipping === 0 ? 'Free' : formatPrice(cartSummary.shipping)}</span>
                 </div>
-                
+
                 <div style={{ textAlign: 'right', marginTop: '4px' }}>
                   <button className="text-button" type="button" onClick={() => setShowTaxes(!showTaxes)} style={{ fontSize: '0.75rem' }}>View tax breakdown ▼</button>
                 </div>
@@ -284,7 +354,7 @@ function Checkout() {
                   </div>
                 )}
               </div>
-              
+
               <div className="summary-total" style={{ borderTop: '1px solid #d5d9d9', paddingTop: '16px', marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <strong style={{ fontSize: '1rem', color: '#0f1111' }}>Order Total:</strong>
                 <div style={{ textAlign: 'right' }}>
@@ -292,7 +362,7 @@ function Checkout() {
                   <div style={{ fontSize: '0.7rem', color: '#565959' }}>(Inclusive of all taxes)</div>
                 </div>
               </div>
-              
+
               {cartSummary.discount > 0 && (
                 <div style={{ marginTop: '16px', padding: '8px', background: '#ecf9ec', color: '#007600', borderRadius: '4px', textAlign: 'center', fontSize: '0.8rem', fontWeight: '500', border: '1px solid #c9e8c9' }}>
                   Yay! Your total savings are {formatPrice(cartSummary.discount)}
@@ -300,8 +370,8 @@ function Checkout() {
               )}
 
               <div style={{ marginTop: '16px', padding: '12px', background: '#f0f2f2', borderRadius: '8px', borderLeft: '4px solid #007185' }}>
-                  <strong style={{ display: 'block', color: '#007185', marginBottom: '4px', fontSize: '0.9rem' }}>Estimated Delivery:</strong>
-                  <p style={{ margin: 0, color: '#0f1111', fontWeight: 600, fontSize: '0.95rem' }}>Arrives between {edd.minStr} – {edd.maxStr}</p>
+                <strong style={{ display: 'block', color: '#007185', marginBottom: '4px', fontSize: '0.9rem' }}>Estimated Delivery:</strong>
+                <p style={{ margin: 0, color: '#0f1111', fontWeight: 600, fontSize: '0.95rem' }}>Arrives between {edd.minStr} – {edd.maxStr}</p>
               </div>
 
               <div className="trust-badges" style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8rem', color: '#565959' }}>
@@ -317,23 +387,12 @@ function Checkout() {
             </div>
           </aside>
         )}
-        
-        {checkoutStep < 4 && (
+
+        {checkoutStep < 3 && (
           <div className="step-actions mobile-only" style={{ marginTop: '20px', width: '100%' }}>
             <button className="action-button action-button--ghost" style={{ minHeight: '56px', padding: '0 32px', flex: 1 }} type="button" onClick={handleBackStep}>Back</button>
             {checkoutStep === 1 && <button className="action-button action-button--solid" style={{ minHeight: '56px', padding: '0 40px', flex: 1 }} type="button" onClick={handleNextStep}>Continue</button>}
             {checkoutStep === 2 && <button className="action-button action-button--solid" style={{ minHeight: '56px', padding: '0 40px', flex: 1 }} type="button" onClick={handleProceedToPayment}>Proceed to Payment</button>}
-            {checkoutStep === 3 && (
-              <button 
-                className="action-button action-button--solid" 
-                style={{ minHeight: '56px', padding: '0 40px', flex: 1 }} 
-                type="button" 
-                onClick={() => paymentRef.current?.submitPayment()}
-                disabled={paymentRef.current?.isProcessing}
-              >
-                {paymentRef.current?.isProcessing ? 'Processing...' : paymentRef.current?.activeTab === 'qr' ? `I have scanned & paid ₹${cartSummary.total}` : `Pay ₹${cartSummary.total}`}
-              </button>
-            )}
           </div>
         )}
       </div>
