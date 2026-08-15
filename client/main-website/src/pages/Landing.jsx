@@ -694,10 +694,10 @@ const Landing = () => {
                 opacity: 0, visibility: 'hidden', transition: 'all 0.3s ease', zIndex: 1000 
               }}>
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                  <img src="/krit-logo.png" alt="KRIT Consultancy" style={{ width: '60px', height: '60px', objectFit: 'contain', background: '#f8fafc', padding: '8px', borderRadius: '12px' }} onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=KRIT&background=2563EB&color=fff&size=60'; }} />
+                  <img src="/krit-logo.png" alt="Krit Consultancy Services LLP" style={{ width: '60px', height: '60px', objectFit: 'contain', background: '#f8fafc', padding: '8px', borderRadius: '12px' }} onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=KRIT&background=2563EB&color=fff&size=60'; }} />
                   <div>
                     <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981', background: '#d1fae5', padding: '4px 8px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Official Technology Partner</span>
-                    <h4 style={{ margin: '8px 0 4px', fontSize: '1.2rem', color: 'var(--navy)' }}>KRIT Consultancy</h4>
+                    <h4 style={{ margin: '8px 0 4px', fontSize: '1.2rem', color: 'var(--navy)' }}>Krit Consultancy Services LLP</h4>
                     <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', lineHeight: 1.5 }}>AI, Cloud, Software Development, Data Analytics & Digital Transformation.</p>
                     <a href="https://kritconsultancy.com/" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '12px', fontSize: '0.9rem', fontWeight: 600, color: 'var(--accent)', textDecoration: 'none' }}>Visit Website ↗</a>
                   </div>
@@ -1016,13 +1016,13 @@ const Landing = () => {
                   onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)'; e.currentTarget.style.borderColor = 'var(--accent)'; }} 
                   onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'var(--shadow-soft)'; e.currentTarget.style.borderColor = 'var(--line)'; }}>
                   
-                  <img src="/krit-logo.png" alt="KRIT Consultancy Logo" style={{ width: '140px', height: '60px', objectFit: 'contain', marginBottom: '24px' }} />
+                  <img src="/krit-logo.png" alt="Krit Consultancy Services LLP Logo" style={{ width: '140px', height: '60px', objectFit: 'contain', marginBottom: '24px' }} />
                   
                   <span style={{ display: 'inline-block', fontSize: '0.8rem', fontWeight: 800, color: '#10b981', background: '#d1fae5', padding: '6px 12px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>
                     Official Technology Partner
                   </span>
                   
-                  <h3 style={{ fontSize: '1.8rem', marginBottom: '16px' }}>KRIT Consultancy</h3>
+                  <h3 style={{ fontSize: '1.8rem', marginBottom: '16px' }}>Krit Consultancy Services LLP</h3>
                   <p style={{ fontWeight: 600, color: 'var(--navy)', marginBottom: '8px' }}>Delivering expertise in:</p>
                   
                   <ul style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>

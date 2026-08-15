@@ -35,7 +35,7 @@ const Login = () => {
         <div className="auth-visual">
           <div className="auth-brand" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             <img src="/logo.png" alt="BECS Logo" style={{ width: '75px', height: '75px', objectFit: 'contain' }} />
-            <span className="brand-name" style={{ fontSize: '2.5rem', color: '#fff' }}>BECS</span>
+            <span className="brand-name" style={{ fontSize: '2.5rem', color: 'var(--navy)' }}>BECS</span>
           </div>
           <h2>{isLogin ? 'Welcome Back!' : 'Join Us Today!'}</h2>
           <p>

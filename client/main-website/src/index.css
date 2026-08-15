@@ -4,10 +4,10 @@
   --bg: #f8f9fb;
   --surface: #ffffff;
   --surface-alt: #fff2cc;
-  --surface-soft: #f2f6ff;
+  --surface-soft: #fdf2f4;
   --text: #17233c;
   --muted: #6c7a92;
-  --line: #e8edf6;
+  --line: #fce4e8;
   --accent: #e6223b;
   --accent-deep: #b91c1c;
   --accent-soft: #fdf2f4;
@@ -54,15 +54,13 @@ img[alt="BECS"],
 img[src*="logo.png"], 
 img[src*="org_logo.png"], 
 img.brand-logo {
-  border-radius: 50% !important;
-  aspect-ratio: 1/1 !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+  border-radius: 8px !important;
+  object-fit: contain !important;
 }
-img[alt="KRIT Consultancy Logo"],
+img[alt="Krit Consultancy Services LLP Logo"],
 img[src*="krit-logo"] {
-  border-radius: 12px !important;
-  aspect-ratio: auto !important;
-  box-shadow: none !important;
+  border-radius: 8px !important;
+  object-fit: contain !important;
 }
 /* ---------------------------- */
 
@@ -84,7 +82,7 @@ button {
 
 .becs-page {
   background:
-    radial-gradient(circle at top right, rgba(107, 199, 213, 0.2), transparent 26%),
+    radial-gradient(circle at top right, rgba(230, 34, 59, 0.08), transparent 26%),
     linear-gradient(180deg, #fbfdff 0%, #f7f9fc 100%);
 }
 
@@ -251,9 +249,9 @@ button {
 }
 
 .pill-button--solid {
-  background: linear-gradient(135deg, var(--accent), #ff8759);
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
   color: #ffffff;
-  box-shadow: 0 14px 28px rgba(255, 112, 72, 0.28);
+  box-shadow: 0 14px 28px rgba(230, 34, 59, 0.28);
 }
 
 .pill-button--ghost {
@@ -322,14 +320,14 @@ button {
 
 .section-pill {
   color: var(--accent);
-  background: #eef5ff;
-  border: 1px solid #dfeaf8;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-soft);
 }
 
 .section-pill--outlined {
   background: rgba(255, 255, 255, 0.65);
   color: var(--accent);
-  border: 1px solid rgba(255, 112, 72, 0.45);
+  border: 1px solid rgba(230, 34, 59, 0.45);
 }
 
 .hero-copy h1 {
@@ -550,24 +548,24 @@ button {
 
 .hero-circuit::before {
   background:
-    linear-gradient(90deg, transparent 0 14%, rgba(44, 209, 255, 0.85) 14% 14.8%, transparent 14.8% 100%),
-    linear-gradient(90deg, transparent 0 37%, rgba(44, 209, 255, 0.88) 37% 37.9%, transparent 37.9% 100%),
-    linear-gradient(90deg, transparent 0 64%, rgba(44, 209, 255, 0.9) 64% 64.8%, transparent 64.8% 100%),
-    linear-gradient(0deg, transparent 0 22%, rgba(44, 209, 255, 0.9) 22% 22.8%, transparent 22.8% 100%),
-    linear-gradient(0deg, transparent 0 48%, rgba(44, 209, 255, 0.88) 48% 48.9%, transparent 48.9% 100%),
-    linear-gradient(0deg, transparent 0 74%, rgba(44, 209, 255, 0.9) 74% 74.8%, transparent 74.8% 100%);
+    linear-gradient(90deg, transparent 0 14%, rgba(230, 34, 59, 0.85) 14% 14.8%, transparent 14.8% 100%),
+    linear-gradient(90deg, transparent 0 37%, rgba(230, 34, 59, 0.88) 37% 37.9%, transparent 37.9% 100%),
+    linear-gradient(90deg, transparent 0 64%, rgba(230, 34, 59, 0.9) 64% 64.8%, transparent 64.8% 100%),
+    linear-gradient(0deg, transparent 0 22%, rgba(230, 34, 59, 0.9) 22% 22.8%, transparent 22.8% 100%),
+    linear-gradient(0deg, transparent 0 48%, rgba(230, 34, 59, 0.88) 48% 48.9%, transparent 48.9% 100%),
+    linear-gradient(0deg, transparent 0 74%, rgba(230, 34, 59, 0.9) 74% 74.8%, transparent 74.8% 100%);
   mix-blend-mode: screen;
   opacity: 0.9;
 }
 
 .hero-circuit::after {
   background:
-    linear-gradient(120deg, transparent 0 20%, rgba(44, 209, 255, 0.45) 20% 21%, transparent 21% 100%),
-    linear-gradient(122deg, transparent 0 45%, rgba(44, 209, 255, 0.5) 45% 46%, transparent 46% 100%),
-    linear-gradient(124deg, transparent 0 66%, rgba(44, 209, 255, 0.42) 66% 67%, transparent 67% 100%),
-    radial-gradient(circle at 28% 26%, rgba(177, 245, 255, 0.9) 0 1.2%, transparent 1.3%),
-    radial-gradient(circle at 65% 50%, rgba(177, 245, 255, 0.9) 0 1.2%, transparent 1.3%),
-    radial-gradient(circle at 77% 72%, rgba(177, 245, 255, 0.9) 0 1.1%, transparent 1.2%);
+    linear-gradient(120deg, transparent 0 20%, rgba(230, 34, 59, 0.45) 20% 21%, transparent 21% 100%),
+    linear-gradient(122deg, transparent 0 45%, rgba(230, 34, 59, 0.5) 45% 46%, transparent 46% 100%),
+    linear-gradient(124deg, transparent 0 66%, rgba(230, 34, 59, 0.42) 66% 67%, transparent 67% 100%),
+    radial-gradient(circle at 28% 26%, rgba(253, 242, 244, 0.9) 0 1.2%, transparent 1.3%),
+    radial-gradient(circle at 65% 50%, rgba(253, 242, 244, 0.9) 0 1.2%, transparent 1.3%),
+    radial-gradient(circle at 77% 72%, rgba(253, 242, 244, 0.9) 0 1.1%, transparent 1.2%);
   opacity: 0.95;
 }
 
@@ -647,7 +645,7 @@ button {
   height: 34px;
   border-radius: 12px;
   position: relative;
-  background: linear-gradient(135deg, #4f74ff, #5ed2ff);
+  background: linear-gradient(135deg, var(--accent-deep), var(--accent));
 }
 
 .badge-icon::before,
@@ -671,11 +669,11 @@ button {
 }
 
 .badge-icon--cyan {
-  background: linear-gradient(135deg, #70d7ff, #58c8c3);
+  background: linear-gradient(135deg, #333, #1a1a1a);
 }
 
 .badge-icon--blue {
-  background: linear-gradient(135deg, #3e72fb, #4fd3ff);
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
 }
 
 .section-cream {
@@ -739,7 +737,7 @@ button {
   place-items: center;
   border-radius: 14px;
   margin: 0 auto 18px;
-  background: linear-gradient(135deg, #eef6ff, #f3fbf7);
+  background: linear-gradient(135deg, var(--accent-soft), #f3fbf7);
 }
 
 .stat-card strong,
@@ -778,7 +776,7 @@ button {
 }
 
 .quote-mark {
-  color: #4f74ff;
+  color: var(--accent-deep);
   font-size: 5.2rem;
   line-height: 0.7;
 }
@@ -845,7 +843,7 @@ button {
 .service-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-  border-color: rgba(255, 112, 72, 0.3);
+  border-color: rgba(230, 34, 59, 0.3);
 }
 
 .service-card::after {
@@ -856,7 +854,7 @@ button {
   right: -20px;
   top: -20px;
   border-radius: 50%;
-  background: rgba(255, 112, 72, 0.06);
+  background: rgba(230, 34, 59, 0.06);
 }
 
 .service-icon {
@@ -1421,7 +1419,7 @@ button {
   background: linear-gradient(135deg, var(--accent), #ff7d59);
   color: #ffffff;
   font-weight: 800;
-  box-shadow: 0 14px 28px rgba(255, 112, 72, 0.22);
+  box-shadow: 0 14px 28px rgba(230, 34, 59, 0.22);
 }
 
 .footer-bottom {
@@ -1989,14 +1987,15 @@ button {
 
 .auth-visual {
   flex: 1;
-  background: linear-gradient(135deg, var(--accent-deep), var(--teal));
+  background: linear-gradient(135deg, #ffffff, #f1f5f9);
   padding: 60px;
-  color: #ffffff;
+  color: #0f172a;
   display: flex;
   flex-direction: column;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  border-right: 1px solid #e2e8f0;
 }
 
 .auth-visual::before {
@@ -2004,9 +2003,8 @@ button {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 82% 28%, rgba(51, 221, 255, 0.45), transparent 18%),
-    radial-gradient(circle at 20% 74%, rgba(84, 203, 255, 0.42), transparent 18%);
-  mix-blend-mode: screen;
+    radial-gradient(circle at 82% 28%, rgba(230, 34, 59, 0.08), transparent 25%),
+    radial-gradient(circle at 20% 74%, rgba(230, 34, 59, 0.05), transparent 25%);
 }
 
 .auth-brand {
@@ -2026,7 +2024,7 @@ button {
 }
 
 .auth-visual p {
-  color: rgba(255, 255, 255, 0.8);
+  color: #475569;
   font-size: 1.1rem;
   line-height: 1.6;
   max-width: 400px;
@@ -2047,7 +2045,7 @@ button {
   align-items: center;
   gap: 12px;
   font-weight: 600;
-  color: #b1f5ff;
+  color: #334155;
 }
 
 .auth-form-wrapper {
@@ -2066,7 +2064,8 @@ button {
   font-family: 'Outfit', sans-serif;
   font-size: 2.2rem;
   margin: 0 0 10px;
-  color: var(--text);
+  color: #111827;
+  font-weight: 800;
 }
 
 .auth-header p {
@@ -2094,9 +2093,9 @@ button {
 
 .form-group input {
   padding: 16px;
-  border: 1px solid #dbe2ef;
+  border: 2px solid #e2e8f0;
   border-radius: 12px;
-  background: #f8fafc;
+  background: #ffffff;
   font-size: 1rem;
   color: var(--text);
   transition: all 0.2s;
@@ -2104,9 +2103,9 @@ button {
 
 .form-group input:focus {
   outline: none;
-  border-color: var(--teal);
+  border-color: var(--accent);
   background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(107, 199, 213, 0.15);
+  box-shadow: 0 0 0 4px rgba(230, 34, 59, 0.15);
 }
 
 .form-options {
