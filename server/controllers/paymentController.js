@@ -78,6 +78,18 @@ const verifyRazorpayPayment = async (req, res) => {
           $addToSet: { enrolledCourses: courseId }
         });
       }
+
+      // If purpose is subscription, activate premium
+      if (req.body.purpose === 'subscription' && req.user) {
+        const User = require('../models/User');
+        const validUntil = new Date();
+        validUntil.setDate(validUntil.getDate() + 30); // 30 days from now
+        
+        await User.findByIdAndUpdate(req.user._id, {
+          isPremium: true,
+          subscriptionValidUntil: validUntil
+        });
+      }
       
       res.json({ success: true, message: 'Payment verified successfully' });
     } else {

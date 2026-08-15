@@ -41,9 +41,8 @@ img[alt="BECS"],
 img[src*="logo.png"], 
 img[src*="org_logo.png"], 
 img.brand-logo {
-  border-radius: 50% !important;
-  aspect-ratio: 1/1 !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+  border-radius: 8px !important;
+  object-fit: contain !important;
 }
 /* ---------------------------- */
 

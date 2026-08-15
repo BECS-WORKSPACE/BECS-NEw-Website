@@ -1,8 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { login as apiLogin, fetchStats, fetchAllOrders, updateOrderStatus, fetchAllUsers, fetchAllProducts, updateProduct, createProduct, deleteProduct, bulkCreateProducts, fetchContacts, fetchEnquiries, fetchCourses, updateEnquiryStatus, deleteEnquiry as apiDeleteEnquiry, deleteContact as apiDeleteContact, createCourse as apiCreateCourse, updateCourse as apiUpdateCourse, deleteCourse as apiDeleteCourse } from './api';
+import { login as apiLogin, fetchStats, fetchAllOrders, updateOrderStatus, fetchAllUsers, fetchAllProducts, updateProduct, createProduct, deleteProduct, bulkCreateProducts, fetchContacts, fetchEnquiries, fetchCourses, updateEnquiryStatus, deleteEnquiry as apiDeleteEnquiry, deleteContact as apiDeleteContact, createCourse as apiCreateCourse, updateCourse as apiUpdateCourse, deleteCourse as apiDeleteCourse, fetchPricingConfig, updatePricingConfig } from './api';
 import io from 'socket.io-client';
 import DashboardOverview from './components/DashboardOverview';
 import StoreOrders from './components/StoreOrders';
+import AssignmentBuilder from './components/AssignmentBuilder';
+import TeacherGradingDashboard from './components/TeacherGradingDashboard';
+import LibraryManager from './components/LibraryManager';
+import ModerationDashboard from './components/ModerationDashboard';
+import TeacherDashboard from './pages/teacher/TeacherDashboard';
+import MyCourses from './pages/teacher/MyCourses';
+import RolesManagement from './pages/RolesManagement';
+import CMSManager from './pages/CMSManager';
+import SubscriptionPlans from './pages/SubscriptionPlans';
+import AuditLogViewer from './pages/AuditLogViewer';
+import NotificationManager from './pages/NotificationManager';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const formatPrice = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
@@ -747,6 +758,68 @@ const AdminApp = () => {
     );
   };
 
+  const SystemConfigView = () => {
+    const [config, setConfig] = useState({ originalPrice: 7999, discountedPrice: 4999 });
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+      fetchPricingConfig().then(res => {
+        if (res.data) setConfig(res.data);
+      }).catch(err => console.error(err));
+    }, []);
+
+    const handleSave = async (e) => {
+      e.preventDefault();
+      setSaving(true);
+      try {
+        await updatePricingConfig(config);
+        alert('Pricing configuration saved successfully.');
+      } catch (err) {
+        alert('Failed to save configuration');
+      } finally {
+        setSaving(false);
+      }
+    };
+
+    return (
+      <div className="view-container">
+        <header className="view-header">
+          <div>
+            <h2 className="view-title">System Settings</h2>
+            <p className="view-subtitle">Global configuration and business rules.</p>
+          </div>
+        </header>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '30px' }}>
+          <section className="card" style={{ padding: '30px' }}>
+            <h3 style={{ margin: '0 0 20px 0', color: 'var(--primary)' }}>EduVerse Premium Pricing</h3>
+            <p style={{ color: 'var(--text-light)', marginBottom: '24px' }}>Update the global subscription cost. This will immediately reflect across all landing pages and the student dashboard checkout gate.</p>
+            
+            <form onSubmit={handleSave}>
+              <div className="form-group">
+                <label style={{ fontWeight: 600 }}>Discounted Price (Active Price in ₹)</label>
+                <input type="number" required value={config.discountedPrice} onChange={e => setConfig({...config, discountedPrice: e.target.value})} placeholder="4999" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1.2rem', fontWeight: 700 }} />
+              </div>
+              <div className="form-group" style={{ marginTop: '20px' }}>
+                <label style={{ fontWeight: 600 }}>Original Price (Strikethrough in ₹)</label>
+                <input type="number" required value={config.originalPrice} onChange={e => setConfig({...config, originalPrice: e.target.value})} placeholder="7999" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }} />
+              </div>
+              
+              <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', marginTop: '24px', marginBottom: '24px', border: '1px solid #e2e8f0' }}>
+                <strong style={{ display: 'block', color: 'var(--accent)', marginBottom: '8px' }}>Live Preview:</strong>
+                <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>₹{config.discountedPrice}</span> <span style={{ textDecoration: 'line-through', color: '#94a3b8' }}>₹{config.originalPrice}</span> / month
+              </div>
+
+              <button type="submit" className="btn-solid-lg" style={{ width: '100%' }} disabled={saving}>
+                {saving ? 'Saving...' : 'Publish New Pricing'}
+              </button>
+            </form>
+          </section>
+        </div>
+      </div>
+    );
+  };
+
   // --- MAIN RENDER ---
   if (!isAuthenticated) {
     return (
@@ -803,6 +876,21 @@ const AdminApp = () => {
       case 'enquiries': return <EnquiriesView />;
       case 'courses': return <CoursesView />;
       case 'eduverse-analytics': return <EduverseAnalyticsView />;
+      case 'assignment-builder': return <AssignmentBuilder />;
+      case 'grading': return <TeacherGradingDashboard />;
+      case 'library': return <LibraryManager />;
+      case 'moderation': return <ModerationDashboard />;
+      case 'system-config': return <SystemConfigView />;
+      case 'roles': return <RolesManagement />;
+      case 'cms': return <CMSManager />;
+      case 'subscriptions': return <SubscriptionPlans />;
+      case 'audit': return <AuditLogViewer />;
+      case 'communications': return <NotificationManager />;
+      
+      // Teacher Portal Routes
+      case 'teacher-dashboard': return <TeacherDashboard />;
+      case 'teacher-courses': return <MyCourses />;
+      
       default: return <DashboardOverview stats={stats} orders={orders} setActiveTab={setActiveTab} formatPrice={formatPrice} />;
     }
   };
@@ -837,7 +925,25 @@ const AdminApp = () => {
           <div style={{ padding: '10px 15px', fontSize: '0.8rem', color: 'var(--text-light)', textTransform: 'uppercase', fontWeight: 800, marginTop: '20px' }}>Vidyapeeth</div>
           <button className={`nav-link ${activeTab === 'enquiries' ? 'active' : ''}`} onClick={() => { setActiveTab('enquiries'); setIsMobileSidebarOpen(false); }}>Student Enquiries</button>
           <button className={`nav-link ${activeTab === 'courses' ? 'active' : ''}`} onClick={() => { setActiveTab('courses'); setIsMobileSidebarOpen(false); }}>Course Catalog</button>
+          <button className={`nav-link ${activeTab === 'assignment-builder' ? 'active' : ''}`} onClick={() => { setActiveTab('assignment-builder'); setIsMobileSidebarOpen(false); }}>Assignment Builder</button>
+          <button className={`nav-link ${activeTab === 'grading' ? 'active' : ''}`} onClick={() => { setActiveTab('grading'); setIsMobileSidebarOpen(false); }}>Teacher Grading</button>
+          <button className={`nav-link ${activeTab === 'library' ? 'active' : ''}`} onClick={() => { setActiveTab('library'); setIsMobileSidebarOpen(false); }}>Digital Library</button>
+          <button className={`nav-link ${activeTab === 'moderation' ? 'active' : ''}`} onClick={() => { setActiveTab('moderation'); setIsMobileSidebarOpen(false); }}>Moderation Center</button>
           <button className={`nav-link ${activeTab === 'eduverse-analytics' ? 'active' : ''}`} onClick={() => { setActiveTab('eduverse-analytics'); setIsMobileSidebarOpen(false); }}>EduVerse Analytics</button>
+          
+          <div style={{ padding: '10px 15px', fontSize: '0.8rem', color: 'var(--text-light)', textTransform: 'uppercase', fontWeight: 800, marginTop: '20px' }}>Teacher Portal</div>
+          <button className={`nav-link ${activeTab === 'teacher-dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('teacher-dashboard'); setIsMobileSidebarOpen(false); }}>My Dashboard</button>
+          <button className={`nav-link ${activeTab === 'teacher-courses' ? 'active' : ''}`} onClick={() => { setActiveTab('teacher-courses'); setIsMobileSidebarOpen(false); }}>My Courses</button>
+          
+          <div style={{ padding: '10px 15px', fontSize: '0.8rem', color: 'var(--text-light)', textTransform: 'uppercase', fontWeight: 800, marginTop: '20px' }}>Settings</div>
+          <button className={`nav-link ${activeTab === 'system-config' ? 'active' : ''}`} onClick={() => { setActiveTab('system-config'); setIsMobileSidebarOpen(false); }}>Platform Pricing</button>
+          
+          <div style={{ padding: '10px 15px', fontSize: '0.8rem', color: 'var(--text-light)', textTransform: 'uppercase', fontWeight: 800, marginTop: '20px' }}>System Administration</div>
+          <button className={`nav-link ${activeTab === 'roles' ? 'active' : ''}`} onClick={() => { setActiveTab('roles'); setIsMobileSidebarOpen(false); }}>Roles & Permissions</button>
+          <button className={`nav-link ${activeTab === 'cms' ? 'active' : ''}`} onClick={() => { setActiveTab('cms'); setIsMobileSidebarOpen(false); }}>Content (CMS)</button>
+          <button className={`nav-link ${activeTab === 'subscriptions' ? 'active' : ''}`} onClick={() => { setActiveTab('subscriptions'); setIsMobileSidebarOpen(false); }}>Subscription Plans</button>
+          <button className={`nav-link ${activeTab === 'communications' ? 'active' : ''}`} onClick={() => { setActiveTab('communications'); setIsMobileSidebarOpen(false); }}>Communication Center</button>
+          <button className={`nav-link ${activeTab === 'audit' ? 'active' : ''}`} onClick={() => { setActiveTab('audit'); setIsMobileSidebarOpen(false); }}>Audit Logs</button>
           
           <div style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
             <a href={frontendUrl} className="nav-link logout-link">← Exit to Frontend</a>

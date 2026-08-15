@@ -1,74 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const User = require('../models/User');
+const rateLimit = require('express-rate-limit');
+const { register, login, refresh, logout, logoutAll } = require('../controllers/authController');
 
-// Register
-router.post('/register', async (req, res) => {
-  const { name, email, password, role, age, education, phone } = req.body;
-
-  try {
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const user = await User.create({
-      name,
-      email,
-      phone,
-      password: hashedPassword,
-      role: role || 'student',
-      age: age ? Number(age) : undefined,
-      education: education || undefined,
-    });
-
-    if (user) {
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        isAdmin: user.isAdmin,
-        role: user.role,
-        age: user.age,
-        education: user.education,
-        enrolledCourses: user.enrolledCourses,
-        token: jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' }),
-      });
-    }
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
+// Rate limiting for login/register to prevent brute force
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 requests per windowMs
+  message: { message: 'Too many requests from this IP, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
-// Login
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const user = await User.findOne({ email });
-    if (user && (await bcrypt.compare(password, user.password))) {
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        isAdmin: user.isAdmin,
-        role: user.role,
-        age: user.age,
-        education: user.education,
-        enrolledCourses: user.enrolledCourses,
-        token: jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' }),
-      });
-    } else {
-      res.status(401).json({ message: 'Invalid email or password' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
+router.post('/register', authLimiter, register);
+router.post('/login', authLimiter, login);
+router.post('/refresh', refresh);
+router.post('/logout', logout);
+router.post('/logout-all', logoutAll);
 
 module.exports = router;

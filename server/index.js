@@ -11,7 +11,13 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
+
+app.use(helmet());
+app.use(cookieParser());
+// Allow specific CORS if frontend uses credentials
+app.use(cors({ origin: true, credentials: true }));
 
 // Stripe Webhook MUST come before express.json()
 app.post('/api/orders/webhook', express.raw({type: 'application/json'}), async (req, res) => {
@@ -66,25 +72,86 @@ app.post('/api/orders/webhook', express.raw({type: 'application/json'}), async (
   res.send();
 });
 
-app.use(express.json());
+// Capture raw body for signature verification in webhooks
+app.use(express.json({
+  verify: (req, res, buf) => {
+    if (req.originalUrl.startsWith('/api/webhooks')) {
+      req.rawBody = buf;
+    }
+  }
+}));
 
 // Routes
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const adminRoutes = require('./routes/admin');
+const adminSystemRoutes = require('./routes/adminSystemRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 
 app.use('/api/auth', authRoutes);
+const userRoutes = require('./routes/userRoutes');
+app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/system', adminSystemRoutes);
+const adminNotificationRoutes = require('./routes/adminNotificationRoutes');
+app.use('/api/admin/notifications', adminNotificationRoutes);
 app.use('/api/payments', paymentRoutes);
+
+const subscriptionRoutes = require('./routes/subscriptionRoutes');
+const webhookRoutes = require('./routes/webhookRoutes');
+app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/webhooks', webhookRoutes);
+
+// Training Institute Routes
+const courseRoutes = require('./routes/courseRoutes');
+const enquiryRoutes = require('./routes/enquiryRoutes');
+app.use('/api/courses', courseRoutes);
+app.use('/api/enquiries', enquiryRoutes);
+
+// Config Routes
+const configRoutes = require('./routes/configRoutes');
+app.use('/api/config', configRoutes);
+
+// Learning LMS Routes
+const learningRoutes = require('./routes/learningRoutes');
+app.use('/api/learning', learningRoutes);
 
 // New Models
 const Contact = require('./models/Contact');
 const Enquiry = require('./models/Enquiry');
 const Course = require('./models/Course');
+const Role = require('./models/Role');
+const Lesson = require('./models/Lesson');
+
+// Gamification & Notifications & Curriculum & Video & Admin Analytics Routes
+const analyticsRoutes = require('./routes/analyticsRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const certificateRoutes = require('./routes/certificateRoutes');
+const curriculumRoutes = require('./routes/curriculumRoutes');
+const videoRoutes = require('./routes/videoRoutes');
+const adminAnalyticsRoutes = require('./routes/adminAnalyticsRoutes');
+const liveClassRoutes = require('./routes/liveClassRoutes');
+const testRoutes = require('./routes/testRoutes');
+const assignmentRoutes = require('./routes/assignmentRoutes');
+const libraryRoutes = require('./routes/libraryRoutes');
+const discussionRoutes = require('./routes/discussionRoutes');
+const teacherRoutes = require('./routes/teacherRoutes');
+
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/certificates', certificateRoutes);
+app.use('/api/curriculum', curriculumRoutes);
+app.use('/api/video', videoRoutes);
+app.use('/api/admin-analytics', adminAnalyticsRoutes);
+app.use('/api/live-classes', liveClassRoutes);
+app.use('/api/tests', testRoutes);
+app.use('/api/assignments', assignmentRoutes);
+app.use('/api/library', libraryRoutes);
+app.use('/api/discussions', discussionRoutes);
+app.use('/api/teacher', teacherRoutes);
 
 // Contact message endpoint (Main Website)
 app.post('/api/contact', async (req, res) => {
@@ -100,28 +167,7 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
-// Training Institute Public Endpoints
-app.get('/api/courses', async (req, res) => {
-  try {
-    const courses = await Course.find({});
-    res.json(courses);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-app.post('/api/enquiries', async (req, res) => {
-  const { name, phone, courseId, courseName, type } = req.body;
-  if (!name || !phone) {
-    return res.status(400).json({ message: 'Name and Phone are required' });
-  }
-  try {
-    await Enquiry.create({ name, phone, courseId, courseName, type });
-    res.status(200).json({ message: 'Enquiry submitted successfully!' });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
+// Removed inline training institute endpoints (moved to separate routers)
 
 app.get('/', (req, res) => {
   res.send('BECS Ecommerce API is running...');
@@ -140,6 +186,11 @@ const io = new Server(server, {
 
 global.io = io;
 
+// Load Live Classroom Socket logic
+require('./socket/liveSocketManager')(io);
+// Load Communication & Chat Socket logic
+require('./socket/chatEngine')(io);
+
 io.on('connection', (socket) => {
   console.log('Client connected to Socket.IO');
   socket.on('disconnect', () => {
@@ -152,7 +203,11 @@ server.listen(PORT, () => {
 });
 
 // Connect to MongoDB in the background
-const mongoURI = process.env.MONGO_URI || 'mongodb+srv://Becs2k26:Becs2k26@cluster0.hap0jpp.mongodb.net/?appName=Cluster0';
+const mongoURI = process.env.MONGO_URI;
+if (!mongoURI) {
+  console.error('ERROR: MONGO_URI is missing from environment variables!');
+  process.exit(1);
+}
 console.log(`Connecting to MongoDB Atlas...`);
 mongoose.connect(mongoURI, { serverSelectionTimeoutMS: 10000 })
   .then(() => {

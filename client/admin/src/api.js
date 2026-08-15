@@ -34,4 +34,14 @@ export const createCourse = (data) => API.post('/admin/courses', data);
 export const updateCourse = (id, data) => API.put(`/admin/courses/${id}`, data);
 export const deleteCourse = (id) => API.delete(`/admin/courses/${id}`);
 
+// System Config
+export const fetchPricingConfig = () => API.get('/config/pricing');
+export const updatePricingConfig = (data) => API.put('/config/pricing', data);
+
+// System Admin
+export const fetchAuditLogs = () => API.get('/admin/system/audit');
+export const fetchSubscriptionPlans = () => API.get('/admin/system/subscriptions');
+export const createSubscriptionPlan = (data) => API.post('/admin/system/subscriptions', data);
+export const updateSubscriptionPlan = (id, data) => API.put(`/admin/system/subscriptions/${id}`, data);
+
 export default API;
