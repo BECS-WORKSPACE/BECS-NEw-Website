@@ -71,7 +71,8 @@ else
     echo "VITE_SUBDOMAIN_DEPLOY=false" >> client/admin/.env.production
 
     # Environment variables for training institute
-    echo "VITE_FRONTEND_URL=/" > client/training-institute/.env.production
+    echo "VITE_API_URL=/api" > client/training-institute/.env.production
+    echo "VITE_FRONTEND_URL=/" >> client/training-institute/.env.production
     echo "VITE_SUBDOMAIN_DEPLOY=false" >> client/training-institute/.env.production
 fi
 

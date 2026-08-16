@@ -866,8 +866,8 @@ const Landing = () => {
         <section style={{ backgroundColor: 'var(--navy)', color: '#fff', padding: '100px 20px', textAlign: 'center' }} id="about">
           <div className="container" style={{ maxWidth: '800px', margin: '0 auto' }}>
             <div style={{ color: 'var(--accent)', fontSize: '4rem', lineHeight: 0.5, marginBottom: '20px', fontFamily: 'serif' }}>"</div>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '40px', lineHeight: 1.4, color: '#fff' }}>
-              Excellence in electronics starts with<br />innovation and education.
+            <h2 style={{ fontSize: '2rem', fontWeight: 600, marginBottom: '40px', lineHeight: 1.5, color: '#fff', fontStyle: 'italic', maxWidth: '900px', margin: '0 auto 40px auto' }}>
+              "Innovation becomes meaningful when knowledge meets purpose. Our endeavour is to unite engineering, technology, and human insight to create solutions that are efficient, dependable, and valuable to every client we serve."
             </h2>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
               <img 
