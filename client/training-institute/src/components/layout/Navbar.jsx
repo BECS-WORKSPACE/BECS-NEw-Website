@@ -56,7 +56,7 @@ const Navbar = () => {
             <span>🎉 Enroll Now for the 2026-27 Sessions!</span>
             <span>⭐ Congratulations to our students for outstanding results!</span>
             <span>🔥 Exclusive Scholarships Available.</span>
-            <span>📞 Call us at +91 98765 43210 for free counseling.</span>
+            <span>📞 Call us at +91 98306 40683 for free counseling.</span>
           </div>
         </div>
       </div>

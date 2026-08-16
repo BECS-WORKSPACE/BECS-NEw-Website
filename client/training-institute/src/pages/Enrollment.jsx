@@ -170,7 +170,7 @@ const Enrollment = () => {
         <div className="form-grid" style={{ marginBottom: '24px' }}>
           <div>
             <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Phone Number</label>
-            <input type="tel" required placeholder="+91 98765 43210" value={enrollFormData.phone} onChange={e => setEnrollFormData({ ...enrollFormData, phone: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
+            <input type="tel" required placeholder="+91 98306 40683" value={enrollFormData.phone} onChange={e => setEnrollFormData({ ...enrollFormData, phone: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem' }} />
           </div>
           <div>
             <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Highest Qualification</label>

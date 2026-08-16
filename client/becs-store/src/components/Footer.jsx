@@ -110,6 +110,10 @@ function Footer() {
                 <span style={{ fontSize: '1.2rem' }}>✉</span>
                 <a href="mailto:admin@becsofficial.com" style={{ color: '#94a3b8', textDecoration: 'none' }}>admin@becsofficial.com</a>
               </li>
+              <li style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <span style={{ fontSize: '1.2rem' }}>📞</span>
+                <a href="tel:+919830640683" style={{ color: '#94a3b8', textDecoration: 'none' }}>+91 9830640683</a>
+              </li>
             </ul>
           </div>
         </div>
