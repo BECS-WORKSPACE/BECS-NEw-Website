@@ -41,8 +41,7 @@ const certificateSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-// Optimize for public verification lookups
-certificateSchema.index({ verificationId: 1 });
+// Index is automatically created by unique: true on verificationId
 // Optimize for student dashboard
 certificateSchema.index({ student: 1, status: 1 });
 

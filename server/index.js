@@ -14,6 +14,9 @@ const PORT = process.env.PORT || 5000;
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 
+// Trust reverse proxy (Vercel, Render, Heroku) for rate limiting
+app.set('trust proxy', 1);
+
 app.use(helmet());
 app.use(cookieParser());
 // Allow specific CORS if frontend uses credentials
