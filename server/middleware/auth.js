@@ -16,6 +16,13 @@ const protect = async (req, res, next) => {
       if (!req.user) {
         return res.status(401).json({ message: 'User no longer exists' });
       }
+      
+      // Auto-expire premium subscription
+      if (req.user.isPremium && req.user.subscriptionValidUntil && new Date(req.user.subscriptionValidUntil).getTime() < Date.now()) {
+        req.user.isPremium = false;
+        await req.user.save();
+      }
+
       if (req.user.status !== 'active') {
         return res.status(403).json({ message: `Account is ${req.user.status}` });
       }

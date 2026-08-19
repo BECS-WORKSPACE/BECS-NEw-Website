@@ -54,7 +54,7 @@ const Dashboard = () => {
     { id: 'notifications', label: 'Notifications', icon: '🔔', path: '/dashboard/notifications' },
     { id: 'calendar', label: 'Calendar', icon: '📅', path: '/dashboard/calendar' },
     { id: 'profile', label: 'Profile', icon: '👤', path: '/profile' },
-    { id: 'subscription', label: 'Subscription', icon: '💳', path: '/dashboard/subscription' },
+    ...(user.enrolledCourses?.length > 0 ? [{ id: 'subscription', label: 'Subscription', icon: '💳', path: '/dashboard/subscription' }] : []),
     { id: 'settings', label: 'Settings', icon: '⚙️', path: '/dashboard/settings' },
     { id: 'support', label: 'Support', icon: '🎧', path: '/dashboard/support' }
   ];

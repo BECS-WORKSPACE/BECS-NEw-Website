@@ -148,7 +148,7 @@ const Subscription = () => {
               </ul>
               
               <button onClick={handleRenew} style={{ width: '100%', marginTop: '24px', background: '#3b82f6', color: 'white', padding: '14px', borderRadius: '12px', fontSize: '1.05rem', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'background 0.2s', boxShadow: '0 4px 12px rgba(59,130,246,0.3)' }}>
-                {isPremium ? 'Renew / Manage Plan' : 'Subscribe Now'}
+                {isPremium ? 'Renew / Manage Plan' : 'Resume Courses (Subscribe)'}
               </button>
             </div>
           </div>

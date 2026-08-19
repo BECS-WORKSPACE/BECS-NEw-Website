@@ -111,6 +111,12 @@ exports.login = async (req, res) => {
     user.loginAttempts = 0;
     user.lockUntil = undefined;
     user.lastLogin = Date.now();
+    
+    // Auto-expire premium subscription on login
+    if (user.isPremium && user.subscriptionValidUntil && new Date(user.subscriptionValidUntil).getTime() < Date.now()) {
+      user.isPremium = false;
+    }
+    
     await user.save();
 
     const accessToken = generateAccessToken(user._id);

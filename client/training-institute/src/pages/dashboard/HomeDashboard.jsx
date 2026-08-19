@@ -32,7 +32,7 @@ const HomeDashboard = () => {
               <button onClick={() => navigate('/dashboard/courses')} style={{ padding: '12px 24px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(59,130,246,0.3)' }}>
                 Resume Learning
               </button>
-              {!user?.isPremium && (
+              {!user?.isPremium && user?.enrolledCourses?.length > 0 && (
                 <button onClick={() => navigate('/dashboard/subscription')} style={{ padding: '12px 24px', background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '12px', fontWeight: 600, cursor: 'pointer', backdropFilter: 'blur(10px)' }}>
                   Upgrade to Premium
                 </button>
