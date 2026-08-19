@@ -106,8 +106,7 @@ const Enrollment = () => {
                 localStorage.setItem('becs_user', JSON.stringify(updatedUser));
               }
 
-              setEnrollSubmitted(true);
-              window.scrollTo(0, 0);
+              navigate('/dashboard');
             } else {
               alert('Payment Verification Failed!');
             }
@@ -132,20 +131,7 @@ const Enrollment = () => {
     }
   };
 
-  if (enrollSubmitted) {
-    return (
-      <div className="container" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center', background: 'var(--surface)', padding: '50px', borderRadius: '20px', border: '1px solid var(--border)', maxWidth: '600px' }}>
-          <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎉</div>
-          <h2 className="responsive-heading" style={{ fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '16px' }}>Enrollment Successful!</h2>
-          <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '30px', lineHeight: '1.6' }}>
-            Thank you, <strong>{enrollFormData.name}</strong>. Your enrollment for <strong>{selectedCourse.title}</strong> is complete. A receipt has been generated. You now have access to Career & Psychological Counselling and can proceed to take the Scholarship Test.
-          </p>
-          <button className="btn-solid" onClick={() => navigate('/dashboard')}>Go to Dashboard</button>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="container" style={{ padding: '60px 24px', minHeight: '80vh', maxWidth: '800px', margin: '0 auto' }}>

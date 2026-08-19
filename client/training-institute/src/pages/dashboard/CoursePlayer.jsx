@@ -31,10 +31,6 @@ const CoursePlayer = () => {
   const dummyVideo = "https://www.w3schools.com/html/mov_bbb.mp4";
 
   useEffect(() => {
-    if (!user?.isPremium) {
-      navigate('/dashboard/subscription');
-      return;
-    }
 
     const loadData = async () => {
       try {
@@ -74,7 +70,11 @@ const CoursePlayer = () => {
     loadData();
   }, [courseId, user, navigate]);
 
-  const handleLessonChange = async (lessonIdentifier) => {
+  const handleLessonChange = async (lessonIdentifier, isLocked = false) => {
+    if (isLocked && !user?.isPremium) {
+      navigate('/dashboard/subscription');
+      return;
+    }
     setActiveLesson(lessonIdentifier);
     setResumeTime(0);
     setCurrentPlaybackTime(0);
@@ -205,7 +205,7 @@ const CoursePlayer = () => {
             <div style={{ overflowY: 'auto', flex: '1', padding: '12px' }}>
               {isV2 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {curriculumTree.map(mod => (
+                  {curriculumTree.map((mod, modIdx) => (
                     <div key={mod._id} style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
                       <div onClick={() => toggleModule(mod._id)} style={{ padding: '12px 16px', background: expandedModules[mod._id] ? '#f1f5f9' : '#ffffff', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--navy)', fontWeight: 700 }}>{mod.title}</h4>
@@ -214,7 +214,7 @@ const CoursePlayer = () => {
                       
                       {expandedModules[mod._id] && (
                         <div style={{ padding: '8px', background: '#f8fafc' }}>
-                          {mod.chapters.map(chap => (
+                          {mod.chapters.map((chap, chapIdx) => (
                             <div key={chap._id} style={{ marginBottom: '8px', background: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
                               <div onClick={() => toggleChapter(chap._id)} style={{ padding: '10px 12px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', borderBottom: expandedChapters[chap._id] ? '1px solid #e2e8f0' : 'none' }}>
                                 <h5 style={{ margin: 0, fontSize: '0.9rem', color: '#334155', fontWeight: 600 }}>{chap.title}</h5>
@@ -223,24 +223,26 @@ const CoursePlayer = () => {
                               
                               {expandedChapters[chap._id] && (
                                 <div style={{ padding: '8px' }}>
-                                  {chap.lessons.map(les => {
+                                  {chap.lessons.map((les, lIdx) => {
+                                    const isLocked = !user?.isPremium && (modIdx > 0 || chapIdx > 0 || lIdx > 1);
                                     const isCompleted = progressData.some(p => p.lesson === les._id && p.isCompleted);
                                     const isActive = activeLesson?._id === les._id;
                                     
                                     return (
                                       <div 
-                                        key={les._id} onClick={() => handleLessonChange(les)}
+                                        key={les._id} onClick={() => handleLessonChange(les, isLocked)}
                                         style={{ 
-                                          padding: '10px', borderRadius: '6px', cursor: 'pointer', marginBottom: '4px',
+                                          padding: '10px', borderRadius: '6px', cursor: isLocked ? 'not-allowed' : 'pointer', marginBottom: '4px',
                                           display: 'flex', gap: '12px', alignItems: 'center',
                                           background: isActive ? 'rgba(59,130,246,0.1)' : 'transparent',
-                                          color: isActive ? '#1d4ed8' : '#475569'
+                                          color: isLocked ? '#94a3b8' : (isActive ? '#1d4ed8' : '#475569'),
+                                          opacity: isLocked ? 0.6 : 1
                                         }}
                                       >
-                                        <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: isCompleted ? '#10b981' : (isActive ? '#3b82f6' : '#cbd5e1'), color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>
-                                          {isCompleted ? '✓' : '▶'}
+                                        <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: isLocked ? '#e2e8f0' : (isCompleted ? '#10b981' : (isActive ? '#3b82f6' : '#cbd5e1')), color: isLocked ? '#94a3b8' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>
+                                          {isLocked ? '🔒' : (isCompleted ? '✓' : '▶')}
                                         </div>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: isActive ? 600 : 500 }}>{les.title}</span>
+                                        <span style={{ fontSize: '0.85rem', fontWeight: isActive ? 600 : 500 }}>{les.title} {isLocked && <span style={{fontSize: '0.7rem', color: '#ef4444', marginLeft: '4px'}}>(Premium)</span>}</span>
                                       </div>
                                     );
                                   })}
@@ -255,32 +257,34 @@ const CoursePlayer = () => {
                 </div>
               ) : (
                 course.syllabus?.map((lesson, idx) => {
+                  const isLocked = !user?.isPremium && idx > 1;
                   const isCompleted = progressData.some(p => p.lesson === lesson && p.isCompleted);
                   const isActive = idx === activeLesson;
                   
                   return (
                     <div 
                       key={idx}
-                      onClick={() => handleLessonChange(idx)}
+                      onClick={() => handleLessonChange(idx, isLocked)}
                       style={{ 
-                        padding: '16px', borderRadius: '12px', cursor: 'pointer', marginBottom: '8px',
+                        padding: '16px', borderRadius: '12px', cursor: isLocked ? 'not-allowed' : 'pointer', marginBottom: '8px',
                         display: 'flex', gap: '16px', alignItems: 'flex-start',
                         background: isActive ? 'rgba(59,130,246,0.05)' : 'transparent',
                         border: isActive ? '1px solid rgba(59,130,246,0.2)' : '1px solid transparent',
-                        transition: 'background 0.2s'
+                        transition: 'background 0.2s',
+                        opacity: isLocked ? 0.6 : 1
                       }}
                     >
                       <div style={{ 
                         width: '24px', height: '24px', borderRadius: '50%', 
-                        background: isCompleted ? '#10b981' : (isActive ? '#3b82f6' : '#e2e8f0'),
-                        color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: isLocked ? '#e2e8f0' : (isCompleted ? '#10b981' : (isActive ? '#3b82f6' : '#e2e8f0')),
+                        color: isLocked ? '#94a3b8' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: '0.8rem', fontWeight: 700, flexShrink: 0
                       }}>
-                        {isCompleted ? '✓' : (idx + 1)}
+                        {isLocked ? '🔒' : (isCompleted ? '✓' : (idx + 1))}
                       </div>
                       <div>
-                        <h4 style={{ margin: '0 0 6px 0', fontSize: '0.95rem', color: isActive ? '#1e40af' : 'var(--navy)', fontWeight: isActive ? 700 : 500 }}>
-                          {lesson}
+                        <h4 style={{ margin: '0 0 6px 0', fontSize: '0.95rem', color: isLocked ? '#94a3b8' : (isActive ? '#1e40af' : 'var(--navy)'), fontWeight: isActive ? 700 : 500 }}>
+                          {lesson} {isLocked && <span style={{fontSize: '0.7rem', color: '#ef4444', marginLeft: '4px'}}>(Premium)</span>}
                         </h4>
                         <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>▶ Video</p>
                       </div>

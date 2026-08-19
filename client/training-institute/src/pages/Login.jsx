@@ -1,40 +1,63 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { login } from '../api';
+import { login, register } from '../api';
 
 const Login = () => {
   const { setUser, user } = useAuth();
   const navigate = useNavigate();
   const [authRole, setAuthRole] = useState('student');
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+
+  const location = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
     if (user) {
-      navigate('/dashboard');
+      if (location.state?.from) {
+        navigate(location.state.from, { state: { course: location.state.course } });
+      } else {
+        navigate('/dashboard');
+      }
     }
-  }, [user, navigate]);
+  }, [user, navigate, location]);
   
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const authenticatedUser = await login({
-        email: formData.email,
-        password: formData.password
-      });
+      let authenticatedUser;
       
-      if (authRole === 'teacher' && authenticatedUser.role !== 'teacher') {
+      if (isRegistering) {
+        authenticatedUser = await register({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          role: authRole // Backend should assign the correct Object ID or handle legacy string
+        });
+      } else {
+        authenticatedUser = await login({
+          email: formData.email,
+          password: formData.password
+        });
+      }
+      
+      if (authRole === 'teacher' && authenticatedUser.role !== 'teacher' && authenticatedUser.legacyRole !== 'teacher') {
         throw new Error("You are not authorized as a Teacher.");
       }
       
       setUser(authenticatedUser);
       localStorage.setItem('becs_user', JSON.stringify(authenticatedUser));
-      navigate('/dashboard');
+      
+      if (location.state?.from) {
+        navigate(location.state.from, { state: { course: location.state.course } });
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
-      alert(err.message || 'Authentication failed');
+      alert(err.message || (isRegistering ? 'Registration failed' : 'Authentication failed'));
     } finally {
       setIsLoading(false);
     }
@@ -63,17 +86,27 @@ const Login = () => {
         
         <div className="auth-right-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 60px', background: 'white' }}>
           <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: '#1e293b', margin: '0 0 8px 0' }}>Log in to your account</h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>Enter your credentials provided by the administration.</p>
+            <h2 style={{ fontSize: '2rem', fontFamily: 'Outfit', color: '#1e293b', margin: '0 0 8px 0' }}>
+              {isRegistering ? 'Create your account' : 'Log in to your account'}
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+              {isRegistering ? 'Sign up to start your learning journey.' : 'Enter your credentials provided by the administration.'}
+            </p>
           </div>
 
           <div style={{ display: 'flex', position: 'relative', background: '#f1f5f9', padding: '4px', borderRadius: '12px', marginBottom: '32px', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)' }}>
             <div style={{ position: 'absolute', top: '4px', bottom: '4px', left: authRole === 'student' ? '4px' : '50%', width: 'calc(50% - 4px)', background: 'white', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 1 }}></div>
-            <button onClick={() => setAuthRole('student')} style={{ flex: 1, padding: '12px', background: 'transparent', border: 'none', color: authRole === 'student' ? '#1e293b' : 'var(--text-muted)', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', position: 'relative', zIndex: 2, transition: 'color 0.3s' }}>Student Portal</button>
-            <button onClick={() => setAuthRole('teacher')} style={{ flex: 1, padding: '12px', background: 'transparent', border: 'none', color: authRole === 'teacher' ? '#1e293b' : 'var(--text-muted)', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', position: 'relative', zIndex: 2, transition: 'color 0.3s' }}>Teacher Portal</button>
+            <button type="button" onClick={() => setAuthRole('student')} style={{ flex: 1, padding: '12px', background: 'transparent', border: 'none', color: authRole === 'student' ? '#1e293b' : 'var(--text-muted)', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', position: 'relative', zIndex: 2, transition: 'color 0.3s' }}>Student Portal</button>
+            <button type="button" onClick={() => setAuthRole('teacher')} style={{ flex: 1, padding: '12px', background: 'transparent', border: 'none', color: authRole === 'teacher' ? '#1e293b' : 'var(--text-muted)', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', position: 'relative', zIndex: 2, transition: 'color 0.3s' }}>Teacher Portal</button>
           </div>
 
           <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {isRegistering && (
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>Full Name</label>
+                <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Enter your full name" style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', transition: 'border 0.3s', color: '#1e293b' }} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+              </div>
+            )}
             <div>
               <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>Email Address</label>
               <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder={`Enter your ${authRole} email`} style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', transition: 'border 0.3s', color: '#1e293b' }} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
@@ -88,12 +121,16 @@ const Login = () => {
             </div>
 
             <button type="submit" disabled={isLoading} className="btn-solid-lg" style={{ marginTop: '12px', padding: '14px', fontSize: '1.05rem', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxShadow: '0 10px 25px rgba(230, 34, 59, 0.3)', background: 'var(--primary)', color: 'white', border: 'none', cursor: 'pointer', transition: 'all 0.3s' }}>
-              {isLoading ? <span style={{ width: '20px', height: '20px', border: '3px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 1s infinite linear' }} /> : 'Secure Log In'}
+              {isLoading ? <span style={{ width: '20px', height: '20px', border: '3px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 1s infinite linear' }} /> : (isRegistering ? 'Create Account' : 'Secure Log In')}
             </button>
           </form>
 
           <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '32px' }}>
-            Don't have an account? <span style={{ color: '#1e293b', fontWeight: 600, cursor: 'pointer' }}>Contact Administrator</span>
+            {isRegistering ? (
+              <>Already have an account? <span onClick={() => setIsRegistering(false)} style={{ color: '#1e293b', fontWeight: 600, cursor: 'pointer' }}>Log In</span></>
+            ) : (
+              <>Don't have an account? <span onClick={() => setIsRegistering(true)} style={{ color: '#1e293b', fontWeight: 600, cursor: 'pointer' }}>Sign up</span></>
+            )}
           </p>
         </div>
       </div>
