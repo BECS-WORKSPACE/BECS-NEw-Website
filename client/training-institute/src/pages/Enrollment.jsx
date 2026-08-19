@@ -13,6 +13,17 @@ const Enrollment = () => {
 
   const [enrollFormData, setEnrollFormData] = useState({ name: '', email: '', phone: '', highestQualification: '', preparingFor: '', address: '', pinCode: '', city: '', state: '', acceptTerms: false });
   const [enrollSubmitted, setEnrollSubmitted] = useState(false);
+  
+  // Calculate price dynamically based on dropdown or selected course
+  let coursePrice = 999;
+  if (enrollFormData.preparingFor === 'Demo Course (1 Rupee)') {
+    coursePrice = 1;
+  } else if (selectedCourse?.price) {
+    const parsedPrice = typeof selectedCourse.price === 'number' 
+      ? selectedCourse.price 
+      : parseFloat(String(selectedCourse.price).replace(/[^\d.]/g, ''));
+    if (!isNaN(parsedPrice)) coursePrice = parsedPrice;
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -60,7 +71,7 @@ const Enrollment = () => {
         return;
       }
 
-      const orderRes = await createRazorpayOrder({ amount: 999 });
+      const orderRes = await createRazorpayOrder({ amount: coursePrice });
       const razorpayOrder = orderRes.data || orderRes;
 
       const options = {
@@ -139,7 +150,7 @@ const Enrollment = () => {
         ← Back to Course
       </button>
       <h1 className="responsive-heading" style={{ fontFamily: 'Outfit', color: 'var(--primary)', marginBottom: '10px' }}>Enrollment Form</h1>
-      <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '40px' }}>You are enrolling in <strong>{selectedCourse.title}</strong> at <strong>{selectedCourse.center}</strong>. Fee: ₹999.</p>
+      <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '40px' }}>You are enrolling in <strong>{enrollFormData.preparingFor || selectedCourse.title}</strong> at <strong>{selectedCourse.center || 'All Centers'}</strong>. Fee: ₹{coursePrice}.</p>
 
       <form onSubmit={handleSubmit} className="enroll-form" style={{ background: 'var(--surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
         <div className="form-grid">
@@ -168,6 +179,7 @@ const Enrollment = () => {
           <label style={{ display: 'block', fontWeight: 600, marginBottom: '8px', color: 'var(--primary)' }}>Preparing For</label>
           <select required value={enrollFormData.preparingFor} onChange={e => setEnrollFormData({ ...enrollFormData, preparingFor: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '1rem', background: 'var(--surface)' }}>
             <option value="">Select Course</option>
+            <option value="Demo Course (1 Rupee)">Demo Course (1 Rupee)</option>
             <option value="Government Exam Preparation">Government Exam Preparation</option>
             <option value="Joint Entrance Preparation">Joint Entrance Preparation</option>
             <option value="Board Exam (Class 10)">Board Exam (Class 10)</option>
@@ -201,7 +213,7 @@ const Enrollment = () => {
         </div>
 
         <button type="submit" className="btn-solid-lg" style={{ width: '100%', textAlign: 'center' }}>
-          Proceed to Razorpay (Pay ₹999)
+          Proceed to Razorpay (Pay ₹{coursePrice})
         </button>
       </form>
     </div>

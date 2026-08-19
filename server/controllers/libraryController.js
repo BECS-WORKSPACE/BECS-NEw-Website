@@ -49,7 +49,12 @@ exports.searchLibrary = async (req, res) => {
     if (type) query.type = type;
     if (difficulty) query.difficulty = difficulty;
     if (categoryId) query.categoryId = categoryId;
-    if (courseId) query.courseId = courseId;
+    if (courseId) {
+      query.courseId = courseId;
+    } else if (req.query.enrolledOnly === 'true' && req.user && req.user.enrolledCourses) {
+      // If user wants only enrolled courses materials
+      query.courseId = { $in: req.user.enrolledCourses };
+    }
 
     const resources = await LibraryResource.find(query)
       .sort(q ? { score: { $meta: 'textScore' } } : { createdAt: -1 })

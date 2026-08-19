@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { DEFAULT_COURSES } from '../../data/courses';
+import api from '../../api';
 
 const MyCourses = () => {
   const { user } = useAuth();
@@ -10,9 +10,26 @@ const MyCourses = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [filter, setFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [dbCourses, setDbCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await api.get('/courses');
+        const data = res.data?.courses || res.data || [];
+        setDbCourses(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Failed to fetch courses:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   // Fetch enrolled courses and attach dummy progress data
-  const enrolledRaw = user.enrolledCourses ? DEFAULT_COURSES.filter(c => user.enrolledCourses.includes(String(c.id))) : [];
+  const enrolledRaw = user.enrolledCourses ? dbCourses.filter(c => user.enrolledCourses.includes(String(c.id || c._id))) : [];
   
   const userCourses = enrolledRaw.map(c => ({
     ...c,
@@ -34,6 +51,14 @@ const MyCourses = () => {
     return true;
   });
 
+  if (loading) {
+    return (
+      <div className="animate-fade-in" style={{ display: 'grid', placeItems: 'center', minHeight: '500px' }}>
+        <p style={{ color: '#64748b' }}>Loading your courses...</p>
+      </div>
+    );
+  }
+
   if (userCourses.length === 0) {
     return (
       <div className="animate-fade-in" style={{ display: 'grid', placeItems: 'center', minHeight: '500px', background: '#ffffff', borderRadius: '24px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
@@ -41,7 +66,7 @@ const MyCourses = () => {
           <div style={{ fontSize: '5rem', marginBottom: '20px' }}>📚</div>
           <h3 style={{ fontSize: '1.8rem', color: 'var(--navy)', marginBottom: '12px', fontWeight: 700 }}>No Active Courses</h3>
           <p style={{ color: '#64748b', marginBottom: '32px', fontSize: '1.1rem' }}>Explore our flagship programs and enroll today!</p>
-          <button className="btn-solid-lg" onClick={() => navigate('/')} style={{ padding: '16px 40px', borderRadius: '12px', background: 'var(--primary)', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Browse Courses</button>
+          <button className="btn-solid-lg" onClick={() => navigate('/#courses')} style={{ padding: '16px 40px', borderRadius: '12px', background: 'var(--primary)', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Browse Courses</button>
         </div>
       </div>
     );
@@ -137,7 +162,13 @@ const MyCourses = () => {
               </div>
               
               <button 
-                onClick={() => navigate(`/dashboard/learn/${course.id || course._id}`)} 
+                onClick={() => {
+                  if (!user.isPremium) {
+                    navigate('/dashboard/subscription');
+                  } else {
+                    navigate(`/dashboard/learn/${course.id || course._id}`);
+                  }
+                }} 
                 style={{ 
                   width: '100%', padding: '14px', borderRadius: '12px', 
                   background: course.progress === 100 ? '#f8fafc' : 'var(--primary)', 
@@ -146,7 +177,7 @@ const MyCourses = () => {
                   fontWeight: 600, cursor: 'pointer', transition: 'background 0.2s', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px'
                 }}
               >
-                {course.progress === 100 ? 'Review Course' : course.progress > 0 ? 'Resume Learning ▷' : 'Start Course ▷'}
+                {!user.isPremium ? 'Purchase Premium to Unlock 🔒' : (course.progress === 100 ? 'Review Course' : course.progress > 0 ? 'Resume Learning ▷' : 'Start Course ▷')}
               </button>
             </div>
           </div>

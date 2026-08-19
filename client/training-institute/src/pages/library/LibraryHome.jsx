@@ -10,7 +10,8 @@ const LibraryHome = () => {
   const [filters, setFilters] = useState({
     q: '',
     type: '',
-    difficulty: ''
+    difficulty: '',
+    enrolledOnly: true
   });
 
   const fetchResources = async () => {
@@ -33,7 +34,7 @@ const LibraryHome = () => {
   useEffect(() => {
     // Debounce search in a real app, calling directly for now on load
     fetchResources();
-  }, [filters.type, filters.difficulty]); // Trigger on filter change. For query `q`, use explicit search button
+  }, [filters.type, filters.difficulty, filters.enrolledOnly]); // Trigger on filter change. For query `q`, use explicit search button
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -107,6 +108,19 @@ const LibraryHome = () => {
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
               </select>
+            </div>
+
+            <div style={{ marginTop: '24px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={filters.enrolledOnly}
+                  onChange={(e) => setFilters({...filters, enrolledOnly: e.target.checked})}
+                  style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                />
+                <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#475569' }}>My Courses Only</span>
+              </label>
+              <p style={{ margin: '4px 0 0 26px', fontSize: '0.8rem', color: '#94a3b8' }}>Only show materials uploaded for courses I am enrolled in.</p>
             </div>
           </div>
         </div>

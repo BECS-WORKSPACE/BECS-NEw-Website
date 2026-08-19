@@ -110,8 +110,14 @@ const HomeDashboard = () => {
                </div>
                <p style={{ margin: '8px 0 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>75% Completed</p>
              </div>
-             <button style={{ background: '#2563eb', color: 'white', border: 'none', padding: '14px 28px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer', transition: 'background 0.2s', boxShadow: '0 4px 12px rgba(37,99,235,0.3)' }}>
-               Resume ▷
+             <button 
+               onClick={() => {
+                 if (!user?.isPremium) navigate('/dashboard/subscription');
+                 else navigate('/dashboard/courses');
+               }}
+               style={{ background: '#2563eb', color: 'white', border: 'none', padding: '14px 28px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer', transition: 'background 0.2s', boxShadow: '0 4px 12px rgba(37,99,235,0.3)' }}
+             >
+               {!user?.isPremium ? 'Unlock 🔒' : 'Resume ▷'}
              </button>
           </div>
         </div>

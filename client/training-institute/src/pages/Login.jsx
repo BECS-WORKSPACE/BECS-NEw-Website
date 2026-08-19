@@ -10,6 +10,7 @@ const Login = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const location = useLocation();
 
@@ -114,7 +115,12 @@ const Login = () => {
             
             <div>
               <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>Password</label>
-              <input type="password" required value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} placeholder="••••••••" style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', transition: 'border 0.3s', color: '#1e293b' }} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+              <div style={{ position: 'relative' }}>
+                <input type={showPassword ? "text" : "password"} required value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} placeholder="••••••••" style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', transition: 'border 0.3s', color: '#1e293b' }} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem', padding: 0 }}>
+                  {showPassword ? '👁️' : '🙈'}
+                </button>
+              </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
                 <span style={{ fontSize: '0.85rem', color: 'var(--primary)', cursor: 'pointer', fontWeight: 500 }}>Forgot password?</span>
               </div>

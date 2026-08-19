@@ -3,18 +3,25 @@ import { useAuth } from '../../context/AuthContext';
 import api from '../../api';
 
 const Subscription = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const [pricing, setPricing] = useState({ originalPrice: 7999, discountedPrice: 4999 });
   const [loading, setLoading] = useState(true);
 
   // Mock data for the UI
   const isPremium = user?.isPremium || false;
-  const validUntil = user?.subscriptionValidUntil ? new Date(user.subscriptionValidUntil).toLocaleDateString() : 'N/A';
+  const validUntil = user?.subscriptionValidUntil ? new Date(user.subscriptionValidUntil).toLocaleDateString() : null;
+  const hasExpired = !isPremium && validUntil;
   
-  const paymentHistory = [
-    { id: 'INV-2026-001', date: '01 Aug 2026', amount: 4999, status: 'Paid', method: 'Credit Card •••• 4242' },
-    { id: 'INV-2026-002', date: '01 Jul 2026', amount: 4999, status: 'Paid', method: 'UPI' }
-  ];
+  const [paymentHistory, setPaymentHistory] = useState([]);
+
+  useEffect(() => {
+    try {
+      const savedPayments = JSON.parse(localStorage.getItem('becs_payments')) || [];
+      setPaymentHistory(savedPayments);
+    } catch (e) {
+      setPaymentHistory([]);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchPricing = async () => {
@@ -76,6 +83,23 @@ const Subscription = () => {
             });
 
             if (verifyRes.data.success) {
+              const updatedUser = {
+                ...user,
+                isPremium: true,
+                subscriptionValidUntil: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString()
+              };
+              localStorage.setItem('becs_user', JSON.stringify(updatedUser));
+              
+              const newPayment = {
+                id: 'INV-' + Date.now().toString().slice(-6),
+                date: new Date().toLocaleDateString(),
+                amount: pricing.discountedPrice,
+                status: 'Paid',
+                method: 'Razorpay'
+              };
+              const existingPayments = JSON.parse(localStorage.getItem('becs_payments') || '[]');
+              localStorage.setItem('becs_payments', JSON.stringify([newPayment, ...existingPayments]));
+
               alert('Payment Successful! You are now a Premium Member.');
               window.location.reload(); // Quick refresh to load new auth status
             }
@@ -124,8 +148,8 @@ const Subscription = () => {
           <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '24px' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                <span style={{ background: isPremium ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)', color: isPremium ? '#34d399' : '#f87171', padding: '6px 16px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', border: `1px solid ${isPremium ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}` }}>
-                  {isPremium ? 'Active' : 'Expired'}
+                <span style={{ background: isPremium ? 'rgba(16,185,129,0.2)' : (hasExpired ? 'rgba(239,68,68,0.2)' : 'rgba(100,116,139,0.2)'), color: isPremium ? '#34d399' : (hasExpired ? '#f87171' : '#94a3b8'), padding: '6px 16px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', border: `1px solid ${isPremium ? 'rgba(16,185,129,0.3)' : (hasExpired ? 'rgba(239,68,68,0.3)' : 'rgba(100,116,139,0.3)')}` }}>
+                  {isPremium ? 'Active' : (hasExpired ? 'Expired' : 'Not Subscribed')}
                 </span>
                 <span style={{ color: '#94a3b8', fontWeight: 600 }}>EduVerse Premium</span>
               </div>
@@ -134,7 +158,7 @@ const Subscription = () => {
                 ₹{pricing.discountedPrice} <span style={{ fontSize: '1.2rem', color: '#94a3b8', fontWeight: 500 }}>/ month</span>
               </h3>
               <p style={{ color: '#cbd5e1', fontSize: '1.05rem', margin: 0 }}>
-                {isPremium ? `Next billing date: ${validUntil}` : 'Your premium access has expired.'}
+                {isPremium ? `Next billing date: ${validUntil}` : (hasExpired ? `Your premium access expired on ${validUntil}.` : 'You do not have an active subscription.')}
               </p>
             </div>
 
