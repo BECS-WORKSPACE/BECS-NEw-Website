@@ -77,6 +77,9 @@ const seed = async () => {
     // 3. Premium Student Account (Enrolled + Subscription)
     const premiumStudentEmail = 'premium@eduverse.com';
     let premiumStudent = await User.findOne({ email: premiumStudentEmail });
+
+    const nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
     if (premiumStudent) await User.deleteOne({ email: premiumStudentEmail });
 
     premiumStudent = new User({
@@ -93,7 +96,8 @@ const seed = async () => {
       city: 'Bardhaman',
       state: 'West Bengal',
       pinCode: '713104',
-      isPremium: true
+      isPremium: true,
+      subscriptionValidUntil: nextMonth
     });
     await premiumStudent.save();
 
@@ -108,8 +112,7 @@ const seed = async () => {
 
     // Create Subscription (Premium access)
     await Subscription.deleteMany({ user: premiumStudent._id });
-    const nextMonth = new Date();
-    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    
 
     const premiumSubscription = new Subscription({
       user: premiumStudent._id,
