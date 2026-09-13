@@ -22,18 +22,18 @@ const seed = async () => {
 
   try {
     // 1. Create a dummy course if none exist
-    let course = await Course.findOne({});
+    let course = await Course.findOne({ title: "Government Exam Preparation" });
     if (!course) {
       course = new Course({
-        title: "Mastering Full Stack Development",
+        title: "Government Exam Preparation",
         target: "Job Seekers",
         duration: "6 Months",
         price: 4999,
-        category: "Web Development",
+        category: "Government Exams",
         status: "published"
       });
       await course.save();
-      console.log('Created dummy course.');
+      console.log('Created Government Exam Preparation course.');
     } else {
       console.log(`Found course: ${course.title}`);
     }
