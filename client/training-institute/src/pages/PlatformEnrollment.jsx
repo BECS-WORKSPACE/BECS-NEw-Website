@@ -52,7 +52,7 @@ const PlatformEnrollment = () => {
       const orderData = await orderRes.json();
 
       const options = {
-        key: 'rzp_test_dummy_key', // In production, get from backend or env
+        key: orderData.key || 'rzp_test_dummy_key', // Get from backend
         amount: orderData.amount,
         currency: orderData.currency,
         name: 'EduVerse',

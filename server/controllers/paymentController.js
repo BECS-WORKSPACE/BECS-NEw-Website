@@ -45,7 +45,8 @@ const createRazorpayOrder = async (req, res) => {
     res.json({
       id: order.id,
       amount: order.amount,
-      currency: order.currency
+      currency: order.currency,
+      key: process.env.RAZORPAY_KEY_ID
     });
   } catch (error) {
     console.error('Error creating razorpay order:', error);
@@ -141,7 +142,8 @@ const createEnrollmentOrder = async (req, res) => {
     res.json({
       id: order.id,
       amount: order.amount,
-      currency: order.currency
+      currency: order.currency,
+      key: process.env.RAZORPAY_KEY_ID
     });
   } catch (error) {
     console.error('Error creating enrollment order:', error);
@@ -181,7 +183,8 @@ const createSubscriptionOrder = async (req, res) => {
       amount: order.amount,
       currency: order.currency,
       discountApplied: discount,
-      basePrice
+      basePrice,
+      key: process.env.RAZORPAY_KEY_ID
     });
   } catch (error) {
     console.error('Error creating subscription order:', error);

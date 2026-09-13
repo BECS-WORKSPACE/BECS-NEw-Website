@@ -95,7 +95,7 @@ router.post('/profile/complete', protect, async (req, res) => {
     user.profileCompleted = true;
 
     await user.save();
-    res.json({ message: 'Profile completed successfully', profileCompleted: true });
+    res.json(user);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

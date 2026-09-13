@@ -40,7 +40,7 @@ const CourseSubscription = () => {
       const orderData = orderRes.data;
 
       const options = {
-        key: 'rzp_test_dummy_key', // In production, get from env
+        key: orderData.key || 'rzp_test_dummy_key', // Get from backend
         amount: orderData.amount,
         currency: orderData.currency,
         name: 'EduVerse',
