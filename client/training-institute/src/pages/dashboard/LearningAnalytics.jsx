@@ -1,25 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import api from '../../api';
 
 const LearningAnalytics = () => {
   const { user } = useAuth();
+  const [analytics, setAnalytics] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const res = await api.get('/analytics/summary');
+        setAnalytics(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnalytics();
+  }, []);
+
+  if (loading) return <div>Loading analytics...</div>;
   
-  // Dummy analytics data for UI preview
+  // Real or fallback stats
   const stats = {
-    totalCourses: user?.enrolledCourses?.length || 4,
-    completedCourses: 1,
-    hoursStudied: 124,
-    currentStreak: user?.streak || 12,
-    xpEarned: user?.xp || 4250,
-    rank: 142
+    totalCourses: user?.enrolledCourses?.length || 0,
+    completedCourses: analytics?.completedCourses || 0,
+    hoursStudied: Math.round((analytics?.totalWatchTime || 0) / 3600),
+    currentStreak: analytics?.currentStreak || 0,
+    xpEarned: analytics?.xpEarned || 0,
+    rank: analytics?.rank || 'Unranked'
   };
 
-  const badges = [
-    { id: 1, icon: '🔥', name: '7-Day Streak', desc: 'Studied for 7 consecutive days' },
-    { id: 2, icon: '📚', name: 'Bookworm', desc: 'Completed 5 modules' },
-    { id: 3, icon: '🎯', name: 'Sharpshooter', desc: 'Scored 100% in a Mock Test' },
-    { id: 4, icon: '🌟', name: 'Early Bird', desc: 'Attended a 6 AM Live Class' }
-  ];
+  const badges = analytics?.badges || [];
 
   const weeklyProgress = [
     { day: 'Mon', hours: 2.5 },

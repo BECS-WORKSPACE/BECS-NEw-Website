@@ -15,12 +15,15 @@ const Subscription = () => {
   const [paymentHistory, setPaymentHistory] = useState([]);
 
   useEffect(() => {
-    try {
-      const savedPayments = JSON.parse(localStorage.getItem('becs_payments')) || [];
-      setPaymentHistory(savedPayments);
-    } catch (e) {
-      setPaymentHistory([]);
-    }
+    const fetchPayments = async () => {
+      try {
+        const res = await api.get('/orders/myorders');
+        setPaymentHistory(res.data || []);
+      } catch (err) {
+        setPaymentHistory([]);
+      }
+    };
+    fetchPayments();
   }, []);
 
   useEffect(() => {

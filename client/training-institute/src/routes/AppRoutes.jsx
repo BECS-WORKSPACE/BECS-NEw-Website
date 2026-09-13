@@ -28,6 +28,7 @@ import LiveClassroomApp from '../pages/dashboard/LiveClassroomApp';
 import LiveExamEngine from '../pages/assessment/LiveExamEngine';
 import ResultDashboard from '../pages/assessment/ResultDashboard';
 import AssignmentList from '../pages/assessment/AssignmentList';
+import Mentorship from '../pages/dashboard/Mentorship';
 import SubmissionPortal from '../pages/assessment/SubmissionPortal';
 import LibraryHome from '../pages/library/LibraryHome';
 import ResourceViewer from '../pages/library/ResourceViewer';
@@ -79,6 +80,7 @@ const AppRoutes = () => {
             <Route path="tests" element={<MockTests />} />
             <Route path="assignments" element={<AssignmentList />} />
             <Route path="course/:courseId/assignments" element={<AssignmentList />} />
+            <Route path="mentorship" element={<Mentorship />} />
             <Route path="assignments/:assignmentId/submit" element={<SubmissionPortal />} />
             <Route path="library" element={<LibraryHome />} />
             <Route path="library/:resourceId" element={<ResourceViewer />} />
