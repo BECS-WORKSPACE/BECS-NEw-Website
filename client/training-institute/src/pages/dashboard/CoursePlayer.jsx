@@ -31,94 +31,104 @@ const CoursePlayer = () => {
   const dummyVideo = "https://www.w3schools.com/html/mov_bbb.mp4";
 
   useEffect(() => {
-
     const loadData = async () => {
       try {
-        let currentCourse;
-        try {
-          currentCourse = await fetchCourseById(courseId);
-        } catch(e) {
-          currentCourse = DEFAULT_COURSES.find(c => String(c.id) === courseId || String(c._id) === courseId);
-          currentCourse = { ...currentCourse, version: 'legacy' };
-        }
-        setCourse(currentCourse);
-
-        if (currentCourse) {
-          const progressRes = await getCourseProgress(courseId);
-          if (progressRes) setProgressData(progressRes);
-        }
-
-        if (currentCourse?.version === 'v2' && currentCourse._id) {
-          const treeRes = await api.get(`/curriculum/${currentCourse._id}`);
-          setCurriculumTree(treeRes.data);
-          
-          if (treeRes.data.length > 0 && treeRes.data[0].chapters.length > 0 && treeRes.data[0].chapters[0].lessons.length > 0) {
-            handleLessonChange(treeRes.data[0].chapters[0].lessons[0]);
-            setExpandedModules({ [treeRes.data[0]._id]: true });
-            setExpandedChapters({ [treeRes.data[0].chapters[0]._id]: true });
+        const res = await api.get(`/lms/course/${courseId}/syllabus`);
+        if (res.data.success) {
+          if (!res.data.hasAccess) {
+            alert('You do not have access to this course. Please purchase or renew.');
+            navigate('/dashboard/my-courses');
+            return;
           }
-        } else {
-          handleLessonChange(0); // Legacy index
-        }
+          if (res.data.accessStatus === 'expired') {
+            alert('Your subscription has expired. Please renew to access the course content.');
+            navigate('/dashboard/my-courses');
+            return;
+          }
+          
+          setCourse(res.data.course);
+          setCurriculumTree(res.data.syllabus);
 
+          // Get URL params for specific lesson
+          const params = new URLSearchParams(window.location.search);
+          const lessonParamId = params.get('lesson');
+
+          let initialLesson = null;
+          
+          if (lessonParamId) {
+            // Find lesson in tree
+            for (let mod of res.data.syllabus) {
+              for (let ch of mod.chapters) {
+                const found = ch.lessons.find(l => l._id === lessonParamId);
+                if (found) {
+                  initialLesson = found;
+                  // Auto-expand module and chapter
+                  setExpandedModules(prev => ({ ...prev, [mod._id]: true }));
+                  setExpandedChapters(prev => ({ ...prev, [ch._id]: true }));
+                  break;
+                }
+              }
+              if (initialLesson) break;
+            }
+          }
+
+          if (!initialLesson && res.data.syllabus.length > 0 && res.data.syllabus[0].chapters.length > 0 && res.data.syllabus[0].chapters[0].lessons.length > 0) {
+            initialLesson = res.data.syllabus[0].chapters[0].lessons[0];
+            setExpandedModules({ [res.data.syllabus[0]._id]: true });
+            setExpandedChapters({ [res.data.syllabus[0].chapters[0]._id]: true });
+          }
+
+          if (initialLesson) {
+            setActiveLesson(initialLesson);
+            fetchLessonDetails(initialLesson._id);
+          }
+        }
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching course data:', err);
+        alert('Failed to load course data.');
+        navigate('/dashboard/my-courses');
       } finally {
         setLoading(false);
       }
     };
     loadData();
-  }, [courseId, user, navigate]);
+  }, [courseId, navigate]);
 
-  const handleLessonChange = async (lessonIdentifier, isLocked = false) => {
-    if (isLocked && !user?.isPremium) {
-      navigate('/dashboard/subscription');
+  const fetchLessonDetails = async (lessonId) => {
+    try {
+      const res = await api.get(`/lms/lesson/${lessonId}`);
+      if (res.data.success) {
+        setActiveLesson(res.data.lesson);
+        setResumeTime(res.data.resumeFromSeconds || 0);
+      }
+    } catch (err) {
+      console.error('Failed to fetch lesson details', err);
+    }
+  };
+
+  const handleLessonChange = (lessonObj, isLocked = false) => {
+    if (isLocked) {
+      alert('This lesson is locked. Please complete the previous lessons or renew your subscription.');
       return;
     }
-    setActiveLesson(lessonIdentifier);
-    setResumeTime(0);
-    setCurrentPlaybackTime(0);
-    
-    // If it's a V2 course, try to fetch resume time
-    if (lessonIdentifier && typeof lessonIdentifier === 'object' && lessonIdentifier._id) {
-      try {
-        const resumeData = await getResumeData(lessonIdentifier._id);
-        if (resumeData && resumeData.lastWatchedTimestamp > 0) {
-          setResumeTime(resumeData.lastWatchedTimestamp);
-        }
-      } catch (err) {
-        console.error('Failed to get resume time');
-      }
-    }
+    fetchLessonDetails(lessonObj._id);
   };
 
   const handleVideoProgress = async (currentTime, duration) => {
     setCurrentPlaybackTime(currentTime);
-    if (!course) return;
+    if (!activeLesson) return;
     
     const isCompleted = (currentTime / duration) > 0.9;
     
     try {
-      const lessonIdentifier = course.version === 'v2' && activeLesson ? activeLesson._id : course.syllabus[activeLesson];
-      
-      await updateVideoProgress({
-        courseId: course._id || course.id,
-        lessonId: lessonIdentifier,
-        currentTimestamp: Math.floor(currentTime),
-        duration: Math.floor(duration), // V2 payload format
-        watchTimeSeconds: Math.floor(currentTime), // Legacy fallback
-        totalDurationSeconds: Math.floor(duration), // Legacy fallback
+      await api.post(`/lms/lesson/${activeLesson._id}/progress`, {
+        watchedSeconds: Math.floor(currentTime),
         isCompleted
       });
       
-      if (isCompleted && !progressData.some(p => p.lesson === lessonIdentifier && p.isCompleted)) {
-        setProgressData(prev => [
-          ...prev.filter(p => p.lesson !== lessonIdentifier),
-          { lesson: lessonIdentifier, isCompleted: true }
-        ]);
-      }
+      // Update local tree state to reflect completion if needed
     } catch (err) {
-      console.error('Failed to sync progress', err);
+      console.error('Failed to sync progress:', err);
     }
   };
 
@@ -142,7 +152,7 @@ const CoursePlayer = () => {
   const completedCount = progressData.filter(p => p.isCompleted).length;
   const progressPct = totalItems > 0 ? (completedCount / totalItems) * 100 : 0;
   
-  const isV2 = course.version === 'v2';
+  const isV2 = true;
 
   return (
     <div style={{ display: 'flex', gap: '24px', height: 'calc(100vh - 100px)', paddingBottom: '20px' }}>
@@ -224,8 +234,8 @@ const CoursePlayer = () => {
                               {expandedChapters[chap._id] && (
                                 <div style={{ padding: '8px' }}>
                                   {chap.lessons.map((les, lIdx) => {
-                                    const isLocked = !user?.isPremium && (modIdx > 0 || chapIdx > 0 || lIdx > 1);
-                                    const isCompleted = progressData.some(p => p.lesson === les._id && p.isCompleted);
+                                    const isLocked = les.isLocked;
+                                    const isCompleted = les.isCompleted;
                                     const isActive = activeLesson?._id === les._id;
                                     
                                     return (
@@ -242,7 +252,7 @@ const CoursePlayer = () => {
                                         <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: isLocked ? '#e2e8f0' : (isCompleted ? '#10b981' : (isActive ? '#3b82f6' : '#cbd5e1')), color: isLocked ? '#94a3b8' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>
                                           {isLocked ? '🔒' : (isCompleted ? '✓' : '▶')}
                                         </div>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: isActive ? 600 : 500 }}>{les.title} {isLocked && <span style={{fontSize: '0.7rem', color: '#ef4444', marginLeft: '4px'}}>(Premium)</span>}</span>
+                                        <span style={{ fontSize: '0.85rem', fontWeight: isActive ? 600 : 500 }}>{les.title}</span>
                                       </div>
                                     );
                                   })}
