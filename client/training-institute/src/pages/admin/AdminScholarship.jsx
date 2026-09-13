@@ -37,7 +37,9 @@ const AdminScholarship = () => {
           <div style={{ padding: '40px', textAlign: 'center' }}>Loading scholarships...</div>
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <th style={{ padding: '16px 24px', color: '#64748b', fontWeight: 600, fontSize: '0.85rem' }}>Test Name</th>
+            <thead>
+              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
+                <th style={{ padding: '16px 24px', color: '#64748b', fontWeight: 600, fontSize: '0.85rem' }}>Test Name</th>
    <th style={{ padding: '16px 24px', color: '#64748b', fontWeight: 600, fontSize: '0.85rem' }}>Created At</th>
    <th style={{ padding: '16px 24px', color: '#64748b', fontWeight: 600, fontSize: '0.85rem' }}>Questions Count</th>
    <th style={{ padding: '16px 24px', color: '#64748b', fontWeight: 600, fontSize: '0.85rem' }}>Status</th>

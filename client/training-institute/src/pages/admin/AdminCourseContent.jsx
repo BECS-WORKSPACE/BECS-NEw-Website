@@ -13,6 +13,14 @@ const AdminCourseContent = () => {
         // Simulating data
         const res = await api.get('/admin-v2/content-approvals');
         if(res.data.success) setContent(res.data.data);
+      } catch (err) {
+        console.error('Error fetching content:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchContent();
+  }, []);
 
   return (
     <div className="animate-fade-in">
