@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const rateLimit = require('express-rate-limit');
-const { register, login, refresh, logout, logoutAll } = require('../controllers/authController');
+const { register, login, refresh, logout, logoutAll, forgotPassword, resetPassword } = require('../controllers/authController');
 
 // Rate limiting for login/register to prevent brute force
 const authLimiter = rateLimit({
@@ -17,5 +17,8 @@ router.post('/login', authLimiter, login);
 router.post('/refresh', refresh);
 router.post('/logout', logout);
 router.post('/logout-all', logoutAll);
+
+router.post('/forgot-password', authLimiter, forgotPassword);
+router.post('/reset-password/:token', authLimiter, resetPassword);
 
 module.exports = router;

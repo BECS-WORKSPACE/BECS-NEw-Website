@@ -15,18 +15,24 @@ const getIpAddress = (req) => {
 };
 
 exports.register = async (req, res) => {
-  const { name, email, password, role, age, education, phone } = req.body;
+  const { name, email, phone, password, confirmPassword } = req.body;
 
   try {
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+    if (!name || !email || !phone || !password || !confirmPassword) {
+      return res.status(400).json({ message: 'All fields are required.' });
     }
 
-    if (password && !isPasswordStrong(password)) {
-      // Temporarily bypass strong password for backward compatibility if needed, 
-      // but log it or return warning. For now, we enforce if provided.
-      // return res.status(400).json({ message: 'Password is not strong enough.' });
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match.' });
+    }
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: 'User already exists with this email' });
+    }
+
+    if (!isPasswordStrong(password)) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long and contain uppercase, lowercase, numbers, and special characters.' });
     }
 
     const hashedPassword = await hashPassword(password);
@@ -36,9 +42,7 @@ exports.register = async (req, res) => {
       email,
       phone,
       password: hashedPassword,
-      legacyRole: role || 'student', // Fallback for old system
-      age: age ? Number(age) : undefined,
-      education: education || undefined,
+      legacyRole: 'student', // Enforce student role
     });
 
     if (user) {
@@ -212,6 +216,66 @@ exports.logoutAll = async (req, res) => {
     res.clearCookie('jwt', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });
     res.json({ message: 'Logged out from all devices' });
   } catch(error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'No user found with this email' });
+    }
+
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    await user.save();
+
+    // In a production app, send this via email using Nodemailer
+    // const resetUrl = `${req.protocol}://${req.get('host')}/reset-password/${resetToken}`;
+    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    console.log(`[Email Simulation] Password reset token for ${email}: ${resetUrl}`);
+
+    res.status(200).json({ message: 'Email sent (simulated - check console)' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password, confirmPassword } = req.body;
+
+  try {
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
+
+    if (!isPasswordStrong(password)) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long and contain uppercase, lowercase, numbers, and special characters.' });
+    }
+
+    const resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    user.password = await hashPassword(password);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
 };

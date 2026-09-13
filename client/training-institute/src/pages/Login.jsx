@@ -7,10 +7,11 @@ const Login = () => {
   const { setUser, user } = useAuth();
   const navigate = useNavigate();
   const [authRole, setAuthRole] = useState('student');
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const location = useLocation();
 
@@ -32,11 +33,15 @@ const Login = () => {
       let authenticatedUser;
       
       if (isRegistering) {
+        if (formData.password !== formData.confirmPassword) {
+          throw new Error("Passwords do not match.");
+        }
         authenticatedUser = await register({
           name: formData.name,
           email: formData.email,
+          phone: formData.phone,
           password: formData.password,
-          role: authRole // Backend should assign the correct Object ID or handle legacy string
+          confirmPassword: formData.confirmPassword
         });
       } else {
         authenticatedUser = await login({
@@ -95,22 +100,30 @@ const Login = () => {
             </p>
           </div>
 
-          <div style={{ display: 'flex', position: 'relative', background: '#f1f5f9', padding: '4px', borderRadius: '12px', marginBottom: '32px', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)' }}>
-            <div style={{ position: 'absolute', top: '4px', bottom: '4px', left: authRole === 'student' ? '4px' : '50%', width: 'calc(50% - 4px)', background: 'white', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 1 }}></div>
-            <button type="button" onClick={() => setAuthRole('student')} style={{ flex: 1, padding: '12px', background: 'transparent', border: 'none', color: authRole === 'student' ? '#1e293b' : 'var(--text-muted)', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', position: 'relative', zIndex: 2, transition: 'color 0.3s' }}>Student Portal</button>
-            <button type="button" onClick={() => setAuthRole('teacher')} style={{ flex: 1, padding: '12px', background: 'transparent', border: 'none', color: authRole === 'teacher' ? '#1e293b' : 'var(--text-muted)', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', position: 'relative', zIndex: 2, transition: 'color 0.3s' }}>Teacher Portal</button>
-          </div>
+          {!isRegistering && (
+            <div style={{ display: 'flex', position: 'relative', background: '#f1f5f9', padding: '4px', borderRadius: '12px', marginBottom: '32px', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)' }}>
+              <div style={{ position: 'absolute', top: '4px', bottom: '4px', left: authRole === 'student' ? '4px' : '50%', width: 'calc(50% - 4px)', background: 'white', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 1 }}></div>
+              <button type="button" onClick={() => setAuthRole('student')} style={{ flex: 1, padding: '12px', background: 'transparent', border: 'none', color: authRole === 'student' ? '#1e293b' : 'var(--text-muted)', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', position: 'relative', zIndex: 2, transition: 'color 0.3s' }}>Student Portal</button>
+              <button type="button" onClick={() => setAuthRole('teacher')} style={{ flex: 1, padding: '12px', background: 'transparent', border: 'none', color: authRole === 'teacher' ? '#1e293b' : 'var(--text-muted)', fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', position: 'relative', zIndex: 2, transition: 'color 0.3s' }}>Teacher Portal</button>
+            </div>
+          )}
 
           <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {isRegistering && (
-              <div>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>Full Name</label>
-                <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Enter your full name" style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', transition: 'border 0.3s', color: '#1e293b' }} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
-              </div>
+              <>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>Full Name</label>
+                  <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Enter your full name" style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', transition: 'border 0.3s', color: '#1e293b' }} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>Phone Number</label>
+                  <input type="tel" required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="Enter your phone number" style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', transition: 'border 0.3s', color: '#1e293b' }} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                </div>
+              </>
             )}
             <div>
               <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>Email Address</label>
-              <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder={`Enter your ${authRole} email`} style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', transition: 'border 0.3s', color: '#1e293b' }} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+              <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder={`Enter your ${isRegistering ? '' : authRole} email`.trim()} style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', transition: 'border 0.3s', color: '#1e293b' }} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
             </div>
             
             <div>
@@ -121,10 +134,24 @@ const Login = () => {
                   {showPassword ? '👁️' : '🙈'}
                 </button>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--primary)', cursor: 'pointer', fontWeight: 500 }}>Forgot password?</span>
-              </div>
+              {!isRegistering && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--primary)', cursor: 'pointer', fontWeight: 500 }}>Forgot password?</span>
+                </div>
+              )}
             </div>
+
+            {isRegistering && (
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>Confirm Password</label>
+                <div style={{ position: 'relative' }}>
+                  <input type={showConfirmPassword ? "text" : "password"} required value={formData.confirmPassword} onChange={e => setFormData({...formData, confirmPassword: e.target.value})} placeholder="••••••••" style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', transition: 'border 0.3s', color: '#1e293b' }} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem', padding: 0 }}>
+                    {showConfirmPassword ? '👁️' : '🙈'}
+                  </button>
+                </div>
+              </div>
+            )}
 
             <button type="submit" disabled={isLoading} className="btn-solid-lg" style={{ marginTop: '12px', padding: '14px', fontSize: '1.05rem', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxShadow: '0 10px 25px rgba(230, 34, 59, 0.3)', background: 'var(--primary)', color: 'white', border: 'none', cursor: 'pointer', transition: 'all 0.3s' }}>
               {isLoading ? <span style={{ width: '20px', height: '20px', border: '3px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 1s infinite linear' }} /> : (isRegistering ? 'Create Account' : 'Secure Log In')}

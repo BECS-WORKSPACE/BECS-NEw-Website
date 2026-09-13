@@ -34,8 +34,12 @@ router.put('/profile', protect, async (req, res) => {
       user.address = req.body.address || user.address;
       user.state = req.body.state || user.state;
       user.district = req.body.district || user.district;
+      user.city = req.body.city || user.city;
+      user.pinCode = req.body.pinCode || user.pinCode;
       user.country = req.body.country || user.country;
       user.education = req.body.education || user.education;
+      user.highestEducation = req.body.highestEducation || user.highestEducation;
+      user.preparingFor = req.body.preparingFor || user.preparingFor;
       user.institute = req.body.institute || user.institute;
       user.course = req.body.course || user.course;
       user.bio = req.body.bio || user.bio;
@@ -62,6 +66,36 @@ router.put('/profile', protect, async (req, res) => {
     } else {
       res.status(404).json({ message: 'User not found' });
     }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   POST /api/users/profile/complete
+// @desc    Complete Onboarding Profile
+// @access  Private
+router.post('/profile/complete', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const { highestEducation, preparingFor, address, pinCode, city, state } = req.body;
+
+    if (!highestEducation || !preparingFor || !address || !pinCode || !city || !state) {
+      return res.status(400).json({ message: 'All fields are required to complete profile.' });
+    }
+
+    user.highestEducation = highestEducation;
+    user.preparingFor = preparingFor;
+    user.address = address;
+    user.pinCode = pinCode;
+    user.city = city;
+    user.state = state;
+    user.profileCompleted = true;
+
+    await user.save();
+    res.json({ message: 'Profile completed successfully', profileCompleted: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

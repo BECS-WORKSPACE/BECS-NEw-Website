@@ -5,6 +5,8 @@ import ProtectedRoute from '../components/common/ProtectedRoute';
 import Home from '../pages/Home';
 import CourseDetails from '../pages/CourseDetails';
 import Enrollment from '../pages/Enrollment';
+import PlatformEnrollment from '../pages/PlatformEnrollment';
+import CompleteProfile from '../pages/CompleteProfile';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import HomeDashboard from '../pages/dashboard/HomeDashboard';
@@ -72,6 +74,8 @@ const AppRoutes = () => {
           </Route>
           
           <Route path="/profile" element={<ProfileSettings />} />
+          <Route path="/complete-profile" element={<CompleteProfile />} />
+          <Route path="/enrollment" element={<PlatformEnrollment />} />
           <Route path="/enroll/:id" element={<Enrollment />} />
         </Route>
 

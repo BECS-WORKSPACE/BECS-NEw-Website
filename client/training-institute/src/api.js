@@ -100,6 +100,15 @@ export const register = async (userData) => {
   }
 };
 
+export const completeProfile = async (profileData) => {
+  try {
+    const res = await api.post('/users/profile/complete', profileData);
+    return res.data;
+  } catch (err) {
+    throw new Error(err.response?.data?.message || 'Failed to complete profile');
+  }
+};
+
 export const logout = async () => {
   try {
     await api.post('/auth/logout');

@@ -90,6 +90,14 @@ const verifyRazorpayPayment = async (req, res) => {
           subscriptionValidUntil: validUntil
         });
       }
+
+      // If purpose is platform enrollment
+      if (req.body.purpose === 'platform_enrollment' && req.user) {
+        const User = require('../models/User');
+        await User.findByIdAndUpdate(req.user._id, {
+          enrollmentStatus: 'ENROLLED'
+        });
+      }
       
       res.json({ success: true, message: 'Payment verified successfully' });
     } else {
@@ -101,7 +109,48 @@ const verifyRazorpayPayment = async (req, res) => {
   }
 };
 
+// @desc    Create a Razorpay Order for Platform Enrollment (₹999)
+// @route   POST /api/payments/create-enrollment-order
+// @access  Private
+const createEnrollmentOrder = async (req, res) => {
+  try {
+    const user = req.user;
+    
+    if (user.enrollmentStatus === 'ENROLLED') {
+      return res.status(400).json({ message: 'User is already enrolled' });
+    }
+
+    const amount = 999; // Hardcoded to prevent client-side manipulation
+
+    const options = {
+      amount: amount * 100, // paise
+      currency: 'INR',
+      receipt: `enroll_${user._id}_${Date.now()}`,
+      notes: {
+        userId: user._id.toString(),
+        purpose: 'platform_enrollment'
+      }
+    };
+
+    const order = await razorpay.orders.create(options);
+    
+    // Update user status
+    user.enrollmentStatus = 'PAYMENT_PENDING';
+    await user.save();
+
+    res.json({
+      id: order.id,
+      amount: order.amount,
+      currency: order.currency
+    });
+  } catch (error) {
+    console.error('Error creating enrollment order:', error);
+    res.status(500).json({ message: 'Failed to create enrollment order' });
+  }
+};
+
 module.exports = {
   createRazorpayOrder,
-  verifyRazorpayPayment
+  verifyRazorpayPayment,
+  createEnrollmentOrder
 };

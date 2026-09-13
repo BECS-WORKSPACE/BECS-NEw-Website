@@ -70,9 +70,21 @@ const handlePaymentCaptured = async (paymentEntity) => {
   const orderId = paymentEntity.order_id;
   const paymentId = paymentEntity.id;
   
+  // Check if this is a platform enrollment payment
+  if (paymentEntity.notes && paymentEntity.notes.purpose === 'platform_enrollment') {
+    const userId = paymentEntity.notes.userId;
+    if (userId) {
+      await User.findByIdAndUpdate(userId, { enrollmentStatus: 'ENROLLED' });
+      console.log(`Platform enrollment activated for user ${userId}`);
+    }
+  }
+
   // Find the transaction record created during checkout
   const transaction = await PaymentTransaction.findOne({ providerOrderId: orderId });
   if (!transaction) {
+    if (paymentEntity.notes && paymentEntity.notes.purpose === 'platform_enrollment') {
+      return; // Handled above, no transaction record exists yet for this.
+    }
     console.error(`Transaction not found for order ${orderId}`);
     return;
   }

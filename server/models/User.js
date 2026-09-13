@@ -29,6 +29,11 @@ const userSchema = new mongoose.Schema({
     canManageAssistants: { type: Boolean, default: false }
   },
 
+  // Onboarding & Enrollment
+  profileCompleted: { type: Boolean, default: false },
+  enrollmentStatus: { type: String, enum: ['NOT_ENROLLED', 'PAYMENT_PENDING', 'PAYMENT_FAILED', 'ENROLLED', 'SUSPENDED'], default: 'NOT_ENROLLED' },
+  preparingFor: { type: String, enum: ['Government Exam Preparation', 'Joint Entrance Preparation', 'Board Exam — Class 10', 'Board Exam — Class 11–12'] },
+
   // Profile - Basic Info
   name: { type: String, required: true },
   profilePicture: { type: String },
@@ -38,11 +43,14 @@ const userSchema = new mongoose.Schema({
   
   // Profile - Address
   address: { type: String },
+  city: { type: String },
   state: { type: String },
   district: { type: String },
+  pinCode: { type: String },
   country: { type: String, default: 'India' },
 
   // Profile - Academic/Professional
+  highestEducation: { type: String },
   education: { type: String },
   institute: { type: String },
   course: { type: String },
@@ -58,6 +66,8 @@ const userSchema = new mongoose.Schema({
   },
 
   // Security
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
   loginAttempts: { type: Number, required: true, default: 0 },
   lockUntil: { type: Date },
   lastLogin: { type: Date },
