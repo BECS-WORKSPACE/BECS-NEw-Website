@@ -52,7 +52,15 @@ const seed = async () => {
       password: hashedPassword,
       phone: '9999999991',
       legacyRole: 'student',
-      status: 'active'
+      enrollmentStatus: 'ENROLLED',
+      profileCompleted: true,
+      highestEducation: '12th',
+      preparingFor: 'Government Exam Preparation',
+      address: 'Test Address',
+      city: 'Bardhaman',
+      state: 'West Bengal',
+      pinCode: '713104',
+      isPremium: false
     });
     await freeStudent.save();
 
@@ -77,7 +85,15 @@ const seed = async () => {
       password: hashedPassword,
       phone: '9999999992',
       legacyRole: 'student',
-      status: 'active'
+      enrollmentStatus: 'ENROLLED',
+      profileCompleted: true,
+      highestEducation: '12th',
+      preparingFor: 'Government Exam Preparation',
+      address: 'Test Address',
+      city: 'Bardhaman',
+      state: 'West Bengal',
+      pinCode: '713104',
+      isPremium: true
     });
     await premiumStudent.save();
 
