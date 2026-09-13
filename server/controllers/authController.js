@@ -11,7 +11,7 @@ const getDeviceString = (req) => {
 };
 
 const getIpAddress = (req) => {
-  return req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'Unknown IP';
+  return req.headers['x-forwarded-for'] || req.socket?.remoteAddress || req.connection?.remoteAddress || 'Unknown IP';
 };
 
 exports.register = async (req, res) => {
