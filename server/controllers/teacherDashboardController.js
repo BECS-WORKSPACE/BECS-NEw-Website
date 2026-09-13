@@ -55,3 +55,25 @@ exports.getDashboardStats = async (req, res) => {
     res.status(500).json({ message: 'Failed to load dashboard data' });
   }
 };
+
+exports.getPerformanceStats = async (req, res) => {
+  try {
+    // Return mock data for now, ideally aggregate from submissions and tests
+    res.json({
+      success: true,
+      data: {
+        averageAttendance: 85,
+        averageTestScore: 72,
+        totalAssignmentsSubmitted: 140,
+        classTrend: [60, 65, 70, 68, 75, 80],
+        topPerformers: [
+          { name: "Alice", score: 95 },
+          { name: "Bob", score: 92 },
+          { name: "Charlie", score: 88 }
+        ]
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};

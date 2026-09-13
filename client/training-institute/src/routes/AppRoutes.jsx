@@ -21,6 +21,31 @@ import MockTests from '../pages/dashboard/MockTests';
 import LearningAnalytics from '../pages/dashboard/LearningAnalytics';
 import DashboardCalendarPage from '../pages/dashboard/DashboardCalendarPage';
 import CurriculumBuilder from '../pages/dashboard/CurriculumBuilder';
+import TeacherCourses from '../pages/dashboard/TeacherCourses';
+import TeacherBatches from '../pages/dashboard/TeacherBatches';
+import TeacherStudents from '../pages/dashboard/TeacherStudents';
+import TeacherMaterials from '../pages/dashboard/TeacherMaterials';
+import TeacherQuestionBank from '../pages/dashboard/TeacherQuestionBank';
+import TeacherMockTests from '../pages/dashboard/TeacherMockTests';
+import TeacherAssignments from '../pages/dashboard/TeacherAssignments';
+import TeacherDoubts from '../pages/dashboard/TeacherDoubts';
+import TeacherAttendance from '../pages/dashboard/TeacherAttendance';
+import TeacherMentorship from '../pages/dashboard/TeacherMentorship';
+import TeacherPerformance from '../pages/dashboard/TeacherPerformance';
+import TeacherAnnouncements from '../pages/dashboard/TeacherAnnouncements';
+import AdminStudents from '../pages/admin/AdminStudents';
+import AdminTeachers from '../pages/admin/AdminTeachers';
+import AdminCourses from '../pages/admin/AdminCourses';
+import AdminCourseContent from '../pages/admin/AdminCourseContent';
+import AdminBatches from '../pages/admin/AdminBatches';
+import AdminEnrollments from '../pages/admin/AdminEnrollments';
+import AdminSubscriptions from '../pages/admin/AdminSubscriptions';
+import AdminPayments from '../pages/admin/AdminPayments';
+import AdminRevenueAnalytics from '../pages/admin/AdminRevenueAnalytics';
+import AdminLearningAnalytics from '../pages/admin/AdminLearningAnalytics';
+import AdminScholarship from '../pages/admin/AdminScholarship';
+import AdminCMS from '../pages/admin/AdminCMS';
+import AdminSettings from '../pages/admin/AdminSettings';
 import AdminVideoAnalytics from '../pages/dashboard/AdminVideoAnalytics';
 import ProfileSettings from '../pages/ProfileSettings';
 import UserManagement from '../pages/admin/UserManagement';
@@ -60,6 +85,19 @@ const AppRoutes = () => {
             <Route path="achievements" element={<LearningAnalytics />} />
             <Route path="calendar" element={<DashboardCalendarPage />} />
             <Route path="curriculum-builder" element={<CurriculumBuilder />} />
+            <Route path="teacher/courses" element={<TeacherCourses />} />
+            <Route path="teacher/batches" element={<TeacherBatches />} />
+            <Route path="teacher/students" element={<TeacherStudents />} />
+            <Route path="teacher/materials" element={<TeacherMaterials />} />
+            <Route path="teacher/question-bank" element={<TeacherQuestionBank />} />
+            <Route path="teacher/pyqs" element={<TeacherQuestionBank />} />
+            <Route path="teacher/tests" element={<TeacherMockTests />} />
+            <Route path="teacher/assignments" element={<TeacherAssignments />} />
+            <Route path="teacher/doubts" element={<TeacherDoubts />} />
+            <Route path="teacher/attendance" element={<TeacherAttendance />} />
+            <Route path="teacher/mentorship" element={<TeacherMentorship />} />
+            <Route path="teacher/performance" element={<TeacherPerformance />} />
+            <Route path="teacher/announcements" element={<TeacherAnnouncements />} />
             <Route path="subscription" element={<Subscription />} />
             <Route path="question-bank" element={<QuestionBank />} />
             <Route path="mistake-book" element={<MistakeBook />} />
@@ -126,8 +164,21 @@ const AppRoutes = () => {
         </Route>
 
         {/* Admin Only Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['admin', 'Admin']} />}>
+        <Route element={<ProtectedRoute allowedRoles={['admin', 'Admin', 'Super Admin']} />}>
           <Route path="/admin/users" element={<UserManagement />} />
+          <Route path="/admin/students" element={<AdminStudents />} />
+          <Route path="/admin/teachers" element={<AdminTeachers />} />
+          <Route path="/admin/courses" element={<AdminCourses />} />
+          <Route path="/admin/content" element={<AdminCourseContent />} />
+          <Route path="/admin/batches" element={<AdminBatches />} />
+          <Route path="/admin/enrollments" element={<AdminEnrollments />} />
+          <Route path="/admin/subscriptions" element={<AdminSubscriptions />} />
+          <Route path="/admin/payments" element={<AdminPayments />} />
+          <Route path="/admin/revenue" element={<AdminRevenueAnalytics />} />
+          <Route path="/admin/analytics" element={<AdminLearningAnalytics />} />
+          <Route path="/admin/scholarships" element={<AdminScholarship />} />
+          <Route path="/admin/cms" element={<AdminCMS />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
         </Route>
         
         <Route path="*" element={<Home />} />

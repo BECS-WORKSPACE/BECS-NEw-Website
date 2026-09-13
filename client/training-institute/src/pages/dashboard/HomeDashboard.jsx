@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import TeacherHome from './TeacherHome';
-import AdminHome from './AdminHome';
+import AdminOverview from './AdminOverview';
 
 const HomeDashboard = () => {
   const { user } = useAuth();
@@ -43,8 +43,8 @@ const HomeDashboard = () => {
         if (coursesRes.data?.success) {
           setMyCourses(coursesRes.data.myCourses);
         }
-      } catch (err) {
-        console.error("Error fetching stats:", err);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
       } finally {
         setLoading(false);
       }
@@ -53,7 +53,7 @@ const HomeDashboard = () => {
   }, [userRole]);
   
   if (userRole === 'admin' || userRole === 'Admin') {
-    return <AdminHome />;
+    return <AdminOverview />;
   }
   
   if (userRole === 'teacher' || userRole === 'Teacher') {

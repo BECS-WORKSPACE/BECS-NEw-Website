@@ -24,20 +24,56 @@ const Dashboard = () => {
 
   const sidebarItems = (userRole === 'teacher' || userRole === 'Teacher') ? [
     { id: 'home', label: 'Overview', icon: '📊', path: '/dashboard' },
-    { id: 'curriculum', label: 'Curriculum Builder', icon: '🏗️', path: '/dashboard/curriculum-builder' },
-    { id: 'video_analytics', label: 'Video Analytics', icon: '📈', path: '/dashboard/video-analytics' },
-    { id: 'students', label: 'Students', icon: '👥', path: '/dashboard/students' },
+    { id: 'courses', label: 'My Courses', icon: '📚', path: '/dashboard/teacher/courses' },
+    { id: 'batches', label: 'My Batches', icon: '🏫', path: '/dashboard/teacher/batches' },
+    { id: 'students', label: 'Students', icon: '👥', path: '/dashboard/teacher/students' },
+    { id: 'curriculum', label: 'Learning Content', icon: '🏗️', path: '/dashboard/curriculum-builder' },
     { id: 'live', label: 'Live Classes', icon: '🔴', path: '/dashboard/live-classes' },
-    { id: 'materials', label: 'Study Materials', icon: '☁️', path: '/dashboard/library' },
-    { id: 'assignments', label: 'Assignments', icon: '📝', path: '/dashboard/assignments' },
-    { id: 'tests', label: 'Mock Tests', icon: '🎯', path: '/dashboard/tests' },
-    { id: 'settings', label: 'Settings', icon: '⚙️', path: '/profile' },
+    { id: 'recorded', label: 'Recorded Classes', icon: '📼', path: '/dashboard/teacher/recorded' },
+    { id: 'materials', label: 'Study Materials', icon: '☁️', path: '/dashboard/teacher/materials' },
+    { id: 'question_bank', label: 'Question Bank', icon: '🗃️', path: '/dashboard/teacher/question-bank' },
+    { id: 'pyqs', label: 'PYQs', icon: '📜', path: '/dashboard/teacher/pyqs' },
+    { id: 'tests', label: 'Mock Tests', icon: '🎯', path: '/dashboard/teacher/tests' },
+    { id: 'assignments', label: 'Assignments', icon: '📝', path: '/dashboard/teacher/assignments' },
+    { id: 'doubts', label: 'Doubt Room', icon: '💬', path: '/dashboard/teacher/doubts' },
+    { id: 'attendance', label: 'Attendance', icon: '✅', path: '/dashboard/teacher/attendance' },
+    { id: 'mentorship', label: 'Mentorship', icon: '🤝', path: '/dashboard/teacher/mentorship' },
+    { id: 'performance', label: 'Performance', icon: '📈', path: '/dashboard/teacher/performance' },
+    { id: 'announcements', label: 'Announcements', icon: '📢', path: '/dashboard/teacher/announcements' },
+    { id: 'calendar', label: 'Calendar', icon: '📅', path: '/dashboard/teacher/calendar' },
+    { id: 'notifications', label: 'Notifications', icon: '🔔', path: '/dashboard/teacher/notifications' },
+    { id: 'settings', label: 'Profile', icon: '⚙️', path: '/profile' },
   ] : (userRole === 'admin' || userRole === 'Admin') ? [
     { id: 'home', label: 'Admin Dashboard', icon: '📈', path: '/dashboard' },
-    { id: 'curriculum', label: 'Curriculum Builder', icon: '🏗️', path: '/dashboard/curriculum-builder' },
-    { id: 'video_analytics', label: 'Video Analytics', icon: '📈', path: '/dashboard/video-analytics' },
-    { id: 'users', label: 'User Management', icon: '👥', path: '/admin/users' },
-    { id: 'settings', label: 'Settings', icon: '⚙️', path: '/profile' }
+    
+    // ACADEMIC
+    { group: 'ACADEMIC' },
+    { id: 'admin_courses', label: 'Courses & Pricing', icon: '📚', path: '/admin/courses' },
+    { id: 'admin_content', label: 'Content Approval', icon: '✅', path: '/admin/content' },
+    { id: 'admin_batches', label: 'Batches', icon: '🏫', path: '/admin/batches' },
+    
+    // PEOPLE
+    { group: 'PEOPLE' },
+    { id: 'admin_students', label: 'Students', icon: '👨‍🎓', path: '/admin/students' },
+    { id: 'admin_teachers', label: 'Teachers', icon: '👨‍🏫', path: '/admin/teachers' },
+    { id: 'admin_users', label: 'All Users & Roles', icon: '👥', path: '/admin/users' },
+
+    // FINANCE
+    { group: 'FINANCE' },
+    { id: 'admin_enrollments', label: 'Enrollments', icon: '💳', path: '/admin/enrollments' },
+    { id: 'admin_subscriptions', label: 'Subscriptions', icon: '🔁', path: '/admin/subscriptions' },
+    { id: 'admin_payments', label: 'Payments & Refunds', icon: '💰', path: '/admin/payments' },
+    { id: 'admin_scholarships', label: 'Scholarships', icon: '🎓', path: '/admin/scholarships' },
+
+    // ANALYTICS
+    { group: 'ANALYTICS' },
+    { id: 'admin_revenue', label: 'Revenue Analytics', icon: '📈', path: '/admin/revenue' },
+    { id: 'admin_learning', label: 'Learning Analytics', icon: '🧠', path: '/admin/analytics' },
+
+    // SYSTEM & CMS
+    { group: 'SYSTEM & CMS' },
+    { id: 'admin_cms', label: 'Website CMS', icon: '🖥️', path: '/admin/cms' },
+    { id: 'admin_settings', label: 'Settings & Logs', icon: '⚙️', path: '/admin/settings' },
   ] : [
     { id: 'home', label: 'Overview', icon: '📊', path: '/dashboard' },
     { id: 'my_courses', label: 'My Courses', icon: '📚', path: '/dashboard/courses' },
@@ -203,15 +239,21 @@ const Dashboard = () => {
           </div>
 
           <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            {sidebarItems.map(item => (
-              <button 
-                key={item.id}
-                onClick={() => navigate(item.path)}
-                className={`sidebar-btn ${location.pathname === item.path ? 'active' : ''}`}
-              >
-                <span style={{ fontSize: '1.2rem', width: '24px', textAlign: 'center' }}>{item.icon}</span>
-                {item.label}
-              </button>
+            {sidebarItems.map((item, idx) => (
+              item.group ? (
+                <div key={`group-${idx}`} style={{ fontSize: '0.75rem', fontWeight: 800, color: '#94a3b8', padding: '16px 16px 4px 16px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  {item.group}
+                </div>
+              ) : (
+                <button 
+                  key={item.id}
+                  onClick={() => navigate(item.path)}
+                  className={`sidebar-btn ${location.pathname === item.path ? 'active' : ''}`}
+                >
+                  <span style={{ fontSize: '1.2rem', width: '24px', textAlign: 'center' }}>{item.icon}</span>
+                  {item.label}
+                </button>
+              )
             ))}
           </nav>
         </aside>
