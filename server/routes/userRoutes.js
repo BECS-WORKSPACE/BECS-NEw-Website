@@ -77,7 +77,7 @@ router.put('/profile', protect, async (req, res) => {
 // @access  Private
 router.post('/profile/complete', protect, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     const { highestEducation, preparingFor, address, pinCode, city, state } = req.body;
@@ -97,8 +97,8 @@ router.post('/profile/complete', protect, async (req, res) => {
     await user.save();
     res.json(user);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Profile complete error:', error);
+    res.status(500).json({ message: error.message || 'Server error' });
   }
 });
 

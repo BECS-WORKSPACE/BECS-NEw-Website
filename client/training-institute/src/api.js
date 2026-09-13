@@ -105,7 +105,7 @@ export const completeProfile = async (profileData) => {
     const res = await api.post('/users/profile/complete', profileData);
     return res.data;
   } catch (err) {
-    throw new Error(err.response?.data?.message || 'Failed to complete profile');
+    throw new Error(err.response?.data?.message || err.message || 'Failed to complete profile');
   }
 };
 
