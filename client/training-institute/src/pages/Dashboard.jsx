@@ -8,6 +8,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!user) navigate('/login');
@@ -112,13 +113,34 @@ const Dashboard = () => {
     sidebarItems = sItems;
   }
 
-  const bottomNavItems = [
-    { id: 'home', label: 'Home', icon: '📊', path: '/dashboard' },
-    { id: 'learn', label: 'Learn', icon: '📚', path: '/dashboard/courses' },
-    { id: 'tests', label: 'Tests', icon: '🎯', path: '/dashboard/tests' },
-    { id: 'doubts', label: 'Doubts', icon: '💬', path: '/dashboard/doubts' },
-    { id: 'profile', label: 'Profile', icon: '👤', path: '/profile' },
-  ];
+  
+  let bottomNavItems = [];
+  if (userRole === 'teacher' || userRole === 'Teacher') {
+    bottomNavItems = [
+      { id: 'home', label: 'Home', icon: '📊', path: '/dashboard' },
+      { id: 'courses', label: 'Courses', icon: '📚', path: '/dashboard/teacher/courses' },
+      { id: 'live', label: 'Live', icon: '🔴', path: '/dashboard/live-classes' },
+      { id: 'students', label: 'Students', icon: '👥', path: '/dashboard/teacher/students' },
+      { id: 'menu', label: 'Menu', icon: '☰', path: '#menu' },
+    ];
+  } else if (userRole === 'admin' || userRole === 'Admin' || userRole === 'Super Admin' || userRole === 'god') {
+    bottomNavItems = [
+      { id: 'home', label: 'Admin', icon: '📈', path: '/dashboard' },
+      { id: 'courses', label: 'Courses', icon: '📚', path: '/admin/courses' },
+      { id: 'students', label: 'Users', icon: '👥', path: '/admin/users' },
+      { id: 'revenue', label: 'Revenue', icon: '💰', path: '/admin/revenue' },
+      { id: 'menu', label: 'Menu', icon: '☰', path: '#menu' },
+    ];
+  } else {
+    bottomNavItems = [
+      { id: 'home', label: 'Home', icon: '📊', path: '/dashboard' },
+      { id: 'learn', label: 'Learn', icon: '📚', path: '/dashboard/courses' },
+      { id: 'tests', label: 'Tests', icon: '🎯', path: '/dashboard/tests' },
+      { id: 'doubts', label: 'Doubts', icon: '💬', path: '/dashboard/doubts' },
+      { id: 'menu', label: 'Menu', icon: '☰', path: '#menu' },
+    ];
+  }
+
 
   return (
     <div style={{ background: '#f8fafc', minHeight: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column' }}>
@@ -230,6 +252,31 @@ const Dashboard = () => {
         `}
       </style>
 
+      
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100 }} onClick={() => setMobileMenuOpen(false)}>
+          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '280px', background: '#fff', padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Menu</div>
+              <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'transparent', border: 'none', fontSize: '1.5rem' }}>✕</button>
+            </div>
+            {sidebarItems.map((item, idx) => item.group ? (
+              <div key={idx} style={{ fontSize: '0.75rem', fontWeight: 800, color: '#94a3b8', padding: '16px 0 8px 0' }}>{item.group}</div>
+            ) : (
+              <button 
+                key={item.id} 
+                onClick={() => { navigate(item.path); setMobileMenuOpen(false); }}
+                style={{ padding: '12px 0', border: 'none', background: 'transparent', textAlign: 'left', display: 'flex', gap: '12px', alignItems: 'center', fontSize: '1rem', color: location.pathname === item.path ? '#2563eb' : '#333', fontWeight: location.pathname === item.path ? 'bold' : 'normal' }}
+              >
+                <span>{item.icon}</span> <span>{item.label}</span>
+              </button>
+            ))}
+            <button onClick={() => { localStorage.removeItem('becs_user'); navigate('/login'); }} style={{ marginTop: 'auto', padding: '12px 0', color: 'red', border: 'none', background: 'transparent', textAlign: 'left', fontWeight: 'bold' }}>🚪 Logout</button>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Header */}
       <div className="mobile-nav-toggle">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -261,7 +308,7 @@ const Dashboard = () => {
               ) : (
                 <button 
                   key={item.id}
-                  onClick={() => navigate(item.path)}
+                  onClick={() => { if(item.id === 'menu') { setMobileMenuOpen(true); } else { navigate(item.path); setMobileMenuOpen(false); } }}
                   className={`sidebar-btn ${location.pathname === item.path ? 'active' : ''}`}
                 >
                   <span style={{ fontSize: '1.2rem', width: '24px', textAlign: 'center' }}>{item.icon}</span>
@@ -300,7 +347,17 @@ const Dashboard = () => {
             </div>
           </header>
 
+          
+          {location.pathname !== '/dashboard' && (
+            <button 
+              onClick={() => navigate(-1)} 
+              style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px', background: 'white', border: '1px solid #e2e8f0', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, color: '#475569', width: 'fit-content', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+            >
+              <span>←</span> Go Back
+            </button>
+          )}
           <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+
             <Outlet />
           </div>
         </main>
@@ -311,7 +368,7 @@ const Dashboard = () => {
         {bottomNavItems.map(item => (
           <button 
             key={item.id}
-            onClick={() => navigate(item.path)}
+            onClick={() => { if(item.id === 'menu') { setMobileMenuOpen(true); } else { navigate(item.path); setMobileMenuOpen(false); } }}
             className={`bottom-nav-item ${location.pathname === item.path ? 'active' : ''}`}
           >
             <span style={{ fontSize: '1.5rem' }}>{item.icon}</span>
