@@ -10,17 +10,17 @@ const Footer = () => {
         </div>
         <div className="footer-links">
           <h4 style={{ color: 'white', marginBottom: '20px' }}>Quick Links</h4>
-          <a href="#" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>Courses</a>
-          <a href="#" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>Career</a>
-          <a href="#" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>About Us</a>
-          <a href="#" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>Contact</a>
+          <a href="#programs" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>Programs</a>
+          <a href="#mentorship" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>Mentorship</a>
+          <a href="#counselling" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>Counselling</a>
+          <a href="#about" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>About Us</a>
         </div>
         <div className="footer-links">
           <h4 style={{ color: 'white', marginBottom: '20px' }}>Legal & Support</h4>
+          <a href="#scholarship" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>Scholarships</a>
           <a href="#" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>Privacy Policy</a>
           <a href="#" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>Terms of Service</a>
-          <a href="#" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>Student Dashboard</a>
-          <a href="#" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>Help Center</a>
+          <a href="/login" style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '10px', textDecoration: 'none' }}>Student Dashboard</a>
         </div>
         <div className="footer-contact">
           <h4 style={{ color: 'white', marginBottom: '20px' }}>Contact Info</h4>

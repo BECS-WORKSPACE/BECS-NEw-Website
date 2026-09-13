@@ -70,26 +70,29 @@ const Navbar = () => {
             </div>
           </Link>
           <div className="nav-links">
-            <a href="#courses" className="nav-item" onClick={(e) => handleNavClick(e, '/', 'courses')}>Courses</a>
+            <a href="#home" className="nav-item" onClick={(e) => handleNavClick(e, '/', 'home')}>Home</a>
+            <a href="#programs" className="nav-item" onClick={(e) => handleNavClick(e, '/', 'programs')}>Programs</a>
+            <a href="#journey" className="nav-item" onClick={(e) => handleNavClick(e, '/', 'journey')}>Methodology</a>
+            <a href="#tests" className="nav-item" onClick={(e) => handleNavClick(e, '/', 'tests')}>Tests</a>
+            <a href="#mentorship" className="nav-item" onClick={(e) => handleNavClick(e, '/', 'mentorship')}>Mentorship</a>
             <a href="#counselling" className="nav-item" onClick={(e) => handleNavClick(e, '/', 'counselling')}>Counselling</a>
-            <a href="#memberships" className="nav-item" onClick={(e) => handleNavClick(e, '/', 'memberships')}>Memberships</a>
-            <a href="#about" className="nav-item" onClick={(e) => handleNavClick(e, '/', 'about')}>About Us</a>
+            <a href="#scholarship" className="nav-item" onClick={(e) => handleNavClick(e, '/', 'scholarship')}>Scholarships</a>
           </div>
-          <div className="nav-actions">
+          <div className="nav-actions" style={{ gap: '10px' }}>
             <button className="theme-toggle-btn" onClick={() => setIsDarkMode(!isDarkMode)} aria-label="Toggle Theme">
               {isDarkMode ? '☀️' : '🌙'}
             </button>
-            <a href={frontendUrl} className="btn-outline-sm desktop-only" style={{ textDecoration: 'none', padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>Main Website</a>
+            <a href={frontendUrl} className="btn-outline-sm desktop-only" style={{ textDecoration: 'none', padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>Main Site</a>
             {user ? (
-              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <NotificationCenter />
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <Link to="/dashboard" className="btn-solid nav-cta" style={{ textDecoration: 'none' }}>Dashboard</Link>
-                  <button className="btn-outline-sm" onClick={onLogout} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', color: 'var(--primary)', borderColor: 'var(--primary)' }}>Logout</button>
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <Link to="/dashboard" className="btn-solid nav-cta" style={{ textDecoration: 'none', padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>Dashboard</Link>
+                  <button className="btn-outline-sm" onClick={onLogout} style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem', color: 'var(--primary)', borderColor: 'var(--primary)' }}>Logout</button>
                 </div>
               </div>
             ) : (
-              <Link to="/login" className="btn-solid nav-cta" style={{ textDecoration: 'none' }}>Portal Login</Link>
+              <Link to="/login" className="btn-solid nav-cta" style={{ textDecoration: 'none', padding: '0.6rem 1.2rem', fontSize: '0.9rem' }}>Portal Login</Link>
             )}
             <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)}>☰</button>
           </div>
@@ -104,10 +107,15 @@ const Navbar = () => {
           <button className="close-btn" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
         </div>
         <nav className="mobile-nav">
-          <a href="#courses" onClick={(e) => handleNavClick(e, '/', 'courses')}>Courses</a>
+          <a href="#home" onClick={(e) => handleNavClick(e, '/', 'home')}>Home</a>
+          <a href="#programs" onClick={(e) => handleNavClick(e, '/', 'programs')}>Programs</a>
+          <a href="#journey" onClick={(e) => handleNavClick(e, '/', 'journey')}>How It Works</a>
+          <a href="#tests" onClick={(e) => handleNavClick(e, '/', 'tests')}>Tests</a>
+          <a href="#mentorship" onClick={(e) => handleNavClick(e, '/', 'mentorship')}>Mentorship</a>
           <a href="#counselling" onClick={(e) => handleNavClick(e, '/', 'counselling')}>Counselling</a>
-          <a href="#memberships" onClick={(e) => handleNavClick(e, '/', 'memberships')}>Memberships</a>
-          <a href="#about" onClick={(e) => handleNavClick(e, '/', 'about')}>About Us</a>
+          <a href="#scholarship" onClick={(e) => handleNavClick(e, '/', 'scholarship')}>Scholarship</a>
+          <a href="#resources" onClick={(e) => handleNavClick(e, '/', 'resources')}>Resources</a>
+          <a href="#about" onClick={(e) => handleNavClick(e, '/', 'about')}>About</a>
           <button className="btn-outline-sm" onClick={() => { setIsDarkMode(!isDarkMode); setIsMobileMenuOpen(false); }} style={{ marginTop: '10px' }}>
             Toggle {isDarkMode ? 'Light' : 'Dark'} Mode
           </button>

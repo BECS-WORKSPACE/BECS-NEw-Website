@@ -93,18 +93,18 @@ body.theme-dark .navbar {
   display: flex; justify-content: space-between; align-items: center; height: 80px;
 }
 .brand { display: flex; align-items: center; gap: 16px; text-decoration: none; }
-.brand-logo { width: 56px; height: 56px; object-fit: contain; transition: transform 0.3s ease; }
+.brand-logo { width: 48px; height: 48px; object-fit: contain; transition: transform 0.3s ease; }
 .brand-logo:hover { transform: scale(1.05); }
 .brand-text-container { display: flex; flex-direction: column; justify-content: center; }
-.brand-text { font-family: 'Poppins', sans-serif; font-size: 1.7rem; font-weight: 800; background: linear-gradient(90deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; letter-spacing: -0.5px; }
-.brand-subtext { font-family: 'Inter', sans-serif; font-size: 1.0rem; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 1.9px; opacity: 0.85; }
+.brand-text { font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--primary); line-height: 1.1; letter-spacing: -0.5px; }
+.brand-subtext { font-family: 'Inter', sans-serif; font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
-.nav-links { display: flex; align-items: center; gap: 32px; height: 100%; flex-grow: 1; padding-left: 48px; }
+.nav-links { display: flex; align-items: center; gap: 15px; height: 100%; flex-grow: 1; justify-content: center; }
 .nav-item { 
   font-family: 'Inter', sans-serif;
-  font-weight: 500; 
+  font-weight: 600; 
   color: var(--text); 
-  font-size: 1rem; 
+  font-size: 0.9rem; 
   text-decoration: none;
   position: relative;
   display: flex;
@@ -150,7 +150,7 @@ body.theme-dark .navbar {
 
 /* Hero */
 .hero { background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%); padding: 90px 0; overflow: hidden; }
-.hero-inner { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items: center; }
+.hero-inner { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: center; }
 .badge { display: inline-block; background: rgba(255, 112, 72, 0.1); color: var(--accent); padding: 8px 20px; border-radius: 999px; font-weight: 800; font-size: 0.85rem; margin-bottom: 24px; letter-spacing: 1px; border: 1px solid rgba(255, 112, 72, 0.2); }
 .hero-content h1 { font-family: 'Outfit', sans-serif; font-size: 4rem; font-weight: 800; color: var(--primary); line-height: 1.1; margin-bottom: 24px; }
 .highlight { color: var(--accent); }
@@ -181,13 +181,28 @@ body.theme-dark .navbar {
 
 /* Courses */
 .courses-section { padding: 100px 0; }
-.courses-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-.course-card { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; transition: 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.03); display: flex; flex-direction: column; }
-.course-card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px rgba(0,0,0,0.1); border-color: rgba(255, 112, 72, 0.3); }
-.course-image-container { position: relative; height: 220px; flex-shrink: 0; }
-.course-image-container img { width: 100%; height: 100%; object-fit: cover; }
+.courses-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; width: 100%; }
+.course-card { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 25px rgba(0,0,0,0.03); display: flex; flex-direction: column; position: relative; }
+.course-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), #ff6b6b);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+  transform-origin: left;
+  z-index: 10;
+}
+.course-card:hover { transform: translateY(-12px); box-shadow: 0 30px 60px rgba(230, 34, 59, 0.12); border-color: rgba(230, 34, 59, 0.4); }
+.course-card:hover::after { transform: scaleX(1); }
+.course-image-container { position: relative; height: 240px; flex-shrink: 0; overflow: hidden; }
+.course-image-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.course-card:hover .course-image-container img { transform: scale(1.08); }
 .discount-badge { position: absolute; top: 16px; right: 16px; background: #22c55e; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 0.85rem; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3); }
-.course-body { padding: 24px; display: flex; flex-direction: column; flex-grow: 1; }
+.course-body { padding: 30px; display: flex; flex-direction: column; flex-grow: 1; }
 .course-tags { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
 .tag { font-size: 0.75rem; font-weight: 700; padding: 6px 12px; border-radius: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
 .mode-tag { background: rgba(30, 58, 138, 0.1); color: var(--primary); }
@@ -200,11 +215,83 @@ body.theme-dark .navbar {
 .price { font-size: 1.6rem; font-weight: 800; color: var(--primary); font-family: 'Outfit', sans-serif; line-height: 1; margin-bottom: 4px; }
 .original-price { font-size: 1rem; color: var(--text-muted); text-decoration: line-through; font-weight: 500; }
 
-/* Why Offline */
+/* Why Offline & Methodology */
+.methodology-card {
+  padding: 30px 20px;
+  background: white;
+  border-radius: 20px;
+  text-align: center;
+  border: 1px solid var(--border);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+  position: relative;
+  overflow: hidden;
+}
+.methodology-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+  transform-origin: left;
+}
+.methodology-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(230, 34, 59, 0.1);
+  border-color: rgba(230, 34, 59, 0.3);
+}
+.methodology-card:hover::before {
+  transform: scaleX(1);
+}
+.methodology-icon-wrapper {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 20px;
+  background: var(--bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  transition: all 0.3s ease;
+}
+.methodology-card:hover .methodology-icon-wrapper {
+  background: var(--primary);
+  color: white;
+  transform: scale(1.1) rotate(5deg);
+}
+.methodology-card:hover .methodology-icon-wrapper .emoji-icon {
+  filter: brightness(0) invert(1);
+}
+.methodology-step-num {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 5rem;
+  font-weight: 900;
+  color: var(--border);
+  opacity: 0.3;
+  z-index: 0;
+  transition: all 0.3s ease;
+}
+.methodology-card:hover .methodology-step-num {
+  color: var(--primary);
+  opacity: 0.1;
+  transform: scale(1.1);
+}
+.methodology-content {
+  position: relative;
+  z-index: 1;
+}
+
 .why-offline-section { padding: 100px 0; background: white; }
 .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
 .feature-card { padding: 40px 30px; background: var(--bg); border-radius: 20px; text-align: center; border: 1px solid var(--border); transition: 0.3s; }
-.feature-card:hover { background: white; box-shadow: 0 20px 40px rgba(0,0,0,0.05); transform: translateY(-5px); border-color: rgba(255, 112, 72, 0.2); }
+.feature-card:hover { background: white; box-shadow: 0 20px 40px rgba(0,0,0,0.05); transform: translateY(-5px); border-color: rgba(230, 34, 59, 0.2); }
 .feature-icon { font-size: 3.5rem; margin-bottom: 24px; }
 .feature-card h3 { font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 16px; color: var(--primary); }
 .feature-card p { font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; }
