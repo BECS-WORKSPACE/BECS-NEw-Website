@@ -11,13 +11,20 @@ const VideoProgress = require('../models/VideoProgress');
 const checkCourseAccess = async (userId, courseId) => {
   // Check active subscription
   const sub = await Subscription.findOne({ user: userId, course: courseId, status: 'active' });
-  if (sub) return { access: true, type: 'subscription', data: sub };
+  if (sub) {
+    if (sub.endDate && new Date(sub.endDate) < new Date()) {
+      return { access: true, type: 'subscription', status: 'expired', data: sub };
+    }
+    return { access: true, type: 'subscription', status: 'active', data: sub };
+  }
 
   // Check manual enrollment
   const enrollment = await Enrollment.findOne({ user: userId, course: courseId, status: 'active' });
-  if (enrollment) return { access: true, type: 'enrollment', data: enrollment };
+  if (enrollment) {
+    return { access: true, type: 'enrollment', status: 'active', data: enrollment };
+  }
 
-  return { access: false };
+  return { access: false, status: 'locked' };
 };
 
 exports.getMyCourses = async (req, res) => {
@@ -32,10 +39,11 @@ exports.getMyCourses = async (req, res) => {
 
     subscriptions.forEach(sub => {
       if (sub.course) {
+        const isExpired = sub.endDate && new Date(sub.endDate) < new Date();
         courseMap.set(sub.course._id.toString(), {
           course: sub.course,
           accessType: 'subscription',
-          status: sub.status,
+          status: isExpired ? 'expired' : sub.status,
           expiryDate: sub.endDate
         });
       }
@@ -230,6 +238,66 @@ exports.updateLessonProgress = async (req, res) => {
     res.json({ success: true, message: 'Progress saved' });
   } catch (err) {
     console.error('Error updating progress:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+exports.getDashboardSummary = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // 1. Get last accessed lesson for Continue Learning
+    const lastAccessed = await VideoProgress.findOne({ user: userId })
+      .sort('-updatedAt')
+      .populate({
+        path: 'lesson',
+        populate: [
+          { path: 'course', select: 'title category image' },
+          { path: 'chapterId', select: 'title' } // Assuming chapterId is ref to Chapter
+        ]
+      });
+
+    let continueLearning = null;
+    if (lastAccessed && lastAccessed.lesson) {
+      continueLearning = {
+        lessonId: lastAccessed.lesson._id,
+        lessonTitle: lastAccessed.lesson.title,
+        courseId: lastAccessed.lesson.course ? lastAccessed.lesson.course._id : null,
+        courseTitle: lastAccessed.lesson.course ? lastAccessed.lesson.course.title : 'Course',
+        chapterTitle: lastAccessed.lesson.chapterId ? lastAccessed.lesson.chapterId.title : 'Chapter',
+        progress: lastAccessed.lesson.duration ? Math.round((lastAccessed.watchedSeconds / (lastAccessed.lesson.duration * 60)) * 100) : (lastAccessed.isCompleted ? 100 : 0)
+      };
+    }
+
+    // 2. Mocking Stats for now until Assessment Phase is built
+    const stats = {
+      streak: 1, // To be calculated from login logs
+      examReadiness: 20, // Example
+      questionsSolved: 0, 
+      testsCompleted: 0,
+      averageScore: 0,
+      attendance: 0,
+      syllabusCompletion: 0
+    };
+
+    // If we have course progress, use it for syllabus completion
+    const progresses = await CourseProgress.find({ user: userId });
+    if (progresses.length > 0) {
+      const totalPct = progresses.reduce((sum, p) => sum + p.percentage, 0);
+      stats.syllabusCompletion = Math.round(totalPct / progresses.length);
+    }
+
+    // 3. Upcoming (Mock for now until LiveClass Phase is built)
+    const upcoming = [];
+
+    res.json({
+      success: true,
+      continueLearning,
+      stats,
+      upcoming
+    });
+  } catch (err) {
+    console.error('Error fetching dashboard summary:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';
 import TeacherHome from './TeacherHome';
 import AdminHome from './AdminHome';
 
@@ -20,24 +20,25 @@ const HomeDashboard = () => {
   const userRole = user?.role?.name || user?.role || user?.legacyRole || (user?.isAdmin ? 'admin' : 'student');
   
   const [myCourses, setMyCourses] = useState([]);
+  const [dashboardSummary, setDashboardSummary] = useState(null);
   
   useEffect(() => {
     const fetchStats = async () => {
       try {
         if (userRole !== 'student' && userRole !== 'Student') return;
         
-        const token = localStorage.getItem('token');
-        const [statsRes, coursesRes] = await Promise.all([
-          axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/progress/dashboard`, {
-            headers: { Authorization: `Bearer ${token}` }
-          }).catch(() => ({ data: { success: false } })),
-          axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/lms/my-courses`, {
-            headers: { Authorization: `Bearer ${token}` }
-          }).catch(() => ({ data: { success: false } }))
+        const [statsRes, coursesRes, summaryRes] = await Promise.all([
+          api.get('/progress/dashboard').catch(() => ({ data: { success: false } })),
+          api.get('/lms/my-courses').catch(() => ({ data: { success: false } })),
+          api.get('/lms/dashboard-summary').catch(() => ({ data: { success: false } }))
         ]);
         
         if (statsRes.data?.success) {
-          setStats(statsRes.data.stats);
+          setStats(prev => ({...prev, ...statsRes.data.stats}));
+        }
+        if (summaryRes.data?.success) {
+          setStats(prev => ({...prev, ...summaryRes.data.stats}));
+          setDashboardSummary(summaryRes.data);
         }
         if (coursesRes.data?.success) {
           setMyCourses(coursesRes.data.myCourses);
@@ -125,9 +126,9 @@ const HomeDashboard = () => {
                 <button 
                   onClick={() => {
                     if (myCourses[0].lastAccessedLesson) {
-                      navigate(`/dashboard/lesson/${myCourses[0].lastAccessedLesson.id}`);
+                      navigate(`/dashboard/learn/${myCourses[0].course._id}?lesson=${myCourses[0].lastAccessedLesson.id}`);
                     } else {
-                      navigate(`/dashboard/course/${myCourses[0].course._id}`);
+                      navigate(`/dashboard/learn/${myCourses[0].course._id}`);
                     }
                   }} 
                   style={{ padding: '12px 24px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(59,130,246,0.3)' }}
@@ -181,22 +182,28 @@ const HomeDashboard = () => {
         {/* Continue Learning */}
         <div style={{ background: '#ffffff', borderRadius: '24px', padding: '32px', border: '1px solid #e2e8f0' }}>
           <h3 style={{ fontSize: '1.4rem', color: 'var(--navy)', margin: '0 0 24px 0', fontWeight: 700 }}>Continue Learning</h3>
-          <div style={{ display: 'flex', gap: '24px', alignItems: 'center', background: '#f8fafc', padding: '20px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-            <div style={{ width: '120px', height: '80px', background: '#e2e8f0', borderRadius: '12px', flexShrink: 0, backgroundImage: 'url(https://images.unsplash.com/photo-1635070041078-e363dbe005cb)', backgroundSize: 'cover' }}></div>
-            <div style={{ flex: 1 }}>
-              <span style={{ fontSize: '0.8rem', color: '#3b82f6', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Physics • Chapter 4</span>
-              <h4 style={{ margin: '8px 0', fontSize: '1.1rem', color: '#1e293b', fontWeight: 700 }}>Laws of Motion: Friction</h4>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ flex: 1, height: '6px', background: '#cbd5e1', borderRadius: '3px' }}>
-                  <div style={{ width: '45%', height: '100%', background: '#3b82f6', borderRadius: '3px' }}></div>
+          {dashboardSummary?.continueLearning ? (
+            <div style={{ display: 'flex', gap: '24px', alignItems: 'center', background: '#f8fafc', padding: '20px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+              <div style={{ width: '120px', height: '80px', background: '#e2e8f0', borderRadius: '12px', flexShrink: 0, backgroundImage: 'url(https://images.unsplash.com/photo-1635070041078-e363dbe005cb)', backgroundSize: 'cover' }}></div>
+              <div style={{ flex: 1 }}>
+                <span style={{ fontSize: '0.8rem', color: '#3b82f6', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{dashboardSummary.continueLearning.courseTitle} • {dashboardSummary.continueLearning.chapterTitle}</span>
+                <h4 style={{ margin: '8px 0', fontSize: '1.1rem', color: '#1e293b', fontWeight: 700 }}>{dashboardSummary.continueLearning.lessonTitle}</h4>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ flex: 1, height: '6px', background: '#cbd5e1', borderRadius: '3px' }}>
+                    <div style={{ width: `${dashboardSummary.continueLearning.progress}%`, height: '100%', background: '#3b82f6', borderRadius: '3px' }}></div>
+                  </div>
+                  <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>{dashboardSummary.continueLearning.progress}%</span>
                 </div>
-                <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>45%</span>
               </div>
+              <button onClick={() => navigate(`/dashboard/learn/${dashboardSummary.continueLearning.courseId}?lesson=${dashboardSummary.continueLearning.lessonId}`)} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#3b82f6', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 12px rgba(59,130,246,0.4)' }}>
+                ▶
+              </button>
             </div>
-            <button onClick={() => navigate('/dashboard/learning-path')} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#3b82f6', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 12px rgba(59,130,246,0.4)' }}>
-              ▶
-            </button>
-          </div>
+          ) : (
+            <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', textAlign: 'center', color: '#64748b' }}>
+              No recent activity. Start a course from My Courses to see it here!
+            </div>
+          )}
         </div>
 
         {/* Schedule */}

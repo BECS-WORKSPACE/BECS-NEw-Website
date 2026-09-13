@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';
 
 const MyCourses = () => {
   const navigate = useNavigate();
@@ -10,9 +10,7 @@ const MyCourses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/lms/my-courses`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const res = await api.get('/lms/my-courses');
         if (res.data.success) {
           setCourses(res.data.myCourses);
         }
@@ -75,7 +73,7 @@ const MyCourses = () => {
                 </div>
                 
                 <button 
-                  onClick={() => navigate(`/dashboard/course/${c.course._id}`)}
+                  onClick={() => navigate(`/dashboard/learn/${c.course._id}`)}
                   style={{ width: '100%', padding: '12px', background: c.status === 'expired' ? '#f1f5f9' : '#1e293b', color: c.status === 'expired' ? '#64748b' : 'white', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}
                 >
                   {c.status === 'expired' ? 'Renew Access' : 'Open Course'}
