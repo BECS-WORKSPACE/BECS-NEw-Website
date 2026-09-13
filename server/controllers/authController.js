@@ -76,6 +76,9 @@ exports.register = async (req, res) => {
         age: user.age,
         education: user.education,
         enrolledCourses: user.enrolledCourses,
+        profileCompleted: user.profileCompleted,
+        enrollmentStatus: user.enrollmentStatus,
+        subscriptionValidUntil: user.subscriptionValidUntil,
         token: accessToken, // Backward compatible token field
       });
     }
@@ -153,6 +156,9 @@ exports.login = async (req, res) => {
       age: user.age,
       education: user.education,
       enrolledCourses: user.enrolledCourses,
+      profileCompleted: user.profileCompleted,
+      enrollmentStatus: user.enrollmentStatus,
+      subscriptionValidUntil: user.subscriptionValidUntil,
       token: accessToken,
     });
   } catch (error) {
