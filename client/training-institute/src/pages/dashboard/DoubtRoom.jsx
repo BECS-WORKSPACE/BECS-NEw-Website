@@ -1,15 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const DoubtRoom = () => {
-  const [activeTab, setActiveTab] = useState('pending'); // pending, answered, resolved
-  
-  const dummyDoubts = [
-    { id: 1, title: 'Not understanding Lenz Law', subject: 'Physics', text: 'Why is the induced current opposing the change in magnetic flux? Can someone explain the conservation of energy here?', status: 'pending', date: '2023-10-14' },
-    { id: 2, title: 'Organic Chem Mechanism', subject: 'Chemistry', text: 'What is the intermediate formed in SN1 reaction?', status: 'answered', answer: 'A carbocation intermediate is formed in SN1 reactions, leading to racemization.', answeredBy: 'Dr. Smith', date: '2023-10-12' },
-    { id: 3, title: 'Integration limits', subject: 'Maths', text: 'How do we change limits when using substitution method?', status: 'resolved', answer: 'Plug the original x limits into your u=g(x) substitution equation to get the new u limits.', answeredBy: 'Prof. Davis', date: '2023-10-05' }
-  ];
+  const [activeTab, setActiveTab] = useState('ask'); // ask, pending, resolved
+  const [doubts, setDoubts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredDoubts = dummyDoubts.filter(d => d.status === activeTab);
+  // Form states
+  const [subject, setSubject] = useState('');
+  const [title, setTitle] = useState('');
+  const [text, setText] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetchDoubts();
+  }, []);
+
+  const fetchDoubts = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/doubts`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (res.data.success) {
+        setDoubts(res.data.doubts);
+      }
+    } catch (err) {
+      console.error("Error fetching doubts:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAskDoubt = async (e) => {
+    e.preventDefault();
+    if (!subject || !title || !text) return;
+    
+    setIsSubmitting(true);
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/doubts`, {
+        subject, title, text
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      
+      if (res.data.success) {
+        setSubject('');
+        setTitle('');
+        setText('');
+        setActiveTab('pending');
+        fetchDoubts(); // Refresh list
+      }
+    } catch (err) {
+      console.error("Error submitting doubt:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const pendingDoubts = doubts.filter(d => d.status === 'pending');
+  const resolvedDoubts = doubts.filter(d => d.status === 'answered' || d.status === 'resolved');
 
   return (
     <div className="animate-fade-in" style={{ paddingBottom: '40px' }}>
@@ -17,22 +66,26 @@ const DoubtRoom = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <div>
           <h1 style={{ fontSize: '2rem', color: '#1e293b', margin: '0 0 8px 0', fontWeight: 800 }}>Doubt Room</h1>
-          <p style={{ color: '#64748b', margin: 0 }}>Ask questions and get answers from our expert faculty.</p>
+          <p style={{ color: '#64748b', margin: 0 }}>Get your concepts cleared by expert faculty within 24 hours.</p>
         </div>
-        <button style={{ background: '#3b82f6', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(59,130,246,0.3)' }}>
-          + Ask a Doubt
+        <button onClick={() => setActiveTab('ask')} style={{ background: '#3b82f6', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(59,130,246,0.3)' }}>
+          Ask a Doubt
         </button>
       </div>
 
       <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
-        {['pending', 'answered', 'resolved'].map(tab => (
+        {[
+          { id: 'ask', label: 'Ask a Doubt' },
+          { id: 'pending', label: `Pending (${pendingDoubts.length})` },
+          { id: 'resolved', label: `Resolved (${resolvedDoubts.length})` }
+        ].map(tab => (
           <button 
-            key={tab}
-            onClick={() => setActiveTab(tab)}
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
             style={{ 
               padding: '10px 20px', 
-              background: activeTab === tab ? '#eff6ff' : 'transparent', 
-              color: activeTab === tab ? '#2563eb' : '#64748b',
+              background: activeTab === tab.id ? '#eff6ff' : 'transparent', 
+              color: activeTab === tab.id ? '#2563eb' : '#64748b',
               border: 'none',
               borderRadius: '8px',
               fontWeight: 600,
@@ -40,7 +93,7 @@ const DoubtRoom = () => {
               textTransform: 'capitalize'
             }}
           >
-            {tab}
+            {tab.label}
           </button>
         ))}
       </div>

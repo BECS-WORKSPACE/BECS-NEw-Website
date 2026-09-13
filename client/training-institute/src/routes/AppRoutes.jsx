@@ -40,7 +40,8 @@ import DoubtForum from '../pages/community/DoubtForum';
 import DiscussionThread from '../pages/community/DiscussionThread';
 import ChatInterface from '../pages/community/ChatInterface';
 import Certificates from '../pages/dashboard/Certificates';
-
+import CourseViewer from '../pages/dashboard/CourseViewer';
+import LessonViewer from '../pages/dashboard/LessonViewer';
 const AppRoutes = () => {
   return (
     <Routes>
@@ -65,7 +66,9 @@ const AppRoutes = () => {
             <Route path="doubts" element={<DoubtRoom />} />
             <Route path="students" element={<StudentsList />} />
             
-            <Route element={<ProtectedRoute requireSubscription={true} />}>
+            <Route element={<ProtectedRoute requireSubscription={false} />}>
+              <Route path="course/:id" element={<CourseViewer />} />
+              <Route path="lesson/:id" element={<LessonViewer />} />
               <Route path="learn/:courseId" element={<CoursePlayer />} />
               <Route path="live-classes" element={<LiveClasses />} />
               <Route path="live-class/:classId" element={<LiveClassroomApp />} />

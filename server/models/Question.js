@@ -33,7 +33,11 @@ const questionSchema = new mongoose.Schema({
   // Categorization for Analytics
   tags: [{ type: String }],
   topic: { type: String },
+  chapter: { type: String },
   subject: { type: String },
+  isPYQ: { type: Boolean, default: false },
+  pyqYear: { type: String },
+  pyqExam: { type: String },
   
   // Lifecycle
   status: { type: String, enum: ['draft', 'approved', 'archived'], default: 'draft' },

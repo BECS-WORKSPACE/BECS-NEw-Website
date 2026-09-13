@@ -1,30 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'recharts';
+import axios from 'axios';
 
 const Performance = () => {
-  const scoreData = [
-    { name: 'Test 1', score: 65, accuracy: 70 },
-    { name: 'Test 2', score: 72, accuracy: 75 },
-    { name: 'Test 3', score: 68, accuracy: 72 },
-    { name: 'Test 4', score: 85, accuracy: 82 },
-    { name: 'Test 5', score: 82, accuracy: 80 },
-    { name: 'Test 6', score: 90, accuracy: 88 },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState({
+    scoreData: [],
+    subjectData: [],
+    topicData: []
+  });
 
-  const subjectData = [
-    { subject: 'Physics', score: 75, fullMark: 100 },
-    { subject: 'Chemistry', score: 85, fullMark: 100 },
-    { subject: 'Maths', score: 92, fullMark: 100 },
-    { subject: 'Biology', score: 60, fullMark: 100 },
-  ];
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/analytics/performance`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        if (res.data.success) {
+          setData({
+            scoreData: res.data.scoreData || [],
+            subjectData: res.data.subjectData || [],
+            topicData: res.data.topicData || []
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching analytics:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnalytics();
+  }, []);
 
-  const topicData = [
-    { name: 'Mechanics', score: 80 },
-    { name: 'Thermodynamics', score: 65 },
-    { name: 'Calculus', score: 95 },
-    { name: 'Optics', score: 70 },
-    { name: 'Algebra', score: 85 },
-  ];
+  const { scoreData, subjectData, topicData } = data;
+
+  if (loading) {
+    return <div style={{ padding: '40px', textAlign: 'center' }}>Loading analytics...</div>;
+  }
 
   return (
     <div className="animate-fade-in" style={{ paddingBottom: '40px' }}>

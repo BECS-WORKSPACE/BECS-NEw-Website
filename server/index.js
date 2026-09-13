@@ -91,6 +91,15 @@ const orderRoutes = require('./routes/orders');
 const adminRoutes = require('./routes/admin');
 const adminSystemRoutes = require('./routes/adminSystemRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const examRoutes = require('./routes/exam');
+const profileRoutes = require('./routes/profile');
+const progressRoutes = require('./routes/progress');
+const questionsRoutes = require('./routes/questions');
+const doubtsRoutes = require('./routes/doubts');
+const counsellingRoutes = require('./routes/counselling');
+const courseRoutes = require('./routes/courseRoutes');
+const scholarshipRoutes = require('./routes/scholarshipRoutes');
+const studentAnalyticsRoutes = require('./routes/analytics');
 
 app.use('/api/auth', authRoutes);
 const userRoutes = require('./routes/userRoutes');
@@ -98,6 +107,15 @@ app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/scholarships', scholarshipRoutes);
+app.use('/api/counselling', counsellingRoutes);
+app.use('/api/exams', examRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/progress', progressRoutes);
+app.use('/api/questions', questionsRoutes);
+app.use('/api/doubts', doubtsRoutes);
+app.use('/api/analytics', studentAnalyticsRoutes);
 app.use('/api/admin/system', adminSystemRoutes);
 const adminNotificationRoutes = require('./routes/adminNotificationRoutes');
 app.use('/api/admin/notifications', adminNotificationRoutes);
@@ -109,9 +127,7 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/webhooks', webhookRoutes);
 
 // Training Institute Routes
-const courseRoutes = require('./routes/courseRoutes');
 const enquiryRoutes = require('./routes/enquiryRoutes');
-app.use('/api/courses', courseRoutes);
 app.use('/api/enquiries', enquiryRoutes);
 
 // Config Routes
@@ -120,7 +136,9 @@ app.use('/api/config', configRoutes);
 
 // Learning LMS Routes
 const learningRoutes = require('./routes/learningRoutes');
+const lmsRoutes = require('./routes/lmsRoutes');
 app.use('/api/learning', learningRoutes);
+app.use('/api/lms', lmsRoutes);
 
 // New Models
 const Contact = require('./models/Contact');
@@ -142,9 +160,8 @@ const assignmentRoutes = require('./routes/assignmentRoutes');
 const libraryRoutes = require('./routes/libraryRoutes');
 const discussionRoutes = require('./routes/discussionRoutes');
 const teacherRoutes = require('./routes/teacherRoutes');
-const scholarshipRoutes = require('./routes/scholarshipRoutes');
 
-app.use('/api/analytics', analyticsRoutes);
+app.use('/api/admin/dashboard-analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/curriculum', curriculumRoutes);
@@ -156,7 +173,6 @@ app.use('/api/assignments', assignmentRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api/discussions', discussionRoutes);
 app.use('/api/teacher', teacherRoutes);
-app.use('/api/scholarship', scholarshipRoutes);
 
 // Contact message endpoint (Main Website)
 app.post('/api/contact', async (req, res) => {

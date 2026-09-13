@@ -1,14 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import TeacherHome from './TeacherHome';
 import AdminHome from './AdminHome';
 
 const HomeDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    streak: 0,
+    examReadiness: 0,
+    syllabusCompletion: 0,
+    questionsSolved: 0,
+    accuracy: 0
+  });
+  const [loading, setLoading] = useState(true);
   
   const userRole = user?.role?.name || user?.role || user?.legacyRole || (user?.isAdmin ? 'admin' : 'student');
+  
+  const [myCourses, setMyCourses] = useState([]);
+  
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        if (userRole !== 'student' && userRole !== 'Student') return;
+        
+        const token = localStorage.getItem('token');
+        const [statsRes, coursesRes] = await Promise.all([
+          axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/progress/dashboard`, {
+            headers: { Authorization: `Bearer ${token}` }
+          }).catch(() => ({ data: { success: false } })),
+          axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/lms/my-courses`, {
+            headers: { Authorization: `Bearer ${token}` }
+          }).catch(() => ({ data: { success: false } }))
+        ]);
+        
+        if (statsRes.data?.success) {
+          setStats(statsRes.data.stats);
+        }
+        if (coursesRes.data?.success) {
+          setMyCourses(coursesRes.data.myCourses);
+        }
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, [userRole]);
   
   if (userRole === 'admin' || userRole === 'Admin') {
     return <AdminHome />;
@@ -18,13 +59,14 @@ const HomeDashboard = () => {
     return <TeacherHome />;
   }
 
-  // Dummy Analytics Data based on Part 5 Requirements
-  const streak = user?.streak || 12;
-  const examReadiness = 78; // Calculated score out of 100
-  const syllabusCompletion = 65;
-  const questionsSolved = 1245;
-  const testsCompleted = 18;
-  const averageScore = 82;
+  // Real Analytics Data based on Backend
+  const { streak, examReadiness, syllabusCompletion, questionsSolved, accuracy } = stats;
+
+  if (loading) {
+    return <div style={{ padding: '40px', textAlign: 'center' }}>Loading dashboard...</div>;
+  }
+  const testsCompleted = stats.testsCompleted || 18;
+  const averageScore = accuracy || stats.averageScore || 82;
   const attendance = 94;
   
   return (
@@ -40,14 +82,60 @@ const HomeDashboard = () => {
             <h2 style={{ fontSize: '2.2rem', fontFamily: 'Outfit', fontWeight: 800, margin: '0 0 8px 0' }}>
               Welcome back, {user?.name?.split(' ')[0]}! 👋
             </h2>
-            <p style={{ color: '#cbd5e1', fontSize: '1.1rem', margin: '0 0 24px 0', maxWidth: '80%' }}>
-              Today's Learning: You have a live class at 4:00 PM and a Chapter Test pending.
-            </p>
-            <div style={{ display: 'flex', gap: '16px' }}>
-              <button onClick={() => navigate('/dashboard/learning-path')} style={{ padding: '12px 24px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(59,130,246,0.3)' }}>
-                Continue Learning
-              </button>
-            </div>
+            
+            {myCourses.length === 0 ? (
+              // STATE A: Enrolled, no course
+              <>
+                <div style={{ display: 'inline-block', padding: '6px 12px', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 700, marginBottom: '16px' }}>
+                  ENROLLMENT ACTIVE
+                </div>
+                <p style={{ color: '#cbd5e1', fontSize: '1.1rem', margin: '0 0 24px 0', maxWidth: '80%' }}>
+                  You haven't purchased a course yet. Purchase a course subscription to start learning.
+                </p>
+                <button onClick={() => navigate('/courses')} style={{ padding: '12px 24px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, cursor: 'pointer' }}>
+                  Browse Courses
+                </button>
+              </>
+            ) : myCourses[0].status === 'expired' ? (
+              // STATE C: Expired
+              <>
+                <div style={{ display: 'inline-block', padding: '6px 12px', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 700, marginBottom: '16px' }}>
+                  SUBSCRIPTION EXPIRED
+                </div>
+                <p style={{ color: '#cbd5e1', fontSize: '1.1rem', margin: '0 0 24px 0', maxWidth: '80%' }}>
+                  Your access to {myCourses[0].course.title} has expired. Renew your subscription to restore access and continue learning.
+                </p>
+                <button onClick={() => navigate('/dashboard/my-courses')} style={{ padding: '12px 24px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, cursor: 'pointer' }}>
+                  Renew Subscription
+                </button>
+              </>
+            ) : (
+              // STATE B: Active Course
+              <>
+                <div style={{ display: 'inline-block', padding: '6px 12px', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 700, marginBottom: '16px' }}>
+                  SUBSCRIPTION ACTIVE
+                </div>
+                <p style={{ color: '#cbd5e1', fontSize: '1.1rem', margin: '0 0 24px 0', maxWidth: '80%' }}>
+                  {myCourses[0].lastAccessedLesson ? (
+                    <>You were learning: <strong>{myCourses[0].lastAccessedLesson.title}</strong></>
+                  ) : (
+                    <>Ready to start your journey in <strong>{myCourses[0].course.title}</strong>?</>
+                  )}
+                </p>
+                <button 
+                  onClick={() => {
+                    if (myCourses[0].lastAccessedLesson) {
+                      navigate(`/dashboard/lesson/${myCourses[0].lastAccessedLesson.id}`);
+                    } else {
+                      navigate(`/dashboard/course/${myCourses[0].course._id}`);
+                    }
+                  }} 
+                  style={{ padding: '12px 24px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(59,130,246,0.3)' }}
+                >
+                  Continue Learning
+                </button>
+              </>
+            )}
           </div>
         </div>
 
