@@ -31,6 +31,11 @@ import AssignmentList from '../pages/assessment/AssignmentList';
 import SubmissionPortal from '../pages/assessment/SubmissionPortal';
 import LibraryHome from '../pages/library/LibraryHome';
 import ResourceViewer from '../pages/library/ResourceViewer';
+import QuestionBank from '../pages/dashboard/QuestionBank';
+import MistakeBook from '../pages/dashboard/MistakeBook';
+import Performance from '../pages/dashboard/Performance';
+import DoubtRoom from '../pages/dashboard/DoubtRoom';
+import StudentsList from '../pages/dashboard/StudentsList';
 import DoubtForum from '../pages/community/DoubtForum';
 import DiscussionThread from '../pages/community/DiscussionThread';
 import ChatInterface from '../pages/community/ChatInterface';
@@ -54,6 +59,11 @@ const AppRoutes = () => {
             <Route path="calendar" element={<DashboardCalendarPage />} />
             <Route path="curriculum-builder" element={<CurriculumBuilder />} />
             <Route path="subscription" element={<Subscription />} />
+            <Route path="question-bank" element={<QuestionBank />} />
+            <Route path="mistake-book" element={<MistakeBook />} />
+            <Route path="performance" element={<Performance />} />
+            <Route path="doubts" element={<DoubtRoom />} />
+            <Route path="students" element={<StudentsList />} />
             
             <Route element={<ProtectedRoute requireSubscription={true} />}>
               <Route path="learn/:courseId" element={<CoursePlayer />} />
