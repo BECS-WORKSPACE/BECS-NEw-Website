@@ -142,6 +142,7 @@ const assignmentRoutes = require('./routes/assignmentRoutes');
 const libraryRoutes = require('./routes/libraryRoutes');
 const discussionRoutes = require('./routes/discussionRoutes');
 const teacherRoutes = require('./routes/teacherRoutes');
+const scholarshipRoutes = require('./routes/scholarshipRoutes');
 
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
@@ -155,6 +156,7 @@ app.use('/api/assignments', assignmentRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api/discussions', discussionRoutes);
 app.use('/api/teacher', teacherRoutes);
+app.use('/api/scholarship', scholarshipRoutes);
 
 // Contact message endpoint (Main Website)
 app.post('/api/contact', async (req, res) => {

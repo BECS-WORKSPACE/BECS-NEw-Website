@@ -8,6 +8,9 @@ import Enrollment from '../pages/Enrollment';
 import PlatformEnrollment from '../pages/PlatformEnrollment';
 import CompleteProfile from '../pages/CompleteProfile';
 import Login from '../pages/Login';
+import ScholarshipTest from '../pages/ScholarshipTest';
+import Counselling from '../pages/Counselling';
+import CourseSubscription from '../pages/CourseSubscription';
 import Dashboard from '../pages/Dashboard';
 import HomeDashboard from '../pages/dashboard/HomeDashboard';
 import MyCourses from '../pages/dashboard/MyCourses';
@@ -51,9 +54,13 @@ const AppRoutes = () => {
             <Route path="calendar" element={<DashboardCalendarPage />} />
             <Route path="curriculum-builder" element={<CurriculumBuilder />} />
             <Route path="subscription" element={<Subscription />} />
-            <Route path="learn/:courseId" element={<CoursePlayer />} />
-            <Route path="live-classes" element={<LiveClasses />} />
-            <Route path="live-class/:classId" element={<LiveClassroomApp />} />
+            
+            <Route element={<ProtectedRoute requireSubscription={true} />}>
+              <Route path="learn/:courseId" element={<CoursePlayer />} />
+              <Route path="live-classes" element={<LiveClasses />} />
+              <Route path="live-class/:classId" element={<LiveClassroomApp />} />
+            </Route>
+
             <Route path="test/live/:testId" element={<LiveExamEngine />} />
             <Route path="test/results/:resultId" element={<ResultDashboard />} />
             <Route path="tests" element={<MockTests />} />
@@ -75,7 +82,30 @@ const AppRoutes = () => {
           
           <Route path="/profile" element={<ProfileSettings />} />
           <Route path="/complete-profile" element={<CompleteProfile />} />
-          <Route path="/enrollment" element={<PlatformEnrollment />} />
+          <Route path="/enrollment" element={
+            <ProtectedRoute>
+              <PlatformEnrollment />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/scholarship-test" element={
+            <ProtectedRoute requireEnrollment={true}>
+              <ScholarshipTest />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/counselling" element={
+            <ProtectedRoute requireEnrollment={true}>
+              <Counselling />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/subscription" element={
+            <ProtectedRoute requireEnrollment={true}>
+              <CourseSubscription />
+            </ProtectedRoute>
+          } />
+
           <Route path="/enroll/:id" element={<Enrollment />} />
         </Route>
 

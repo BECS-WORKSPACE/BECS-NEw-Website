@@ -80,7 +80,7 @@ const verifyRazorpayPayment = async (req, res) => {
       }
 
       // If purpose is subscription, activate premium
-      if (req.body.purpose === 'subscription' && req.user) {
+      if ((req.body.purpose === 'subscription' || req.body.purpose === 'course_subscription') && req.user) {
         const User = require('../models/User');
         const validUntil = new Date();
         validUntil.setDate(validUntil.getDate() + 30); // 30 days from now
@@ -149,8 +149,49 @@ const createEnrollmentOrder = async (req, res) => {
   }
 };
 
+// @desc    Create a Razorpay Subscription Order (simulated via standard order)
+// @route   POST /api/payments/create-subscription-order
+// @access  Private
+const createSubscriptionOrder = async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const user = await User.findById(req.user._id);
+    
+    // Base price
+    const basePrice = 4999;
+    
+    // Calculate discounted price
+    const discount = user.scholarshipDiscount || 0;
+    const finalAmount = Math.max(0, basePrice - (basePrice * (discount / 100)));
+
+    const options = {
+      amount: Math.round(finalAmount * 100),
+      currency: 'INR',
+      receipt: `sub_${Date.now()}`,
+      notes: {
+        userId: req.user._id.toString(),
+        purpose: 'course_subscription'
+      }
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    res.json({
+      id: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      discountApplied: discount,
+      basePrice
+    });
+  } catch (error) {
+    console.error('Error creating subscription order:', error);
+    res.status(500).json({ message: 'Failed to create subscription order' });
+  }
+};
+
 module.exports = {
   createRazorpayOrder,
   verifyRazorpayPayment,
-  createEnrollmentOrder
+  createEnrollmentOrder,
+  createSubscriptionOrder
 };

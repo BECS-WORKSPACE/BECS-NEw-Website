@@ -2,9 +2,8 @@ import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-const ProtectedRoute = ({ allowedRoles = [] }) => {
+const ProtectedRoute = ({ allowedRoles = [], requireSubscription = false, children }) => {
   const { user } = useAuth();
-
   const location = useLocation();
 
   if (!user) {
@@ -21,8 +20,16 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
     }
 
     // If they have completed profile but not enrolled, force them to /enrollment
-    if (user.profileCompleted && user.enrollmentStatus !== 'ENROLLED' && location.pathname !== '/enrollment' && location.pathname !== '/complete-profile') {
+    const excludedRoutes = ['/enrollment', '/complete-profile'];
+    if (user.profileCompleted && user.enrollmentStatus !== 'ENROLLED' && !excludedRoutes.includes(location.pathname)) {
       return <Navigate to="/enrollment" replace />;
+    }
+
+    if (requireSubscription) {
+      const isValid = user.isPremium && user.subscriptionValidUntil && new Date(user.subscriptionValidUntil) > new Date();
+      if (!isValid && location.pathname !== '/subscription') {
+        return <Navigate to="/subscription" replace />;
+      }
     }
   }
   
@@ -30,7 +37,7 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  return <Outlet />;
+  return children ? children : <Outlet />;
 };
 
 export default ProtectedRoute;

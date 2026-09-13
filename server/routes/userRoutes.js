@@ -142,4 +142,32 @@ router.put('/:id/role', protect, admin, async (req, res) => {
   }
 });
 
+// @route   POST /api/users/counselling/book
+// @desc    Book a counselling session
+// @access  Private
+router.post('/counselling/book', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const { type, date } = req.body; // type: 'career' or 'psychological'
+    
+    if (!type || !date) {
+      return res.status(400).json({ message: 'Type and date are required' });
+    }
+
+    user.counsellingBookings.push({
+      type,
+      date,
+      status: 'pending'
+    });
+
+    await user.save();
+    res.status(200).json({ message: 'Counselling session booked successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error booking counselling' });
+  }
+});
+
 module.exports = router;
