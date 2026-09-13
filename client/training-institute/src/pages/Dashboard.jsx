@@ -22,7 +22,8 @@ const Dashboard = () => {
     ? `https://api.dicebear.com/9.x/micah/svg?seed=${avatarSeed}&backgroundColor=f8fafc`
     : `https://api.dicebear.com/9.x/notionists/svg?seed=${avatarSeed}&backgroundColor=f8fafc`;
 
-  const sidebarItems = (userRole === 'teacher' || userRole === 'Teacher') ? [
+  
+  const tItems = [
     { id: 'home', label: 'Overview', icon: '📊', path: '/dashboard' },
     { id: 'courses', label: 'My Courses', icon: '📚', path: '/dashboard/teacher/courses' },
     { id: 'batches', label: 'My Batches', icon: '🏫', path: '/dashboard/teacher/batches' },
@@ -43,39 +44,34 @@ const Dashboard = () => {
     { id: 'calendar', label: 'Calendar', icon: '📅', path: '/dashboard/teacher/calendar' },
     { id: 'notifications', label: 'Notifications', icon: '🔔', path: '/dashboard/teacher/notifications' },
     { id: 'settings', label: 'Profile', icon: '⚙️', path: '/profile' },
-  ] : (userRole === 'admin' || userRole === 'Admin') ? [
+  ];
+
+  const aItems = [
     { id: 'home', label: 'Admin Dashboard', icon: '📈', path: '/dashboard' },
-    
-    // ACADEMIC
     { group: 'ACADEMIC' },
     { id: 'admin_courses', label: 'Courses & Pricing', icon: '📚', path: '/admin/courses' },
     { id: 'admin_content', label: 'Content Approval', icon: '✅', path: '/admin/content' },
     { id: 'admin_batches', label: 'Batches', icon: '🏫', path: '/admin/batches' },
-    
-    // PEOPLE
     { group: 'PEOPLE' },
     { id: 'admin_students', label: 'Students', icon: '👨‍🎓', path: '/admin/students' },
     { id: 'admin_teachers', label: 'Teachers', icon: '👨‍🏫', path: '/admin/teachers' },
     { id: 'admin_users', label: 'All Users & Roles', icon: '👥', path: '/admin/users' },
-
-    // FINANCE
     { group: 'FINANCE' },
-    { id: 'admin_enrollments', label: 'Enrollments', icon: '💳', path: '/admin/enrollments' },
-    { id: 'admin_subscriptions', label: 'Subscriptions', icon: '🔁', path: '/admin/subscriptions' },
-    { id: 'admin_payments', label: 'Payments & Refunds', icon: '💰', path: '/admin/payments' },
-    { id: 'admin_scholarships', label: 'Scholarships', icon: '🎓', path: '/admin/scholarships' },
-
-    // ANALYTICS
+    { id: 'admin_enrollments', label: 'Enrollments', icon: '📝', path: '/admin/enrollments' },
+    { id: 'admin_subscriptions', label: 'Subscriptions', icon: '💳', path: '/admin/subscriptions' },
+    { id: 'admin_payments', label: 'Payments', icon: '💰', path: '/admin/payments' },
+    { id: 'admin_revenue', label: 'Revenue Analytics', icon: '📊', path: '/admin/revenue' },
     { group: 'ANALYTICS' },
-    { id: 'admin_revenue', label: 'Revenue Analytics', icon: '📈', path: '/admin/revenue' },
-    { id: 'admin_learning', label: 'Learning Analytics', icon: '🧠', path: '/admin/analytics' },
+    { id: 'admin_learning', label: 'Learning Analytics', icon: '🧠', path: '/admin/learning' },
+    { id: 'admin_video', label: 'Video Analytics', icon: '📼', path: '/admin/video' },
+    { group: 'CMS & SETTINGS' },
+    { id: 'admin_scholarship', label: 'Scholarships', icon: '🎓', path: '/admin/scholarship' },
+    { id: 'admin_cms', label: 'CMS Manager', icon: '🌐', path: '/admin/cms' },
+    { id: 'admin_settings', label: 'Settings', icon: '⚙️', path: '/admin/settings' },
+  ];
 
-    // SYSTEM & CMS
-    { group: 'SYSTEM & CMS' },
-    { id: 'admin_cms', label: 'Website CMS', icon: '🖥️', path: '/admin/cms' },
-    { id: 'admin_settings', label: 'Settings & Logs', icon: '⚙️', path: '/admin/settings' },
-  ] : [
-    { id: 'home', label: 'Overview', icon: '📊', path: '/dashboard' },
+  const sItems = [
+    { id: 'home', label: 'My Dashboard', icon: '📊', path: '/dashboard' },
     { id: 'my_courses', label: 'My Courses', icon: '📚', path: '/dashboard/courses' },
     { id: 'learning_path', label: 'Learning Path', icon: '🛤️', path: '/dashboard/learning-path' },
     { id: 'live', label: 'Live Classes', icon: '🔴', path: '/dashboard/live-classes' },
@@ -97,6 +93,24 @@ const Dashboard = () => {
     { id: 'profile', label: 'Profile', icon: '👤', path: '/profile' },
     { id: 'support', label: 'Support', icon: '🎧', path: '/dashboard/support' }
   ];
+
+  let sidebarItems = [];
+  if (userRole === 'god') {
+    sidebarItems = [
+      { group: '=== ADMINISTRATION ===' },
+      ...aItems.filter(i => !i.group && i.id !== 'home'),
+      { group: '=== TEACHING ===' },
+      ...tItems.filter(i => !i.group && i.id !== 'home' && i.id !== 'settings'),
+      { group: '=== LEARNING ===' },
+      ...sItems.filter(i => !i.group && i.id !== 'home' && i.id !== 'profile')
+    ];
+  } else if (userRole === 'teacher' || userRole === 'Teacher') {
+    sidebarItems = tItems;
+  } else if (userRole === 'admin' || userRole === 'Admin' || userRole === 'Super Admin') {
+    sidebarItems = aItems;
+  } else {
+    sidebarItems = sItems;
+  }
 
   const bottomNavItems = [
     { id: 'home', label: 'Home', icon: '📊', path: '/dashboard' },

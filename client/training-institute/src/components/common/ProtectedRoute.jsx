@@ -33,7 +33,7 @@ const ProtectedRoute = ({ allowedRoles = [], requireSubscription = false, childr
     }
   }
   
-  if (allowedRoles.length > 0 && !allowedRoles.includes(userRole) && !allowedRoles.includes(userRole.toLowerCase())) {
+  if (allowedRoles.length > 0 && !allowedRoles.includes(userRole) && !allowedRoles.includes(userRole.toLowerCase()) && userRole !== 'god') {
     return <Navigate to="/dashboard" replace />;
   }
 

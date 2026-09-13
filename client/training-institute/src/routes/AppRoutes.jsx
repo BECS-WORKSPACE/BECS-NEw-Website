@@ -164,7 +164,7 @@ const AppRoutes = () => {
         </Route>
 
         {/* Admin Only Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['admin', 'Admin', 'Super Admin']} />}>
+        <Route element={<ProtectedRoute allowedRoles={[...['admin', 'Admin', 'Super Admin'], 'god']} />}>
           <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/students" element={<AdminStudents />} />
           <Route path="/admin/teachers" element={<AdminTeachers />} />

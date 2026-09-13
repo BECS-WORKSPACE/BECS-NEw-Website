@@ -43,7 +43,7 @@ const protect = async (req, res, next) => {
 const admin = (req, res, next) => {
   // Check legacy isAdmin OR check if populated role name is 'Admin' or 'Super Admin'
   const isRoleAdmin = req.user.role && (req.user.role.name === 'Admin' || req.user.role.name === 'Super Admin');
-  if (req.user && (req.user.isAdmin || isRoleAdmin)) {
+  if (req.user && (req.user.isAdmin || isRoleAdmin || req.user.legacyRole === 'god')) {
     next();
   } else {
     res.status(403).json({ message: 'Not authorized as an admin' });
@@ -59,7 +59,7 @@ const authorize = (...roles) => {
       userRole = 'Super Admin';
     }
     
-    if (!roles.includes(userRole)) {
+    if (!roles.includes(userRole) && userRole !== 'god') {
       return res.status(403).json({ 
         message: `User role ${userRole} is not authorized to access this route` 
       });
