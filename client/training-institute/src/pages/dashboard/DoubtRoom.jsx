@@ -55,6 +55,10 @@ const DoubtRoom = () => {
 
   const pendingDoubts = doubts.filter(d => d.status === 'pending');
   const resolvedDoubts = doubts.filter(d => d.status === 'answered' || d.status === 'resolved');
+  
+  let filteredDoubts = doubts;
+  if (activeTab === 'pending') filteredDoubts = pendingDoubts;
+  if (activeTab === 'resolved') filteredDoubts = resolvedDoubts;
 
   return (
     <div className="animate-fade-in" style={{ paddingBottom: '40px' }}>
@@ -95,7 +99,34 @@ const DoubtRoom = () => {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {filteredDoubts.length === 0 ? (
+        {activeTab === 'ask' ? (
+          <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
+            <h3 style={{ fontSize: '1.2rem', color: '#1e293b', marginBottom: '24px', fontWeight: 700 }}>Submit a New Doubt</h3>
+            <form onSubmit={handleAskDoubt} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>Subject</label>
+                <select value={subject} onChange={e => setSubject(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} required>
+                  <option value="">Select Subject...</option>
+                  <option value="Physics">Physics</option>
+                  <option value="Chemistry">Chemistry</option>
+                  <option value="Mathematics">Mathematics</option>
+                  <option value="Biology">Biology</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>Question Title</label>
+                <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Help with Thermodynamics Law 2" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} required />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>Detailed Description</label>
+                <textarea value={text} onChange={e => setText(e.target.value)} rows="6" placeholder="Explain what exactly you don't understand..." style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }} required></textarea>
+              </div>
+              <button type="submit" disabled={isSubmitting} style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', opacity: isSubmitting ? 0.7 : 1 }}>
+                {isSubmitting ? 'Submitting...' : 'Submit Doubt for Review'}
+              </button>
+            </form>
+          </div>
+        ) : filteredDoubts.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px', background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
             <span style={{ fontSize: '3rem' }}>🔍</span>
             <h3 style={{ color: '#1e293b', marginTop: '16px' }}>No {activeTab} doubts</h3>
