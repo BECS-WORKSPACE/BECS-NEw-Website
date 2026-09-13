@@ -84,6 +84,17 @@ exports.getCourseAssignments = async (req, res) => {
   }
 };
 
+exports.getMyAssignments = async (req, res) => {
+  try {
+    // Get all assignments for the system or for enrolled courses. For simplicity, just get all published.
+    const assignments = await Assignment.find({ status: 'published' }).sort({ dueDate: 1 }).populate('courseId', 'title');
+    res.status(200).json(assignments);
+  } catch (err) {
+    console.error('Error fetching my assignments:', err);
+    res.status(500).json({ message: 'Failed to fetch assignments' });
+  }
+};
+
 // Save a Draft or Finalize Submission
 exports.handleSubmission = async (req, res) => {
   try {

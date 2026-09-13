@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 
 const DoubtRoom = () => {
   const [activeTab, setActiveTab] = useState('ask'); // ask, pending, resolved
@@ -18,9 +18,7 @@ const DoubtRoom = () => {
 
   const fetchDoubts = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/doubts`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const res = await api.get('/doubts');
       if (res.data.success) {
         setDoubts(res.data.doubts);
       }
@@ -37,10 +35,8 @@ const DoubtRoom = () => {
     
     setIsSubmitting(true);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/doubts`, {
+      const res = await api.post('/doubts', {
         subject, title, text
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       
       if (res.data.success) {

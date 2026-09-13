@@ -7,6 +7,7 @@ router.use(protect);
 
 // Student fetching
 router.get('/course/:courseId', assignmentController.getCourseAssignments);
+router.get('/', assignmentController.getMyAssignments);
 
 // Student Submissions
 router.post('/submissions/:assignmentId', assignmentController.handleSubmission);

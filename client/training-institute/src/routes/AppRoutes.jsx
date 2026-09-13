@@ -77,6 +77,7 @@ const AppRoutes = () => {
             <Route path="test/live/:testId" element={<LiveExamEngine />} />
             <Route path="test/results/:resultId" element={<ResultDashboard />} />
             <Route path="tests" element={<MockTests />} />
+            <Route path="assignments" element={<AssignmentList />} />
             <Route path="course/:courseId/assignments" element={<AssignmentList />} />
             <Route path="assignments/:assignmentId/submit" element={<SubmissionPortal />} />
             <Route path="library" element={<LibraryHome />} />

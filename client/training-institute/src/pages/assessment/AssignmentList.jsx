@@ -19,7 +19,7 @@ const AssignmentList = () => {
         setLoading(false);
       }
     };
-    if (courseId) fetchAssignments();
+    fetchAssignments();
   }, [courseId]);
 
   if (loading) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 
 const Certificates = () => {
   const [certificates, setCertificates] = useState([]);
@@ -12,8 +12,7 @@ const Certificates = () => {
 
   const fetchCertificates = async () => {
     try {
-      // Endpoint from Phase 2
-      const res = await axios.get('/api/certificates/mine', { withCredentials: true });
+      const res = await api.get('/certificates/mine');
       setCertificates(res.data);
       setLoading(false);
     } catch (err) {

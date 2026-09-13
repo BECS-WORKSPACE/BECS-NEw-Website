@@ -182,7 +182,8 @@ export const getTestResult = async (attemptId) => {
 
 // --- ASSIGNMENT APIs ---
 export const getCourseAssignments = async (courseId) => {
-  const res = await api.get(`/assignments/course/${courseId}`);
+  const url = courseId ? `/assignments/course/${courseId}` : `/assignments`;
+  const res = await api.get(url);
   return res.data;
 };
 
