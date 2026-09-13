@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getQuestions, getMistakes, submitAttempt } = require('../controllers/questionController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/auth');
 
 router.get('/', protect, getQuestions);
 router.get('/mistakes', protect, getMistakes);

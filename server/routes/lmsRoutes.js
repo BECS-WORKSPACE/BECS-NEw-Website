@@ -6,7 +6,7 @@ const {
   getLessonDetails, 
   updateLessonProgress 
 } = require('../controllers/lmsController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/auth');
 
 router.get('/my-courses', protect, getMyCourses);
 router.get('/course/:id/syllabus', protect, getCourseSyllabus);
