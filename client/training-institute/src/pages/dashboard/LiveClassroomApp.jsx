@@ -23,8 +23,17 @@ const LiveClassroomApp = () => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     const socketUrl = API_URL.replace('/api', '/live');
     
-    // Get token from localStorage assuming authContext uses it or just pull it
-    const token = localStorage.getItem('token') || (user.token); // Adjust based on your Auth context
+    // Get token from localStorage
+    let token = '';
+    const savedUser = localStorage.getItem('becs_user');
+    if (savedUser) {
+      try {
+        const parsed = JSON.parse(savedUser);
+        token = parsed.token;
+      } catch (e) {
+        console.error('Failed to parse user', e);
+      }
+    }
 
     socketRef.current = io(socketUrl, {
       auth: { token }
