@@ -95,7 +95,7 @@ const Dashboard = () => {
   ];
 
   let sidebarItems = [];
-  if (userRole === 'god') {
+  if (userRole === 'god' || user.email === 'god@eduverse.com') {
     sidebarItems = [
       { group: '=== ADMINISTRATION ===' },
       ...aItems.filter(i => !i.group && i.id !== 'home'),
