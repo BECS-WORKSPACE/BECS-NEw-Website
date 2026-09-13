@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 
 const QuestionBank = () => {
   const [filters, setFilters] = useState({ subject: 'All Subjects', difficulty: 'All Levels', type: 'All' });
@@ -15,10 +15,7 @@ const QuestionBank = () => {
       if (filters.type === 'PYQ Only') params.isPYQ = true;
       if (filters.type === 'Standard Only') params.isPYQ = false;
 
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/questions`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        params
-      });
+      const res = await api.get(`/questions`, { params });
       if (res.data.success) {
         setQuestions(res.data.questions);
       }

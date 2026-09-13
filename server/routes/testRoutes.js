@@ -7,9 +7,11 @@ const { protect } = require('../middleware/auth');
 router.use(protect);
 
 // Exam Engine
+router.get('/', testController.listTests);
 router.post('/attempts/start/:testId', testController.startOrResumeAttempt);
 router.put('/attempts/:attemptId/autosave', testController.autoSaveAttempt);
 router.post('/attempts/:attemptId/submit', testController.submitAttempt);
+router.get('/:testId/result', testController.getTestResult);
 router.get('/attempts/:attemptId/result', testController.getAttemptResult);
 
 module.exports = router;

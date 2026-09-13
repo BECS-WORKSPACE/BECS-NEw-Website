@@ -5,6 +5,87 @@ const Question = require('../models/Question');
 const mongoose = require('mongoose');
 const CredentialEngine = require('../services/CredentialEngine');
 
+// List all tests for dashboard
+exports.listTests = async (req, res) => {
+  try {
+    const studentId = req.user._id;
+    const isPremium = req.user.isPremium; // Assuming protect middleware or user lookup sets this
+
+    const tests = await Test.find({ status: 'published' }).select('title description courseId durationMinutes totalMarks settings');
+    
+    // Fetch attempts for this student to determine status and score
+    const attempts = await TestAttempt.find({ studentId }).lean();
+    const results = await TestResult.find({ studentId }).lean();
+
+    const formattedTests = tests.map(test => {
+      const result = results.find(r => r.testId.toString() === test._id.toString());
+      const attempt = attempts.find(a => a.testId.toString() === test._id.toString());
+      
+      let status = 'Pending';
+      let score = null;
+      let percentile = null;
+
+      if (result) {
+        status = 'Completed';
+        score = `${result.score}/${result.totalMarks}`;
+        percentile = result.percentile ? `${result.percentile}th` : 'N/A';
+      } else if (attempt && !attempt.isSubmitted) {
+        status = 'In Progress';
+      }
+
+      return {
+        id: test._id,
+        title: test.title,
+        subject: test.description || 'General',
+        questions: test.questions?.length || 0,
+        duration: `${test.durationMinutes} Mins`,
+        score,
+        status,
+        percentile,
+        isPremium: test.settings?.isPremium || false
+      };
+    });
+
+    res.json({ success: true, tests: formattedTests });
+  } catch (error) {
+    console.error('List tests error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// Get result by testId
+exports.getTestResult = async (req, res) => {
+  try {
+    const { testId } = req.params;
+    const studentId = req.user._id;
+
+    const result = await TestResult.findOne({ testId, studentId })
+      .populate('testId', 'title description totalMarks')
+      .populate({
+        path: 'attemptId',
+        populate: { path: 'answers.questionId' }
+      });
+
+    if (!result) return res.status(404).json({ message: 'Result not found' });
+
+    // Format data for ResultDashboard
+    const report = {
+      testTitle: result.testId.title,
+      score: result.score,
+      totalMarks: result.totalMarks,
+      percentile: result.percentile,
+      detailedAnalysis: result.detailedAnalysis,
+      subjectBreakdown: result.subjectBreakdown,
+      answers: result.attemptId.answers
+    };
+
+    res.json({ success: true, result: report });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 // Start an exam session (or resume an active one)
 exports.startOrResumeAttempt = async (req, res) => {
   try {

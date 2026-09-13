@@ -1,10 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api';
 
 const MockTests = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [tests, setTests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTests = async () => {
+      try {
+        const res = await api.get('/tests');
+        if (res.data.success) {
+          setTests(res.data.tests);
+        }
+      } catch (err) {
+        console.error('Failed to load tests:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTests();
+  }, []);
 
   // Premium gate
   if (!user?.isPremium) {
@@ -20,38 +39,7 @@ const MockTests = () => {
     );
   }
 
-  const tests = [
-    {
-      id: 1,
-      title: 'Full Length JEE Advanced Mock',
-      subject: 'Engineering Entrance',
-      questions: 54,
-      duration: '3 Hours',
-      score: '185/300',
-      status: 'Completed',
-      percentile: '92nd'
-    },
-    {
-      id: 2,
-      title: 'Thermodynamics Topic Test',
-      subject: 'Physics',
-      questions: 30,
-      duration: '1 Hour',
-      score: null,
-      status: 'Pending',
-      percentile: null
-    },
-    {
-      id: 3,
-      title: 'Calculus Advanced Assessment',
-      subject: 'Mathematics',
-      questions: 45,
-      duration: '2 Hours',
-      score: null,
-      status: 'Pending',
-      percentile: null
-    }
-  ];
+  if (loading) return <div>Loading mock tests...</div>;
 
   return (
     <div className="animate-fade-in">
@@ -111,6 +99,13 @@ const MockTests = () => {
             
             <div style={{ padding: '20px 24px', background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
               <button 
+                onClick={() => {
+                  if (test.status === 'Completed') {
+                    navigate(`/dashboard/test/results/${test.id}`);
+                  } else {
+                    navigate(`/dashboard/test/live/${test.id}`);
+                  }
+                }}
                 style={{ 
                   width: '100%', padding: '14px', borderRadius: '12px', 
                   background: test.status === 'Completed' ? 'white' : 'var(--primary)', 

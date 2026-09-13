@@ -23,9 +23,8 @@ const ResultDashboard = () => {
     
     const fetchResult = async () => {
       try {
-        // We will fetch the result directly
-        const res = await api.get(`/tests/results/${resultId}`);
-        setResult(res.data);
+        const res = await api.get(`/tests/${resultId}/result`);
+        setResult(res.data.result || res.data);
         setLoading(false);
       } catch (err) {
         console.error(err);

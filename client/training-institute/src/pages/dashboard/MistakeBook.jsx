@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api';
 
 const MistakeBook = () => {
   const [filterSubject, setFilterSubject] = useState('All');
@@ -9,9 +9,7 @@ const MistakeBook = () => {
   useEffect(() => {
     const fetchMistakes = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/questions/mistakes`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const res = await api.get('/questions/mistakes');
         if (res.data.success) {
           setMistakes(res.data.mistakes);
         }
