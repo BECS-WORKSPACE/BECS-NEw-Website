@@ -235,6 +235,11 @@ export const getCourseLiveClasses = async (courseId) => {
   return res.data;
 };
 
+export const addLiveClassRecording = async (classId, recordingUrl) => {
+  const res = await api.post(`/live-classes/${classId}/recording`, { recordingUrl });
+  return res.data;
+};
+
 // Exam & Assessment APIs
 export const startTestAttempt = async (testId) => {
   const res = await api.post(`/tests/attempts/start/${testId}`);

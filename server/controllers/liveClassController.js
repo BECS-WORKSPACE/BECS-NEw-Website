@@ -157,3 +157,31 @@ exports.handleRecordingWebhook = async (req, res) => {
     res.status(500).json({ message: 'Failed to process webhook' });
   }
 };
+
+
+exports.addRecordingManual = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { recordingUrl } = req.body;
+    
+    if (!recordingUrl) return res.status(400).json({ message: 'Recording URL is required' });
+
+    const liveClass = await LiveClass.findById(id);
+    if (!liveClass) return res.status(404).json({ message: 'Live class not found' });
+
+    // Verify teacher authorization
+    const isOwner = liveClass.instructorId.toString() === req.user._id.toString();
+    const isAdmin = req.user.isAdmin || (req.user.role && req.user.role.name === 'Admin');
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ message: 'Not authorized to add recording' });
+    }
+
+    liveClass.recordingUrl = recordingUrl;
+    await liveClass.save();
+
+    res.json({ message: 'Recording linked successfully', liveClass });
+  } catch (err) {
+    console.error('Error adding recording:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

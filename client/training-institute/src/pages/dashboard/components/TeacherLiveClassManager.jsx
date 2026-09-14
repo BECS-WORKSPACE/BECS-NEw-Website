@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getInstructorLiveClasses, scheduleLiveClass } from '../../../api';
+import { getInstructorLiveClasses, scheduleLiveClass, addLiveClassRecording } from '../../../api';
 import api from '../../../api'; // Assuming you might need raw api calls for courses
 
 const TeacherLiveClassManager = () => {
@@ -14,6 +14,7 @@ const TeacherLiveClassManager = () => {
   const [courseId, setCourseId] = useState('');
   const [scheduledStartTime, setScheduledStartTime] = useState('');
   const [durationMinutes, setDurationMinutes] = useState(60);
+  const [recordingModal, setRecordingModal] = useState({ show: false, classId: null, url: '' });
 
   useEffect(() => {
     fetchData();
@@ -31,6 +32,18 @@ const TeacherLiveClassManager = () => {
       console.error('Failed to fetch data', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRecordingSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await addLiveClassRecording(recordingModal.classId, recordingModal.url);
+      setRecordingModal({ show: false, classId: null, url: '' });
+      fetchData();
+      alert('Recording linked successfully');
+    } catch (err) {
+      alert('Failed to link recording');
     }
   };
 
@@ -92,19 +105,32 @@ const TeacherLiveClassManager = () => {
                   <td style={{ padding: '16px 24px' }}>
                     <span style={{ 
                       padding: '4px 10px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600,
-                      background: cls.status === 'live' ? '#fee2e2' : '#e0e7ff',
-                      color: cls.status === 'live' ? '#ef4444' : '#4f46e5'
+                      background: cls.status === 'live' ? '#fee2e2' : cls.status === 'completed' ? '#dcfce7' : '#e0e7ff',
+                      color: cls.status === 'live' ? '#ef4444' : cls.status === 'completed' ? '#16a34a' : '#4f46e5'
                     }}>
                       {cls.status.toUpperCase()}
                     </span>
+                    {cls.status === 'completed' && cls.recordingUrl && (
+                       <div style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '4px' }}>✓ Recording Added</div>
+                    )}
                   </td>
-                  <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                    <button 
-                      onClick={() => window.location.href = `/dashboard/live-class/${cls._id}`}
-                      style={{ padding: '8px 16px', background: 'var(--primary)', color: 'white', borderRadius: '8px', border: 'none', fontWeight: 600, cursor: 'pointer' }}
-                    >
-                      Start Class
-                    </button>
+                  <td style={{ padding: '16px 24px', textAlign: 'right', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                    {cls.status !== 'completed' && (
+                      <button 
+                        onClick={() => window.location.href = `/dashboard/live-class/${cls._id}`}
+                        style={{ padding: '8px 16px', background: 'var(--primary)', color: 'white', borderRadius: '8px', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        {cls.status === 'live' ? 'Join Class' : 'Start Class'}
+                      </button>
+                    )}
+                    {cls.status === 'completed' && (
+                      <button 
+                        onClick={() => setRecordingModal({ show: true, classId: cls._id, url: cls.recordingUrl || '' })}
+                        style={{ padding: '8px 16px', background: '#f59e0b', color: 'white', borderRadius: '8px', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        {cls.recordingUrl ? 'Edit Recording' : '+ Add Recording'}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))
@@ -145,6 +171,25 @@ const TeacherLiveClassManager = () => {
               <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
                 <button type="button" onClick={() => setShowModal(false)} style={{ flex: 1, padding: '14px', background: '#f1f5f9', color: '#475569', borderRadius: '12px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
                 <button type="submit" style={{ flex: 1, padding: '14px', background: 'var(--primary)', color: 'white', borderRadius: '12px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Schedule Class</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {recordingModal.show && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
+          <div style={{ background: 'white', padding: '32px', borderRadius: '24px', width: '100%', maxWidth: '500px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+            <h3 style={{ fontSize: '1.5rem', color: 'var(--navy)', marginBottom: '24px', fontFamily: 'Outfit', fontWeight: 700 }}>Link Class Recording</h3>
+            
+            <form onSubmit={handleRecordingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', color: '#64748b', marginBottom: '8px', fontWeight: 600 }}>Recording URL (G-Drive, YouTube, etc.)</label>
+                <input type="url" required value={recordingModal.url} onChange={e => setRecordingModal({...recordingModal, url: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '1rem', boxSizing: 'border-box' }} placeholder="https://..." />
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+                <button type="button" onClick={() => setRecordingModal({ show: false, classId: null, url: '' })} style={{ flex: 1, padding: '14px', background: '#f1f5f9', color: '#475569', borderRadius: '12px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ flex: 1, padding: '14px', background: 'var(--primary)', color: 'white', borderRadius: '12px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Save Link</button>
               </div>
             </form>
           </div>

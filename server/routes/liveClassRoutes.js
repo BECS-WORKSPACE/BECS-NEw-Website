@@ -15,4 +15,6 @@ router.post('/schedule', protect, authorize('Teacher', 'Admin', 'teacher', 'admi
 // Webhooks (Called by Jitsi/Cloud - Do NOT protect with JWT)
 router.post('/webhook/recording-ready', liveClassController.handleRecordingWebhook);
 
+router.post('/:id/recording', protect, authorize('Teacher', 'Admin', 'teacher', 'admin'), liveClassController.addRecordingManual);
+
 module.exports = router;

@@ -3,12 +3,11 @@ const User = require('../models/User');
 const LiveSession = require('../models/LiveSession');
 const LiveAttendance = require('../models/LiveAttendance');
 const LiveClass = require('../models/LiveClass');
+const LiveDoubt = require('../models/LiveDoubt');
 
 module.exports = (io) => {
-  // Create a dedicated namespace for live classrooms to avoid collision with standard notifications
   const liveNamespace = io.of('/live');
 
-  // Authenticate socket connection
   liveNamespace.use(async (socket, next) => {
     try {
       const token = socket.handshake.auth.token || socket.handshake.query.token;
@@ -28,15 +27,10 @@ module.exports = (io) => {
   });
 
   liveNamespace.on('connection', (socket) => {
-    // console.log(`User connected to /live namespace: ${socket.user.name}`);
-
-    // Join a specific class room
     socket.on('JOIN_CLASS', async ({ classId }) => {
       socket.join(classId);
-      // console.log(`${socket.user.name} joined room ${classId}`);
       
       try {
-        // Track Attendance (Join Time)
         const isTeacher = socket.user.isAdmin || socket.user.legacyRole === 'teacher';
         
         if (!isTeacher) {
@@ -49,7 +43,6 @@ module.exports = (io) => {
             { upsert: true, new: true }
           );
         } else {
-          // If Teacher joins, update the Session status to 'live' if not already
           await LiveClass.findByIdAndUpdate(classId, { status: 'live' });
           await LiveSession.findOneAndUpdate(
             { liveClassId: classId },
@@ -60,19 +53,21 @@ module.exports = (io) => {
           );
         }
 
-        // Notify room
         socket.to(classId).emit('USER_JOINED', { 
           userId: socket.user._id, 
           name: socket.user.name, 
           isTeacher 
         });
 
+        // Send existing doubts to the joining user
+        const existingDoubts = await LiveDoubt.find({ liveClassId: classId }).sort({ createdAt: 1 });
+        socket.emit('SYNC_DOUBTS', existingDoubts);
+
       } catch (err) {
         console.error('Error handling JOIN_CLASS:', err);
       }
     });
 
-    // Leave a specific class room
     socket.on('LEAVE_CLASS', async ({ classId }) => {
       socket.leave(classId);
       
@@ -80,7 +75,6 @@ module.exports = (io) => {
         const isTeacher = socket.user.isAdmin || socket.user.legacyRole === 'teacher';
         
         if (!isTeacher) {
-          // Update the latest session in the array with a leaveTime
           const attendance = await LiveAttendance.findOne({ liveClassId: classId, studentId: socket.user._id });
           if (attendance && attendance.sessions.length > 0) {
             const lastSession = attendance.sessions[attendance.sessions.length - 1];
@@ -89,11 +83,7 @@ module.exports = (io) => {
               await attendance.save();
             }
           }
-        } else {
-          // Teacher leaving - optionally auto-end class or keep alive for 2 mins
-          // For now, we rely on a hard END_CLASS event for explicit termination.
         }
-
         socket.to(classId).emit('USER_LEFT', { 
           userId: socket.user._id, 
           name: socket.user.name 
@@ -103,29 +93,51 @@ module.exports = (io) => {
       }
     });
 
-    // End class (Teacher only)
     socket.on('END_CLASS', async ({ classId }) => {
       try {
         const isTeacher = socket.user.isAdmin || socket.user.legacyRole === 'teacher';
         if (!isTeacher) return;
 
-        // Force everyone out
         liveNamespace.to(classId).emit('CLASS_ENDED', { message: 'The instructor has ended the class.' });
 
-        // Update DB
         await LiveClass.findByIdAndUpdate(classId, { status: 'completed' });
         await LiveSession.findOneAndUpdate({ liveClassId: classId }, { isActive: false, actualEndTime: new Date() });
-
-        // A background Cron job or Queue should ideally calculate the final attendance percentages here.
       } catch (err) {
         console.error('Error ending class:', err);
       }
     });
 
-    // Handle Disconnect
-    socket.on('disconnect', () => {
-      // In a robust system, we would map socket.id to active classIds and trigger LEAVE_CLASS logic
-      // console.log(`User disconnected: ${socket.user.name}`);
+    // Real-Time Doubts Engine
+    socket.on('ASK_DOUBT', async ({ classId, question }) => {
+      try {
+        const doubt = await LiveDoubt.create({
+          liveClassId: classId,
+          studentId: socket.user._id,
+          studentName: socket.user.name,
+          question: question
+        });
+        
+        liveNamespace.to(classId).emit('NEW_DOUBT', doubt);
+      } catch (err) {
+        console.error('Error saving doubt:', err);
+      }
+    });
+
+    socket.on('RESOLVE_DOUBT', async ({ classId, doubtId }) => {
+      try {
+        const isTeacher = socket.user.isAdmin || socket.user.legacyRole === 'teacher';
+        if (!isTeacher) return;
+
+        const updated = await LiveDoubt.findByIdAndUpdate(
+          doubtId, 
+          { isResolved: true, resolvedAt: new Date() },
+          { new: true }
+        );
+        
+        liveNamespace.to(classId).emit('DOUBT_RESOLVED', updated);
+      } catch (err) {
+        console.error('Error resolving doubt:', err);
+      }
     });
   });
 };

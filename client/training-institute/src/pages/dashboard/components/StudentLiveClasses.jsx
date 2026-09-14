@@ -100,19 +100,37 @@ const StudentLiveClasses = () => {
               </div>
               
               <div style={{ padding: '20px 24px', background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
-                <button 
-                  onClick={() => navigate(`/dashboard/live-class/${session._id}`)}
-                  style={{ 
-                    width: '100%', padding: '14px', borderRadius: '12px', 
-                    background: session.status === 'live' ? '#ef4444' : 'var(--primary)', 
-                    color: 'white', border: 'none', fontWeight: 600, cursor: session.status === 'live' ? 'pointer' : 'not-allowed',
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px',
-                    opacity: session.status === 'live' ? 1 : 0.6
-                  }}
-                  disabled={session.status !== 'live'}
-                >
-                  {session.status === 'live' ? '▶ Join Live Session' : 'Waiting for Instructor...'}
-                </button>
+                {session.status === 'completed' ? (
+                  <button 
+                    onClick={() => session.recordingUrl ? window.open(session.recordingUrl, '_blank') : alert('Recording not yet uploaded.')}
+                    style={{ 
+                      width: '100%', padding: '14px', borderRadius: '12px', 
+                      background: session.recordingUrl ? '#10b981' : '#e2e8f0', 
+                      color: session.recordingUrl ? 'white' : '#64748b', 
+                      border: 'none', fontWeight: 600, 
+                      cursor: session.recordingUrl ? 'pointer' : 'not-allowed',
+                      display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px'
+                    }}
+                    disabled={!session.recordingUrl}
+                  >
+                    {session.recordingUrl ? '📼 Watch Recording' : 'Recording Processing...'}
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => navigate(`/dashboard/live-class/${session._id}`)}
+                    style={{ 
+                      width: '100%', padding: '14px', borderRadius: '12px', 
+                      background: session.status === 'live' ? '#ef4444' : 'var(--primary)', 
+                      color: 'white', border: 'none', fontWeight: 600, 
+                      cursor: session.status === 'live' ? 'pointer' : 'not-allowed',
+                      display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px',
+                      opacity: session.status === 'live' ? 1 : 0.6
+                    }}
+                    disabled={session.status !== 'live'}
+                  >
+                    {session.status === 'live' ? '▶ Join Live Session' : 'Waiting for Instructor...'}
+                  </button>
+                )}
               </div>
             </div>
           ))
