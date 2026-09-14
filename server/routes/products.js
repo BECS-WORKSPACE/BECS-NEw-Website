@@ -3,12 +3,26 @@ const router = express.Router();
 const Product = require('../models/Product');
 const { protect, admin } = require('../middleware/auth');
 
+const getRedisClient = require('../redisClient');
+
 // Get all products
 router.get('/', async (req, res) => {
   try {
+    const client = await getRedisClient();
+    const cachedProducts = await client.get('all_products');
+    
+    if (cachedProducts) {
+      return res.json(JSON.parse(cachedProducts));
+    }
+
     const products = await Product.find({});
+    
+    // Cache for 1 hour (3600 seconds)
+    await client.setEx('all_products', 3600, JSON.stringify(products));
+    
     res.json(products);
   } catch (error) {
+    console.error('Error fetching products:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -32,6 +46,11 @@ router.post('/', protect, admin, async (req, res) => {
   try {
     const product = new Product(req.body);
     const createdProduct = await product.save();
+    
+    // Clear cache
+    const client = await getRedisClient();
+    await client.del('all_products');
+    
     res.status(201).json(createdProduct);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -59,6 +78,11 @@ router.put('/:id', protect, admin, async (req, res) => {
     if (product) {
       Object.assign(product, req.body);
       const updatedProduct = await product.save();
+
+      // Clear cache
+      const client = await getRedisClient();
+      await client.del('all_products');
+
       res.json(updatedProduct);
     } else {
       res.status(404).json({ message: 'Product not found' });
@@ -74,6 +98,11 @@ router.delete('/:id', protect, admin, async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (product) {
       await product.deleteOne();
+
+      // Clear cache
+      const client = await getRedisClient();
+      await client.del('all_products');
+
       res.json({ message: 'Product removed' });
     } else {
       res.status(404).json({ message: 'Product not found' });

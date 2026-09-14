@@ -13,17 +13,19 @@ function Products() {
   const [priceRange, setPriceRange] = useState(100000);
   const [inStockOnly, setInStockOnly] = useState(false);
 
-  // Dynamic filter extraction
+  React.useEffect(() => {
+    if (query === 'all' || !query) {
+      setSelectedCategories([]);
+      setSelectedSubFilters([]);
+      setSelectedBrands([]);
+      setPriceRange(100000);
+      setInStockOnly(false);
+    }
+  }, [query]);
+
   const allCategories = useMemo(() => Array.from(new Set((products || []).map(p => p.category).filter(Boolean))), [products]);
   const allBrands = useMemo(() => Array.from(new Set((products || []).map(p => p.brand || 'Generic').filter(Boolean))), [products]);
-  
-  const subFiltersMap = {
-    'Arduino': ['Board', 'Shield', 'Starter Kit'],
-    'Sensors': ['Temperature', 'Motion', 'Distance', 'Optical'],
-    'Automation': ['PLC', 'Relay', 'Contactor'],
-    'Power': ['Battery', 'Adapter', 'Module'],
-    'IoT': ['WiFi', 'Bluetooth', 'LoRa']
-  };
+  const allSubcategories = useMemo(() => Array.from(new Set((products || []).map(p => p.subcategory).filter(Boolean))), [products]);
 
   const handleCategoryToggle = (cat) => {
     setSelectedCategories(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
@@ -52,7 +54,7 @@ function Products() {
     }
 
     if (selectedSubFilters.length > 0) {
-      result = result.filter(p => selectedSubFilters.some(sub => (p.name || '').toLowerCase().includes(sub.toLowerCase())));
+      result = result.filter(p => selectedSubFilters.includes(p.subcategory));
     }
 
     if (selectedBrands.length > 0) {
@@ -134,27 +136,25 @@ function Products() {
 
         {/* Categories & Sub-filters */}
         <div style={{ marginBottom: '32px' }}>
-          <h4 style={{ fontSize: '0.95rem', color: '#475569', fontWeight: 700, marginBottom: '16px' }}>Category & Sub-Type</h4>
+          <h4 style={{ fontSize: '0.95rem', color: '#475569', fontWeight: 700, marginBottom: '16px' }}>Category</h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {allCategories.map(cat => (
-              <React.Fragment key={cat}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', fontSize: '0.95rem', color: '#1e293b', fontWeight: 500 }}>
-                  <input type="checkbox" className="custom-checkbox" checked={selectedCategories.includes(cat)} onChange={() => handleCategoryToggle(cat)} />
-                  {cat}
-                </label>
-                
-                {/* Render Sub-filters if category is selected and has mapping */}
-                {selectedCategories.includes(cat) && subFiltersMap[cat] && (
-                  <div className="sub-filter-list">
-                    {subFiltersMap[cat].map(sub => (
-                      <label key={sub} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '0.85rem', color: '#475569', fontWeight: 500 }}>
-                        <input type="checkbox" className="custom-checkbox" style={{ width: '14px', height: '14px', borderRadius: '3px' }} checked={selectedSubFilters.includes(sub)} onChange={() => handleSubFilterToggle(sub)} />
-                        {sub}
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </React.Fragment>
+              <label key={cat} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', fontSize: '0.95rem', color: '#1e293b', fontWeight: 500 }}>
+                <input type="checkbox" className="custom-checkbox" checked={selectedCategories.includes(cat)} onChange={() => handleCategoryToggle(cat)} />
+                {cat}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginBottom: '32px' }}>
+          <h4 style={{ fontSize: '0.95rem', color: '#475569', fontWeight: 700, marginBottom: '16px' }}>Sub-Type</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '300px', overflowY: 'auto' }}>
+            {allSubcategories.map(sub => (
+               <label key={sub} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '0.85rem', color: '#475569', fontWeight: 500 }}>
+                 <input type="checkbox" className="custom-checkbox" style={{ width: '14px', height: '14px', borderRadius: '3px' }} checked={selectedSubFilters.includes(sub)} onChange={() => handleSubFilterToggle(sub)} />
+                 {sub}
+               </label>
             ))}
           </div>
         </div>
@@ -223,7 +223,7 @@ function Products() {
             <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🔍</div>
             <h3 style={{ fontSize: '1.5rem', color: '#0f172a', margin: '0 0 12px', fontWeight: 800 }}>No products found</h3>
             <p style={{ color: '#64748b', fontSize: '1.1rem', maxWidth: '400px', margin: '0 auto' }}>We couldn't find any products matching your current filters. Try adjusting your search criteria.</p>
-            <button onClick={() => { setSelectedCategories([]); setSelectedBrands([]); setSelectedSubFilters([]); setPriceRange(10000); setInStockOnly(false); }} style={{ marginTop: '24px', background: '#6366f1', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>Clear All Filters</button>
+            <button onClick={() => { setSelectedCategories([]); setSelectedBrands([]); setSelectedSubFilters([]); setPriceRange(100000); setInStockOnly(false); }} style={{ marginTop: '24px', background: '#6366f1', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>Clear All Filters</button>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
