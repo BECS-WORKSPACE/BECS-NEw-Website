@@ -57,6 +57,82 @@ api.interceptors.response.use(
   }
 );
 
+// Caching logic to be appended to api.js
+const originalGet = api.get;
+const originalPost = api.post;
+const originalPut = api.put;
+const originalDelete = api.delete;
+const originalPatch = api.patch;
+
+const clearApiCache = () => {
+  try {
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('becs_cache_')) {
+        localStorage.removeItem(key);
+      }
+    });
+  } catch(e) {}
+};
+
+// Clear cache on any mutation
+api.post = async (...args) => { clearApiCache(); return originalPost.apply(api, args); };
+api.put = async (...args) => { clearApiCache(); return originalPut.apply(api, args); };
+api.delete = async (...args) => { clearApiCache(); return originalDelete.apply(api, args); };
+api.patch = async (...args) => { clearApiCache(); return originalPatch.apply(api, args); };
+
+api.get = async (url, config = {}) => {
+  // Skip cache for auth/user validation routes or if explicitly requested
+  if (config.skipCache || url.includes('/auth') || url.includes('/profile')) {
+    return originalGet.call(api, url, config);
+  }
+
+  const cacheKey = `becs_cache_${url}`;
+  const cachedStr = localStorage.getItem(cacheKey);
+
+  if (cachedStr) {
+    try {
+      const parsed = JSON.parse(cachedStr);
+      // Cache expiration (10 minutes)
+      const isExpired = Date.now() - parsed.timestamp > 10 * 60 * 1000;
+      
+      if (!isExpired) {
+        // Fire background refresh for next time
+        originalGet.call(api, url, config).then(res => {
+          if (res && res.data) {
+            localStorage.setItem(cacheKey, JSON.stringify({
+              timestamp: Date.now(),
+              data: res.data
+            }));
+          }
+        }).catch(() => {}); // silent fail on background update
+        
+        // Instantly return cached response
+        return Promise.resolve({
+          data: parsed.data,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config: config,
+          isCached: true
+        });
+      }
+    } catch (e) {
+      // Ignore invalid cache
+    }
+  }
+
+  // Fetch fresh and store
+  const res = await originalGet.call(api, url, config);
+  if (res && res.data) {
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify({
+        timestamp: Date.now(),
+        data: res.data
+      }));
+    } catch(e) {}
+  }
+  return res;
+};
 export const fetchCourses = async () => {
   const res = await api.get('/courses');
   return res.data;
