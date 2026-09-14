@@ -1,4 +1,22 @@
 const LibraryResource = require('../models/LibraryResource');
+
+
+const verifyCourseAccess = async (req, courseId) => {
+  const Course = require('../models/Course');
+  const course = await Course.findById(courseId);
+  if (!course) throw new Error('Course not found');
+  
+  const role = req.user.legacyRole || (req.user.role && req.user.role.name) || (req.user.isAdmin ? 'admin' : 'student');
+  if (['admin', 'Admin', 'Super Admin', 'god'].includes(role)) return true;
+  
+  const teacherId = req.user._id.toString();
+  const isAssigned = (course.faculty && course.faculty.toString() === teacherId) || 
+                     (course.assignedTeachers && course.assignedTeachers.some(id => id.toString() === teacherId));
+                     
+  if (!isAssigned) throw new Error('Unauthorized: You are not assigned to this course');
+  return true;
+};
+
 const User = require('../models/User');
 
 // --- ADMIN / TEACHER ROUTES ---
@@ -7,6 +25,7 @@ const User = require('../models/User');
 exports.createResource = async (req, res) => {
   try {
     const { title, description, type, fileUrl, fileName, fileSize, mimeType, categoryId, courseId, topicTags, difficulty, isPremium, allowDownload } = req.body;
+    if (courseId) await verifyCourseAccess(req, courseId);
     
     const resource = await LibraryResource.create({
       title,

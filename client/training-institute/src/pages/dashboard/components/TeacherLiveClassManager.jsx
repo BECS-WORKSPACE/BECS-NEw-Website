@@ -23,10 +23,10 @@ const TeacherLiveClassManager = () => {
     try {
       const [classRes, courseRes] = await Promise.all([
         getInstructorLiveClasses(),
-        api.get('/courses') // Get all courses to populate dropdown
+        api.get('/teacher/courses') // Get assigned courses
       ]);
       setClasses(classRes);
-      setCourses(courseRes.data.courses || courseRes.data);
+      setCourses(Array.isArray(courseRes.data) ? courseRes.data : (courseRes.data.courses || []));
     } catch (error) {
       console.error('Failed to fetch data', error);
     } finally {

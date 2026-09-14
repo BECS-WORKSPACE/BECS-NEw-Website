@@ -1,4 +1,5 @@
-
+const fs = require('fs');
+const newContent = `
 import React, { useState, useEffect } from 'react';
 import api from '../../api';
 
@@ -35,7 +36,7 @@ const AdminTeachers = () => {
     setSelectedTeacher(teacher);
     setAssignedCourseIds([]);
     try {
-      const res = await api.get(`/admin-v2/teachers/${teacher._id}/courses`);
+      const res = await api.get(\`/admin-v2/teachers/\${teacher._id}/courses\`);
       if (res.data.success) {
         setAssignedCourseIds(res.data.data.map(c => c._id));
       }
@@ -56,7 +57,7 @@ const AdminTeachers = () => {
     if (!selectedTeacher) return;
     setSaving(true);
     try {
-      await api.put(`/admin-v2/teachers/${selectedTeacher._id}/courses`, { courseIds: assignedCourseIds });
+      await api.put(\`/admin-v2/teachers/\${selectedTeacher._id}/courses\`, { courseIds: assignedCourseIds });
       alert('Courses assigned successfully!');
       setSelectedTeacher(null);
     } catch (err) {
@@ -173,3 +174,5 @@ const AdminTeachers = () => {
 };
 
 export default AdminTeachers;
+`;
+fs.writeFileSync('client/training-institute/src/pages/admin/AdminTeachers.jsx', newContent);

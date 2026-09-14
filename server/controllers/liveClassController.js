@@ -60,10 +60,28 @@ exports.getUpcomingClassesByCourse = async (req, res) => {
 };
 
 // Teacher/Admin fetches all their scheduled classes
+
 exports.getInstructorClasses = async (req, res) => {
   try {
-    const classes = await LiveClass.find({ instructorId: req.user._id })
+    const role = req.user.legacyRole || (req.user.role && req.user.role.name) || (req.user.isAdmin ? 'admin' : 'student');
+    const isAdmin = ['admin', 'Admin', 'Super Admin', 'god'].includes(role);
+    let query = {};
+    
+    if (!isAdmin) {
+      const courses = await Course.find({
+        $or: [
+          { faculty: req.user._id },
+          { assignedTeachers: req.user._id }
+        ]
+      }).select('_id');
+      const courseIds = courses.map(c => c._id);
+      
+      query = { courseId: { $in: courseIds } };
+    }
+
+    const classes = await LiveClass.find(query)
       .populate('courseId', 'title')
+      .populate('instructorId', 'name email')
       .sort({ scheduledStartTime: 1 });
       
     res.status(200).json(classes);

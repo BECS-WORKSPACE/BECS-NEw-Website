@@ -28,4 +28,9 @@ router.get('/learning-analytics', adminController.getLearningAnalytics);
 // CMS / Extra
 router.get('/scholarships', adminController.getScholarships);
 
+
+router.get('/courses', adminController.getCourses);
+router.get('/teachers/:teacherId/courses', adminController.getTeacherAssignedCourses);
+router.put('/teachers/:teacherId/courses', adminController.assignCoursesToTeacher);
+
 module.exports = router;

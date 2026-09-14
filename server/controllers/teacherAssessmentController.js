@@ -1,6 +1,24 @@
 const Question = require('../models/Question');
 const Test = require('../models/Test');
 
+
+const verifyCourseAccess = async (req, courseId) => {
+  const Course = require('../models/Course');
+  const course = await Course.findById(courseId);
+  if (!course) throw new Error('Course not found');
+  
+  const role = req.user.legacyRole || (req.user.role && req.user.role.name) || (req.user.isAdmin ? 'admin' : 'student');
+  if (['admin', 'Admin', 'Super Admin', 'god'].includes(role)) return true;
+  
+  const teacherId = req.user._id.toString();
+  const isAssigned = (course.faculty && course.faculty.toString() === teacherId) || 
+                     (course.assignedTeachers && course.assignedTeachers.some(id => id.toString() === teacherId));
+                     
+  if (!isAssigned) throw new Error('Unauthorized: You are not assigned to this course');
+  return true;
+};
+
+
 exports.createQuestion = async (req, res) => {
   try {
     const { title, type, difficulty, content, options, correctExplanation, marks, tags, isPYQ, pyqYear, pyqExam } = req.body;
@@ -28,6 +46,7 @@ exports.getTeacherQuestions = async (req, res) => {
 exports.createTest = async (req, res) => {
   try {
     const { title, description, courseId, durationMinutes, totalMarks, questions } = req.body;
+    await verifyCourseAccess(req, courseId);
     const test = await Test.create({
       title, description, courseId, durationMinutes, totalMarks, questions,
       createdBy: req.user._id,
@@ -55,6 +74,7 @@ const Submission = require('../models/Submission');
 exports.createAssignment = async (req, res) => {
   try {
     const { title, description, instructions, courseId, type, maxMarks, dueDate } = req.body;
+    await verifyCourseAccess(req, courseId);
     const assignment = await Assignment.create({
       title, description, instructions, courseId, type, maxMarks, dueDate,
       createdBy: req.user._id,

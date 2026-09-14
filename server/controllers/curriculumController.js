@@ -3,10 +3,28 @@ const Module = require('../models/Module');
 const Chapter = require('../models/Chapter');
 const Lesson = require('../models/Lesson');
 
+
+const verifyCourseAccess = async (req, courseId) => {
+  const course = await Course.findById(courseId);
+  if (!course) throw new Error('Course not found');
+  
+  const role = req.user.legacyRole || (req.user.role && req.user.role.name) || (req.user.isAdmin ? 'admin' : 'student');
+  if (['admin', 'Admin', 'Super Admin', 'god'].includes(role)) return true;
+  
+  const teacherId = req.user._id.toString();
+  const isAssigned = (course.faculty && course.faculty.toString() === teacherId) || 
+                     (course.assignedTeachers && course.assignedTeachers.some(id => id.toString() === teacherId));
+                     
+  if (!isAssigned) throw new Error('Unauthorized: You are not assigned to this course');
+  return true;
+};
+
+
 // 1. Create a new Module
 exports.createModule = async (req, res) => {
   try {
     const { courseId, title, description, order } = req.body;
+    await verifyCourseAccess(req, courseId);
     
     // Create the module
     const newModule = await Module.create({
@@ -32,6 +50,7 @@ exports.createModule = async (req, res) => {
 exports.createChapter = async (req, res) => {
   try {
     const { courseId, moduleId, title, description, order } = req.body;
+    await verifyCourseAccess(req, courseId);
     
     const newChapter = await Chapter.create({
       courseId,
@@ -52,6 +71,7 @@ exports.createChapter = async (req, res) => {
 exports.createLesson = async (req, res) => {
   try {
     const { courseId, moduleId, chapterId, title, description, type, order, videoUrl, isFreePreview } = req.body;
+    await verifyCourseAccess(req, courseId);
     
     const newLesson = await Lesson.create({
       course: courseId, // Backward compatibility
@@ -106,6 +126,8 @@ exports.getCurriculum = async (req, res) => {
 // 5. Batch Reorder Curriculum (Drag and Drop Save)
 exports.reorderCurriculum = async (req, res) => {
   try {
+    const { courseId } = req.body;
+    await verifyCourseAccess(req, courseId);
     const { modules, chapters, lessons } = req.body;
     
     // Using bulkWrite for high performance DB operations
