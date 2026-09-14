@@ -102,12 +102,15 @@ const scholarshipRoutes = require('./routes/scholarshipRoutes');
 const studentAnalyticsRoutes = require('./routes/analytics');
 
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 const userRoutes = require('./routes/userRoutes');
 app.use('/api/users', userRoutes);
+app.use('/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/courses', courseRoutes);
 app.use('/api/scholarships', scholarshipRoutes);
 app.use('/api/payments', paymentRoutes);
 const newAdminRoutes = require('./routes/adminRoutes');
