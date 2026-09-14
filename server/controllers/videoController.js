@@ -113,3 +113,54 @@ exports.deleteNote = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete note' });
   }
 };
+
+
+// 6. Secure Video Stream Proxy (DRM)
+// Allows the backend to stream external videos securely to the client using Range headers
+exports.secureStream = async (req, res) => {
+  try {
+    const { url } = req.query;
+    if (!url) return res.status(400).send('Video URL missing');
+
+    const decodedUrl = Buffer.from(url, 'base64').toString('utf8');
+    
+    // In production, verify that decodedUrl is part of the user's enrolled curriculum here
+
+    const axios = require('axios');
+    const range = req.headers.range;
+
+    const config = {
+      responseType: 'stream',
+      headers: {}
+    };
+
+    if (range) {
+      config.headers.Range = range;
+    }
+
+    const response = await axios.get(decodedUrl, config);
+    
+    // Forward headers from the external server (Content-Length, Content-Range, Content-Type)
+    res.set({
+      'Content-Length': response.headers['content-length'],
+      'Content-Type': response.headers['content-type'] || 'video/mp4',
+      'Accept-Ranges': 'bytes'
+    });
+
+    if (response.headers['content-range']) {
+      res.set('Content-Range', response.headers['content-range']);
+      res.status(206); // Partial Content
+    } else {
+      res.status(200);
+    }
+
+    response.data.pipe(res);
+  } catch (error) {
+    if (error.response && error.response.status === 416) {
+      res.status(416).send('Range Not Satisfiable');
+    } else {
+      console.error('Stream Proxy Error:', error.message);
+      res.status(500).send('Streaming Failed');
+    }
+  }
+};

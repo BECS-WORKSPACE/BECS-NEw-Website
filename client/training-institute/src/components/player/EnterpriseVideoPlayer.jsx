@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 const EnterpriseVideoPlayer = ({ videoUrl, lessonId, onProgress, initialTime = 0, onEnded }) => {
+  const { user } = useAuth();
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   
@@ -12,6 +14,18 @@ const EnterpriseVideoPlayer = ({ videoUrl, lessonId, onProgress, initialTime = 0
   const [showControls, setShowControls] = useState(true);
   
   let controlsTimeout = null;
+  const [watermarkPos, setWatermarkPos] = useState({ top: 10, left: 10 });
+  
+  useEffect(() => {
+    // Move watermark randomly every 5 seconds to prevent static cropping
+    const interval = setInterval(() => {
+      setWatermarkPos({
+        top: Math.floor(Math.random() * 80) + 10,
+        left: Math.floor(Math.random() * 80) + 10
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     // Jump to initial time if provided (Resume Playback Feature)
@@ -29,6 +43,23 @@ const EnterpriseVideoPlayer = ({ videoUrl, lessonId, onProgress, initialTime = 0
       setIsPlaying(false);
     }
   };
+
+  useEffect(() => {
+    // Prevent common screen recording / inspect element shortcuts
+    const preventShortcuts = (e) => {
+      if (
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+        (e.ctrlKey && e.key === 'U') ||
+        e.key === 'PrintScreen' ||
+        e.key === 'F12'
+      ) {
+        e.preventDefault();
+        alert('Action disabled for security purposes.');
+      }
+    };
+    window.addEventListener('keydown', preventShortcuts);
+    return () => window.removeEventListener('keydown', preventShortcuts);
+  }, []);
 
   const handleTimeUpdate = () => {
     const time = videoRef.current.currentTime;
@@ -125,8 +156,27 @@ const EnterpriseVideoPlayer = ({ videoUrl, lessonId, onProgress, initialTime = 0
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={onEnded}
         onClick={handlePlayPause}
-        style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'pointer' }}
+        controlsList="nodownload"
+        onContextMenu={(e) => e.preventDefault()}
+        disablePictureInPicture
+        style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'pointer', pointerEvents: showControls ? 'auto' : 'none' }}
       />
+      
+      {/* Anti-Piracy Dynamic Watermark */}
+      <div style={{
+        position: 'absolute',
+        top: `${watermarkPos.top}%`,
+        left: `${watermarkPos.left}%`,
+        color: 'rgba(255, 255, 255, 0.15)',
+        fontSize: '1rem',
+        fontWeight: 'bold',
+        pointerEvents: 'none',
+        userSelect: 'none',
+        transition: 'all 5s linear',
+        zIndex: 5
+      }}>
+        {user?.email || 'EduVerse Protected'}
+      </div>
       
       {/* Custom Controls Overlay */}
       <div style={{

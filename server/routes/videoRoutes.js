@@ -12,4 +12,7 @@ router.post('/notes', protect, videoController.createNote);
 router.get('/notes/:lessonId', protect, videoController.getNotes);
 router.delete('/notes/:noteId', protect, videoController.deleteNote);
 
+// Secure Video Streaming Proxy (DRM)
+router.get('/stream', protect, videoController.secureStream);
+
 module.exports = router;

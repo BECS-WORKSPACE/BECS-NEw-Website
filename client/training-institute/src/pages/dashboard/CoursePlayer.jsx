@@ -30,6 +30,21 @@ const CoursePlayer = () => {
   
   const dummyVideo = "https://www.w3schools.com/html/mov_bbb.mp4";
 
+  // DRM Video Proxy Wrapper
+  const getSecureVideoUrl = (rawUrl) => {
+    try {
+      const savedUser = localStorage.getItem('becs_user');
+      if (savedUser) {
+        const userObj = JSON.parse(savedUser);
+        const token = userObj.token;
+        const encodedUrl = btoa(rawUrl);
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        return `${API_URL}/video/stream?url=${encodedUrl}&token=${token}`;
+      }
+    } catch(e) {}
+    return rawUrl; // fallback
+  };
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -161,7 +176,7 @@ const CoursePlayer = () => {
       <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: '20px', overflow: 'hidden' }}>
         <div style={{ borderRadius: '16px', overflow: 'hidden', flex: '1', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
           <EnterpriseVideoPlayer 
-            videoUrl={activeLesson?.videoUrl || dummyVideo}
+            videoUrl={activeLesson?.videoUrl ? getSecureVideoUrl(activeLesson.videoUrl) : getSecureVideoUrl(dummyVideo)}
             lessonId={isV2 ? activeLesson?._id : activeLesson}
             initialTime={resumeTime}
             onProgress={handleVideoProgress}

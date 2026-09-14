@@ -4,8 +4,9 @@ const User = require('../models/User');
 const protect = async (req, res, next) => {
   let token;
 
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+  if ((req.headers.authorization && req.headers.authorization.startsWith('Bearer')) || req.query.token) {
     try {
+      token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : req.query.token;
       token = req.headers.authorization.split(' ')[1];
       // Use fallback secret to match what we did in security.js
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
