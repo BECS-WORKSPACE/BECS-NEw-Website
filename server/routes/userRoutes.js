@@ -1,3 +1,4 @@
+const NotificationService = require('../services/NotificationService');
 const express = require('express');
 const router = express.Router();
 const { protect, admin } = require('../middleware/auth');
@@ -95,6 +96,23 @@ router.post('/profile/complete', protect, async (req, res) => {
     user.profileCompleted = true;
 
     await user.save();
+    
+    try {
+      NotificationService.notify({
+        userId: user._id,
+        topic: 'system',
+        templateName: 'welcome_email',
+        variables: {
+          name: user.name || 'Student'
+        },
+        metadata: {
+          type: 'system',
+          actionText: 'Explore Dashboard',
+          actionLink: '/dashboard'
+        }
+      });
+    } catch(e) { console.error('Welcome email error:', e); }
+
     res.json(user);
   } catch (error) {
     console.error('Profile complete error:', error);

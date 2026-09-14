@@ -1,3 +1,4 @@
+const NotificationService = require('../services/NotificationService');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const Order = require('../models/Order');
@@ -75,9 +76,28 @@ const verifyRazorpayPayment = async (req, res) => {
       // If courseId is provided and user is authenticated, enroll them
       if (courseId && req.user) {
         const User = require('../models/User');
+        const Course = require('../models/Course');
         await User.findByIdAndUpdate(req.user._id, {
           $addToSet: { enrolledCourses: courseId }
         });
+        
+        try {
+          const course = await Course.findById(courseId);
+          NotificationService.notify({
+            userId: req.user._id,
+            topic: 'courseUpdates',
+            templateName: 'enrollment_success',
+            variables: {
+              name: req.user.name || 'Student',
+              courseName: course ? course.title : 'Premium Course'
+            },
+            metadata: {
+              type: 'course',
+              actionText: 'Start Learning',
+              actionLink: '/dashboard/student'
+            }
+          });
+        } catch(e) { console.error('Notification error:', e); }
       }
 
       // If purpose is subscription, activate premium
