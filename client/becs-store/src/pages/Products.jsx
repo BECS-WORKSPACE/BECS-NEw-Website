@@ -25,7 +25,13 @@ function Products() {
 
   const allCategories = useMemo(() => Array.from(new Set((products || []).map(p => p.category).filter(Boolean))), [products]);
   const allBrands = useMemo(() => Array.from(new Set((products || []).map(p => p.brand || 'Generic').filter(Boolean))), [products]);
-  const allSubcategories = useMemo(() => Array.from(new Set((products || []).map(p => p.subcategory).filter(Boolean))), [products]);
+  const allSubcategories = useMemo(() => {
+    let filtered = products || [];
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(p => selectedCategories.includes(p.category));
+    }
+    return Array.from(new Set(filtered.map(p => p.subcategory).filter(Boolean)));
+  }, [products, selectedCategories]);
 
   const handleCategoryToggle = (cat) => {
     setSelectedCategories(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
@@ -93,7 +99,7 @@ function Products() {
           </div>
         )}
         <Link to={`/product/${product._id}`} style={{ display: 'block', height: '220px', background: '#f8fafc', padding: '24px', textDecoration: 'none', position: 'relative', overflow: 'hidden' }}>
-          <img src={product.image} alt={product.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', transition: 'transform 0.4s ease' }} className="product-img-zoom" />
+          <img src={product.image} alt={product.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', transition: 'transform 0.4s ease' }} className="product-img-zoom" onError={(e) => { e.target.onerror = null; e.target.src = '/org_logo.png'; }} />
         </Link>
         <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#64748b', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>

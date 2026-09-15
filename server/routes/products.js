@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
       return res.json(JSON.parse(cachedProducts));
     }
 
-    const products = await Product.find({});
+    const products = await Product.find({ status: { $ne: 'Archived' } });
     
     // Cache for 1 hour (3600 seconds)
     await client.setEx('all_products', 3600, JSON.stringify(products));
