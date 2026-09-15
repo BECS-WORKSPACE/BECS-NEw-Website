@@ -139,7 +139,7 @@ function Checkout() {
       });
 
       const options = {
-        key: import.meta.env.RAZORPAY_KEY_ID || 'your_public_key_here',
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'your_public_key_here',
         amount: razorpayOrder.amount,
         currency: razorpayOrder.currency,
         name: 'BECS Store',
