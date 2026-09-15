@@ -247,7 +247,7 @@ function Home() {
           <div>
             <h2 style={{ fontSize: '2.5rem', margin: '0', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px' }}>Trending Now</h2>
           </div>
-          <Link to="/products?search=trending" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: 700, fontSize: '1rem' }}>View All →</Link>
+          <Link to="/products?search=all" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: 700, fontSize: '1rem' }}>View All →</Link>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
           {loading ? Array(4).fill().map((_, i) => <SkeletonCard key={i} />) : featuredProducts.map(product => renderProductCard(product))}
