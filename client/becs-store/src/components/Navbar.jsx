@@ -79,7 +79,7 @@ function Navbar() {
   const categoryLinks = [
     { name: 'Shop', path: '/products?search=all' },
     { name: 'New Arrivals', path: '/products?search=new' },
-    { name: 'Best Sellers', path: '/products?search=best' },
+    { name: 'Best Sellers', path: '/products?search=all' },
     { name: 'Brands', path: '/products?search=brands' },
     { name: 'Offers', path: '/products?search=offers', color: '#ef4444' },
     { name: 'Arduino', path: '/products?search=Arduino' },

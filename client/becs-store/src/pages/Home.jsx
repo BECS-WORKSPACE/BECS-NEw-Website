@@ -206,7 +206,7 @@ function Home() {
           {[
             { title: 'Free Shipping', desc: 'On orders above ₹499', icon: '🚚', bg: '#fef3c7', route: '/products?search=all' },
             { title: 'Arduino Kits', desc: 'Starting from ₹999', icon: '⚡', bg: '#e0e7ff', route: '/products?search=Arduino' },
-            { title: 'Best Sellers', desc: 'Shop top rated items', icon: '🔥', bg: '#fee2e2', route: '/products?search=best' },
+            { title: 'Best Sellers', desc: 'Shop top rated items', icon: '🔥', bg: '#fee2e2', route: '/products?search=all' },
             { title: 'Educational Kits', desc: 'Learn electronics', icon: '📚', bg: '#dcfce7', route: '/products?search=Educational' }
           ].map(promo => (
             <div key={promo.title} onClick={() => navigate(promo.route)} style={{ background: promo.bg, padding: '30px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '20px', cursor: 'pointer', transition: 'transform 0.2s' }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-4px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
@@ -283,7 +283,7 @@ function Home() {
             <div>
               <h2 style={{ fontSize: '2.5rem', margin: '0', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px' }}>Best Sellers</h2>
             </div>
-            <Link to="/products?search=best" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: 700, fontSize: '1rem' }}>View All →</Link>
+            <Link to="/products?search=all" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: 700, fontSize: '1rem' }}>View All →</Link>
           </div>
           <div className="product-grid-responsive">
             {loading ? Array(8).fill().map((_, i) => <SkeletonCard key={i} />) : bestSellers.map(product => renderProductCard(product))}
