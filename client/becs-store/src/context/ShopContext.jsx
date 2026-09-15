@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
-import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister } from '../api';
+import API, { fetchProducts, fetchProduct, createOrder, fetchMyOrders, login as apiLogin, register as apiRegister, googleLogin as apiGoogleLogin } from '../api';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
 
@@ -251,6 +251,19 @@ function ShopProvider({ children }) {
     }
   };
 
+  const handleGoogleLogin = async (credential) => {
+    try {
+      const { data } = await apiGoogleLogin(credential);
+      const defaultAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.name}`;
+      const enhancedUser = { ...data, avatar: data.avatar || defaultAvatar };
+      setUser(enhancedUser);
+      window.localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(enhancedUser));
+      return { success: true };
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || 'Google authentication failed' };
+    }
+  };
+
   const handleLogout = () => {
     setUser(null);
     setCartItems([]);
@@ -262,7 +275,7 @@ function ShopProvider({ children }) {
     <ShopContext.Provider value={{
       products, loading, cartItems, setCartItems, wishlistItems, setWishlistItems, addresses, setAddresses, orders, setOrders, checkout, setCheckout,
       cartSummary, handleAddToCart, handleQuantityChange, handleRemoveItem, handleToggleWishlist,
-      message, setMessage, defaultCheckout, user, setUser, handleLogin, handleRegister, handleLogout,
+      message, setMessage, defaultCheckout, user, setUser, handleLogin, handleRegister, handleGoogleLogin, handleLogout,
       getInclusivePrice, shippingSpeed, setShippingSpeed, calculateEDD
     }}>
       {children}

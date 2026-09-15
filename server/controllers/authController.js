@@ -285,3 +285,65 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+const { OAuth2Client } = require('google-auth-library');
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || 'dummy-client-id');
+
+exports.googleAuth = async (req, res) => {
+  const { credential } = req.body;
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id',
+    });
+    const payload = ticket.getPayload();
+    const { email, name } = payload;
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      // Register them
+      const randomPassword = require('crypto').randomBytes(16).toString('hex') + 'A1!'; // meets requirements
+      const hashedPassword = await hashPassword(randomPassword);
+      user = await User.create({
+        name,
+        email,
+        phone: '0000000000', // Dummy phone for OAuth
+        password: hashedPassword,
+        legacyRole: 'student',
+      });
+    }
+
+    // Login process
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    await Session.create({
+      user: user._id,
+      refreshToken,
+      deviceInfo: getDeviceString(req),
+      ipAddress: getIpAddress(req),
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    });
+
+    res.cookie('jwt', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      isPremium: user.isPremium,
+      role: user.legacyRole,
+      legacyRole: user.legacyRole,
+      token: accessToken,
+    });
+  } catch (error) {
+    console.error('Google Auth error', error);
+    res.status(401).json({ message: 'Google authentication failed' });
+  }
+};

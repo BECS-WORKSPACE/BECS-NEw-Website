@@ -1,15 +1,27 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { ShopContext } from '../context/ShopContext';
 
 function LoginPage() {
-  const { handleLogin } = React.useContext(ShopContext);
+  const { handleLogin, handleGoogleLogin } = React.useContext(ShopContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const onGoogleSuccess = async (credentialResponse) => {
+    setLoading(true);
+    const result = await handleGoogleLogin(credentialResponse.credential);
+    if (result.success) {
+      navigate('/');
+    } else {
+      setError(result.message);
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,15 +111,16 @@ function LoginPage() {
               <p style={{ color: '#64748b', fontSize: '1rem', fontWeight: 500 }}>Sign in to continue your journey.</p>
             </div>
 
-            <div className="auth-btn-group">
-              <button style={{ flex: 1, height: '48px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: 600, color: '#1e293b', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 12px rgba(0,0,0,0.05)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)'; }}>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" style={{ width: '20px' }} />
-                Google
-              </button>
-              <button style={{ flex: 1, height: '48px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: 600, color: '#1e293b', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }} onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 12px rgba(0,0,0,0.05)'; }} onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)'; }}>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" alt="GitHub" style={{ width: '20px' }} />
-                GitHub
-              </button>
+            <div className="auth-btn-group" style={{ display: 'flex', justifyContent: 'center' }}>
+              <GoogleLogin
+                onSuccess={onGoogleSuccess}
+                onError={() => setError('Google Sign-In Failed')}
+                useOneTap
+                theme="outline"
+                size="large"
+                shape="rectangular"
+                width="100%"
+              />
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', margin: '24px 0' }}>
