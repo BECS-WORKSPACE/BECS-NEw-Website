@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/',
+  envPrefix: ['VITE_', 'RAZORPAY_KEY_ID', 'GOOGLE_CLIENT_ID'],
   server: {
     port: 5174,
   },
