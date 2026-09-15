@@ -103,7 +103,7 @@ function Home() {
         {discountPercent > 0 && <span style={{ position: 'absolute', top: '16px', left: '16px', background: '#ef4444', color: '#fff', padding: '4px 12px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700, zIndex: 10, letterSpacing: '0.5px' }}>-{discountPercent}%</span>}
 
         <Link to={`/product/${product._id}`} style={{ position: 'relative', overflow: 'hidden', padding: '30px', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '240px' }}>
-          <img src={product.image} alt={product.name} style={{ width: '100%', height: '180px', objectFit: 'contain', padding: '20px', transition: 'transform 0.4s ease' }} className="product-img-zoom" onError={(e) => { e.target.onerror = null; e.target.src = '/org_logo.png'; }} />
+          <img src={product.image} alt={product.name} style={{ width: '100%', height: '180px', objectFit: 'contain', padding: '20px', transition: 'transform 0.4s ease' }} className="product-img-zoom" onError={(e) => { e.target.onerror = null; e.target.src = '/electronic_placeholder.jpg'; }} />
         </Link>
 
         <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>

@@ -156,7 +156,7 @@ function ProductDetail() {
                     transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`, 
                     transition: isZoomed ? 'none' : 'transform 0.3s ease' 
                   }} 
-                  onError={(e) => { e.target.onerror = null; e.target.src = '/org_logo.png'; }}
+                  onError={(e) => { e.target.onerror = null; e.target.src = '/electronic_placeholder.jpg'; }}
                 />
               </div>
             </motion.div>
@@ -169,7 +169,7 @@ function ProductDetail() {
                   onClick={() => setActiveImage(idx)}
                   style={{ width: '80px', height: '80px', background: '#fff', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', border: activeImage === idx ? '2px solid #6366f1' : '2px solid transparent', opacity: activeImage === idx ? 1 : 0.6, transition: 'all 0.2s ease', flexShrink: 0, padding: '8px' }}
                 >
-                  <img src={img} alt={`Thumbnail ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={(e) => { e.target.onerror = null; e.target.src = '/org_logo.png'; }} />
+                  <img src={img} alt={`Thumbnail ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={(e) => { e.target.onerror = null; e.target.src = '/electronic_placeholder.jpg'; }} />
                 </div>
               ))}
             </div>
