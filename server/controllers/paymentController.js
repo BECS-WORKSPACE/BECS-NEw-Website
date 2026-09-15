@@ -72,6 +72,22 @@ const verifyRazorpayPayment = async (req, res) => {
 
     if (isAuthentic) {
       // Payment is verified
+      const { orderId } = req.body;
+      
+      // Update Ecommerce Order if orderId is provided
+      if (orderId) {
+        const Order = require('../models/Order');
+        await Order.findByIdAndUpdate(orderId, {
+          isPaid: true,
+          paidAt: Date.now(),
+          paymentResult: {
+            id: razorpay_payment_id,
+            status: 'success',
+            update_time: Date.now().toString(),
+            email_address: req.user ? req.user.email : ''
+          }
+        });
+      }
       
       // If courseId is provided and user is authenticated, enroll them
       if (courseId && req.user) {
