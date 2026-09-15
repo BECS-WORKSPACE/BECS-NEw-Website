@@ -8,20 +8,27 @@ async function getClient() {
   
   if (!redisClient) {
     redisClient = createClient({
-      url: process.env.REDIS_URL || 'redis://127.0.0.1:6379'
+      url: process.env.REDIS_URL || 'redis://127.0.0.1:6379',
+      socket: {
+        reconnectStrategy: false // Do not retry connecting endlessly
+      }
     });
     
     redisClient.on('error', (err) => {
-      console.log('Redis Client Error', err);
-      redisFailed = true;
+      if (!redisFailed) {
+        console.log('Redis Client Error:', err.message);
+        redisFailed = true;
+      }
     });
     
     try {
       await redisClient.connect();
       console.log('Redis Client Connected');
     } catch (err) {
-      console.error('Failed to connect to Redis. Running without cache.');
-      redisFailed = true;
+      if (!redisFailed) {
+        console.error('Failed to connect to Redis. Running without cache.');
+        redisFailed = true;
+      }
       return null;
     }
   }
