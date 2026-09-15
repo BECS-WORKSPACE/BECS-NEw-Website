@@ -9,16 +9,28 @@ const getRedisClient = require('../redisClient');
 router.get('/', async (req, res) => {
   try {
     const client = await getRedisClient();
-    const cachedProducts = await client.get('all_products');
     
-    if (cachedProducts) {
-      return res.json(JSON.parse(cachedProducts));
+    if (client) {
+      try {
+        const cachedProducts = await client.get('all_products');
+        if (cachedProducts) {
+          return res.json(JSON.parse(cachedProducts));
+        }
+      } catch (e) {
+        console.error('Redis get error', e);
+      }
     }
 
     const products = await Product.find({ status: { $ne: 'Archived' } });
     
-    // Cache for 1 hour (3600 seconds)
-    await client.setEx('all_products', 3600, JSON.stringify(products));
+    if (client) {
+      try {
+        // Cache for 1 hour (3600 seconds)
+        await client.setEx('all_products', 3600, JSON.stringify(products));
+      } catch (e) {
+        console.error('Redis set error', e);
+      }
+    }
     
     res.json(products);
   } catch (error) {
@@ -49,7 +61,7 @@ router.post('/', protect, admin, async (req, res) => {
     
     // Clear cache
     const client = await getRedisClient();
-    await client.del('all_products');
+    if (client) { try { await client.del('all_products'); } catch(e) { console.error(e); } }
     
     res.status(201).json(createdProduct);
   } catch (error) {
@@ -81,7 +93,13 @@ router.put('/:id', protect, admin, async (req, res) => {
 
       // Clear cache
       const client = await getRedisClient();
-      await client.del('all_products');
+      if (client) {
+        try {
+          if (client) { try { await client.del('all_products'); } catch(e) { console.error(e); } }
+        } catch (e) {
+          console.error('Redis del error', e);
+        }
+      }
 
       res.json(updatedProduct);
     } else {
@@ -101,7 +119,7 @@ router.delete('/:id', protect, admin, async (req, res) => {
 
       // Clear cache
       const client = await getRedisClient();
-      await client.del('all_products');
+      if (client) { try { await client.del('all_products'); } catch(e) { console.error(e); } }
 
       res.json({ message: 'Product removed' });
     } else {
